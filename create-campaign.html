@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Create Campaign - EarningHub</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold
+}
+
+h1{
+font-size:30px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+line-height:1.5;
+margin-bottom:25px
+}
+
+.group{
+margin-bottom:16px
+}
+
+label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:7px
+}
+
+input,textarea,select{
+width:100%;
+padding:14px;
+border:1px solid #ccc;
+border-radius:12px;
+background:#fff;
+color:#111;
+outline:none
+}
+
+textarea{
+min-height:100px;
+resize:vertical
+}
+
+.row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.help{
+font-size:12px;
+color:#888;
+margin-top:6px
+}
+
+.submit{
+width:100%;
+padding:15px;
+border:0;
+border-radius:12px;
+background:#111;
+color:#fff;
+font-weight:bold;
+margin-top:5px
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.4
+}
+
+.ad{
+margin-top:25px;
+border:1px dashed #aaa;
+border-radius:14px;
+padding:20px;
+text-align:center;
+color:#777;
+font-size:13px
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<button class="back" onclick="goBack()">
+Back
+</button>
+
+</header>
+
+
+<h1>Create Campaign</h1>
+
+<p class="subtitle">
+Promote your content through legitimate
+watch, visit, feedback and discovery campaigns.
+</p>
+
+
+<form id="campaignForm">
+
+
+<div class="group">
+
+<label>Campaign title</label>
+
+<input
+id="title"
+type="text"
+placeholder="Example: Watch my new video"
+required
+maxlength="100">
+
+</div>
+
+
+<div class="group">
+
+<label>Description</label>
+
+<textarea
+id="description"
+placeholder="Explain what participants need to do..."
+required
+maxlength="500"></textarea>
+
+</div>
+
+
+<div class="group">
+
+<label>Platform</label>
+
+<select id="platform" required>
+
+<option value="">
+Select platform
+</option>
+
+<option value="YouTube">
+YouTube
+</option>
+
+<option value="Website">
+Website
+</option>
+
+<option value="Facebook">
+Facebook
+</option>
+
+<option value="TikTok">
+TikTok
+</option>
+
+<option value="Instagram">
+Instagram
+</option>
+
+</select>
+
+</div>
+
+
+<div class="group">
+
+<label>Task type</label>
+
+<select id="taskType" required>
+
+<option value="">
+Select task type
+</option>
+
+<option value="video_watch">
+Video Watch
+</option>
+
+<option value="website_visit">
+Website Visit
+</option>
+
+<option value="feedback">
+Feedback
+</option>
+
+<option value="survey">
+Survey
+</option>
+
+<option value="content_discovery">
+Content Discovery
+</option>
+
+</select>
+
+</div>
+
+
+<div class="group">
+
+<label>Target URL</label>
+
+<input
+id="targetUrl"
+type="url"
+placeholder="https://..."
+required>
+
+<p class="help">
+Use the public URL participants should visit.
+</p>
+
+</div>
+
+
+<div class="row">
+
+
+<div class="group">
+
+<label>Reward / completion ($)</label>
+
+<input
+id="reward"
+type="number"
+min="0.01"
+step="0.01"
+placeholder="0.05"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>Total budget ($)</label>
+
+<input
+id="budget"
+type="number"
+min="0.01"
+step="0.01"
+placeholder="10.00"
+required>
+
+</div>
+
+
+</div>
+
+
+<button
+class="submit"
+type="submit">
+
+Publish Campaign
+
+</button>
+
+</form>
+
+
+<div id="message" class="message"></div>
+
+
+<div class="ad">
+Advertisement
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+function showMessage(text){
+
+const box =
+document.getElementById("message");
+
+box.textContent=text;
+
+box.style.display="block";
+
+}
+
+
+function goBack(){
+
+window.location.href="dashboard.html";
+
+}
+
+
+document
+.getElementById("campaignForm")
+.addEventListener("submit", async function(event){
+
+event.preventDefault();
+
+const title =
+document.getElementById("title").value.trim();
+
+const description =
+document.getElementById("description").value.trim();
+
+const platform =
+document.getElementById("platform").value;
+
+const taskType =
+document.getElementById("taskType").value;
+
+const targetUrl =
+document.getElementById("targetUrl").value.trim();
+
+const reward =
+Number(document.getElementById("reward").value);
+
+const budget =
+Number(document.getElementById("budget").value);
+
+
+if(reward <= 0 || budget <= 0){
+
+showMessage(
+"Reward and budget must be greater than zero."
+);
+
+return;
+
+}
+
+
+if(budget < reward){
+
+showMessage(
+"Total budget must be at least the reward amount."
+);
+
+return;
+
+}
+
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await supabaseClient.auth.getSession();
+
+
+if(sessionError || !sessionData.session){
+
+showMessage(
+"Please login before creating a campaign."
+);
+
+return;
+
+}
+
+
+const user =
+sessionData.session.user;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("campaigns")
+.insert({
+
+creator_id:user.id,
+
+title:title,
+
+description:description,
+
+platform:platform,
+
+task_type:taskType,
+
+target_url:targetUrl,
+
+reward:reward,
+
+budget:budget,
+
+status:"active"
+
+});
+
+
+if(error){
+
+showMessage(error.message);
+
+return;
+
+}
+
+
+showMessage(
+"Campaign published successfully!"
+);
+
+document
+.getElementById("campaignForm")
+.reset();
+
+
+setTimeout(function(){
+
+window.location.href="dashboard.html";
+
+},1200);
+
+});
+
+</script>
+
+</body>
+</html>
