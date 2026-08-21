@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub Tasks</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold
+}
+
+.title{
+margin-bottom:20px
+}
+
+.title h1{
+font-size:30px;
+margin-bottom:8px
+}
+
+.title p{
+color:#777;
+font-size:14px;
+line-height:1.5
+}
+
+.search{
+width:100%;
+padding:14px;
+border:1px solid #ccc;
+border-radius:12px;
+margin-bottom:15px;
+outline:none
+}
+
+.filters{
+display:flex;
+gap:8px;
+overflow-x:auto;
+margin-bottom:20px;
+padding-bottom:3px
+}
+
+.filter{
+white-space:nowrap;
+padding:10px 14px;
+border:1px solid #ccc;
+border-radius:20px;
+background:#fff
+}
+
+.filter.active{
+background:#111;
+color:#fff;
+border-color:#111
+}
+
+.task{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:13px
+}
+
+.task-head{
+display:flex;
+justify-content:space-between;
+gap:10px
+}
+
+.platform{
+font-size:12px;
+color:#777;
+margin-bottom:7px
+}
+
+.task h2{
+font-size:17px
+}
+
+.reward{
+font-size:18px;
+font-weight:800;
+white-space:nowrap
+}
+
+.task p{
+color:#666;
+font-size:13px;
+line-height:1.5;
+margin-top:10px
+}
+
+.meta{
+display:flex;
+gap:8px;
+margin-top:13px;
+font-size:12px;
+color:#777
+}
+
+.meta span{
+background:#f4f4f4;
+padding:7px 9px;
+border-radius:8px
+}
+
+.start{
+width:100%;
+padding:13px;
+border:0;
+border-radius:11px;
+background:#111;
+color:#fff;
+font-weight:bold;
+margin-top:15px
+}
+
+.empty{
+text-align:center;
+padding:50px 20px;
+color:#777
+}
+
+.loading{
+text-align:center;
+padding:50px
+}
+
+.error{
+background:#f5f5f5;
+border-radius:12px;
+padding:15px;
+font-size:13px;
+line-height:1.5;
+color:#555
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<button class="back" onclick="goBack()">
+Back
+</button>
+
+</header>
+
+<div class="title">
+
+<h1>Available Tasks</h1>
+
+<p>
+Complete eligible campaigns and earn rewards.
+</p>
+
+</div>
+
+<input
+class="search"
+id="search"
+placeholder="Search tasks..."
+oninput="renderTasks()"
+>
+
+<div class="filters">
+
+<button class="filter active"
+onclick="setFilter('All',this)">
+All
+</button>
+
+<button class="filter"
+onclick="setFilter('YouTube',this)">
+YouTube
+</button>
+
+<button class="filter"
+onclick="setFilter('Facebook',this)">
+Facebook
+</button>
+
+<button class="filter"
+onclick="setFilter('TikTok',this)">
+TikTok
+</button>
+
+<button class="filter"
+onclick="setFilter('Instagram',this)">
+Instagram
+</button>
+
+<button class="filter"
+onclick="setFilter('Website',this)">
+Website
+</button>
+
+</div>
+
+<div id="tasks">
+
+<div class="loading">
+Loading campaigns...
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+let tasks=[];
+
+let currentFilter="All";
+
+
+function setFilter(filter,button){
+
+currentFilter=filter;
+
+document
+.querySelectorAll(".filter")
+.forEach(btn=>{
+btn.classList.remove("active");
+});
+
+button.classList.add("active");
+
+renderTasks();
+
+}
+
+
+function renderTasks(){
+
+const container =
+document.getElementById("tasks");
+
+const search =
+document
+.getElementById("search")
+.value
+.toLowerCase()
+.trim();
+
+
+const filtered=tasks.filter(task=>{
+
+const platformMatch =
+currentFilter==="All" ||
+task.platform===currentFilter;
+
+const searchMatch =
+!search ||
+task.title.toLowerCase().includes(search) ||
+task.platform.toLowerCase().includes(search);
+
+return platformMatch && searchMatch;
+
+});
+
+
+if(filtered.length===0){
+
+container.innerHTML=`
+<div class="empty">
+
+<h3>No campaigns available</h3>
+
+<p style="margin-top:8px">
+Check again later for new earning opportunities.
+</p>
+
+</div>
+`;
+
+return;
+
+}
+
+
+container.innerHTML=filtered.map(task=>{
+
+const remaining =
+Math.max(
+0,
+Number(task.total_slots || 0) -
+Number(task.completed_slots || 0)
+);
+
+return `
+
+<div class="task">
+
+<div class="task-head">
+
+<div>
+
+<div class="platform">
+${escapeHtml(task.platform)}
+</div>
+
+<h2>
+${escapeHtml(task.title)}
+</h2>
+
+</div>
+
+<div class="reward">
+$${Number(task.reward || 0).toFixed(2)}
+</div>
+
+</div>
+
+<p>
+${escapeHtml(task.description || "")}
+</p>
+
+<div class="meta">
+
+<span>
+${remaining} left
+</span>
+
+<span>
+${escapeHtml(task.task_type)}
+</span>
+
+</div>
+
+<button
+class="start"
+onclick="openTask('${task.id}')">
+
+View Task
+
+</button>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+async function loadTasks(){
+
+const container =
+document.getElementById("tasks");
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("campaigns")
+.select(`
+id,
+title,
+description,
+platform,
+task_type,
+target_url,
+reward,
+budget,
+status,
+created_at
+`)
+.eq("status","active")
+.order("created_at",{ascending:false});
+
+
+if(error){
+
+container.innerHTML=`
+<div class="error">
+Unable to load campaigns right now.
+<br><br>
+${escapeHtml(error.message)}
+</div>
+`;
+
+return;
+
+}
+
+
+tasks=data || [];
+
+renderTasks();
+
+}
+
+
+function openTask(id){
+
+const task =
+tasks.find(item=>item.id===id);
+
+if(!task)return;
+
+
+/*
+Store the selected campaign temporarily.
+The next page will use this ID to show
+the campaign details and submission form.
+*/
+
+localStorage.setItem(
+"earninghub_selected_campaign",
+JSON.stringify(task)
+);
+
+window.location.href=
+"task.html";
+
+}
+
+
+function escapeHtml(text){
+
+return String(text)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function goBack(){
+
+window.location.href=
+"dashboard.html";
+
+}
+
+
+loadTasks();
+
+</script>
+
+</body>
+</html>
