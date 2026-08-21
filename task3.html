@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EarningHub - Task</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#fff;color:#111}
+.app{max-width:480px;margin:auto;padding:20px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.logo{font-size:24px;font-weight:800}
+.back{padding:10px 14px;border:1px solid #111;border-radius:10px;text-decoration:none;color:#111}
+.card{border:1px solid #ddd;border-radius:20px;padding:20px}
+.platform{font-size:12px;color:#777;margin-bottom:8px}
+h1{font-size:27px;margin-bottom:12px}
+.description{font-size:14px;color:#666;line-height:1.6}
+.reward{background:#111;color:#fff;border-radius:14px;padding:18px;margin-top:20px}
+.reward small{color:#bbb}
+.reward strong{display:block;font-size:30px;margin-top:5px}
+.info{margin-top:18px}
+.info p{font-size:13px;color:#666}
+.target,.submit{display:block;width:100%;padding:14px;border-radius:11px;font-weight:bold;text-align:center}
+.target{margin-top:20px;background:#111;color:#fff;text-decoration:none}
+.proof{border-top:1px solid #ddd;margin-top:22px;padding-top:20px}
+textarea{width:100%;min-height:110px;padding:13px;border:1px solid #bbb;border-radius:12px;resize:vertical;font-size:14px}
+.submit{border:0;background:#111;color:#fff;margin-top:12px;font-size:15px}
+.message{display:none;margin-top:15px;padding:13px;border-radius:12px;background:#f3f3f3;font-size:13px}
+.empty{text-align:center;padding:60px 20px;color:#777}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<div class="logo">EarningHub</div>
+<a class="back" href="earn-tasks2.html">Back</a>
+</header>
+
+<div id="content">
+<div class="empty">Loading task...</div>
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const db =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+let campaign = null;
+
+function esc(v){
+return String(v ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+const params =
+new URLSearchParams(location.search);
+
+const encoded =
+params.get("campaign");
+
+if(!encoded){
+
+document.getElementById("content").innerHTML =
+`<div class="empty">
+<h3>Task not found</h3>
+<p>Please return to Tasks and select a task again.</p>
+</div>`;
+
+}else{
+
+try{
+
+campaign =
+JSON.parse(
+decodeURIComponent(encoded)
+);
+
+document.getElementById("content").innerHTML = `
+
+<div class="card">
+
+<div class="platform">
+${esc(campaign.platform)}
+</div>
+
+<h1>
+${esc(campaign.title)}
+</h1>
+
+<div class="description">
+${esc(campaign.description)}
+</div>
+
+<div class="reward">
+<small>Reward</small>
+<strong>
+$${Number(campaign.reward || 0).toFixed(2)}
+</strong>
+</div>
+
+<div class="info">
+<strong>Task type</strong>
+<p>${esc(campaign.task_type)}</p>
+</div>
+
+<a
+class="target"
+href="${esc(campaign.target_url)}"
+target="_blank"
+rel="noopener noreferrer">
+Open Target
+</a>
+
+<div class="proof">
+
+<h3>Submit Proof</h3>
+
+<p style="color:#777;font-size:13px">
+Complete the task, then enter your proof below.
+</p>
+
+<form id="proofForm">
+
+<textarea
+id="proof"
+placeholder="Enter proof details or proof link..."
+required></textarea>
+
+<button
+type="submit"
+class="submit">
+Submit Task
+</button>
+
+</form>
+
+<div id="message" class="message"></div>
+
+</div>
+
+</div>
+`;
+
+document
+.getElementById("proofForm")
+.addEventListener("submit", submitProof);
+
+}catch(e){
+
+document.getElementById("content").innerHTML =
+`<div class="empty">
+<h3>Unable to open task</h3>
+<p>Return to Tasks and try again.</p>
+</div>`;
+
+}
+
+}
+
+
+async function submitProof(e){
+
+e.preventDefault();
+
+const message =
+document.getElementById("message");
+
+const proof =
+document.getElementById("proof")
+.value
+.trim();
+
+if(!proof){
+
+message.textContent =
+"Please enter your proof first.";
+
+message.style.display="block";
+
+return;
+}
+
+
+/* Check the current login session */
+
+const {
+data,
+error
+} =
+await db.auth.getSession();
+
+if(error){
+
+message.textContent =
+"Session error: " + error.message;
+
+message.style.display="block";
+
+return;
+}
+
+if(!data.session){
+
+message.textContent =
+"Please login before submitting your task.";
+
+message.style.display="block";
+
+return;
+}
+
+const workerId =
+data.session.user.id;
+
+
+/* Insert submission */
+
+const {
+error:insertError
+} =
+await db
+.from("task_submissions")
+.insert({
+
+task_id:campaign.id,
+
+worker_id:workerId,
+
+proof:proof,
+
+status:"pending",
+
+reward:Number(campaign.reward || 0)
+
+});
+
+
+if(insertError){
+
+message.textContent =
+"Submit error: " + insertError.message;
+
+message.style.display="block";
+
+return;
+}
+
+
+message.textContent =
+"Task submitted successfully!";
+
+message.style.display="block";
+
+document
+.getElementById("proofForm")
+.reset();
+
+}
+
+</script>
+
+</body>
+</html>
