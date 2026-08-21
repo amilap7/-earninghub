@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Tasks</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold
+}
+
+h1{
+font-size:30px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:22px
+}
+
+.search{
+width:100%;
+padding:14px;
+border:1px solid #ccc;
+border-radius:12px;
+outline:none;
+margin-bottom:20px
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:14px
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+gap:10px
+}
+
+.platform{
+font-size:12px;
+color:#777;
+margin-bottom:7px
+}
+
+.name{
+font-size:18px;
+font-weight:700
+}
+
+.reward{
+font-size:18px;
+font-weight:800;
+white-space:nowrap
+}
+
+.description{
+font-size:13px;
+color:#666;
+line-height:1.5;
+margin-top:10px
+}
+
+.type{
+display:inline-block;
+background:#f2f2f2;
+padding:7px 9px;
+border-radius:8px;
+font-size:11px;
+margin-top:12px
+}
+
+.view{
+display:block;
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:13px;
+border-radius:11px;
+font-weight:bold;
+margin-top:15px;
+text-align:center;
+text-decoration:none
+}
+
+.message{
+text-align:center;
+padding:50px 15px;
+color:#777
+}
+
+.error{
+background:#f3f3f3;
+border-radius:12px;
+padding:15px;
+font-size:13px;
+line-height:1.5
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<button
+class="back"
+onclick="window.location.href='dashboard.html'">
+Back
+</button>
+
+</header>
+
+<h1>
+Available Tasks
+</h1>
+
+<p class="subtitle">
+Complete available campaigns and earn rewards.
+</p>
+
+<input
+id="search"
+class="search"
+type="search"
+placeholder="Search campaigns..."
+>
+
+<div id="tasks">
+<div class="message">
+Loading campaigns...
+</div>
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+let campaigns=[];
+
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function render(){
+
+const box =
+document.getElementById("tasks");
+
+const search =
+document
+.getElementById("search")
+.value
+.toLowerCase()
+.trim();
+
+const filtered =
+campaigns.filter(c =>
+
+!search ||
+
+String(c.title || "")
+.toLowerCase()
+.includes(search) ||
+
+String(c.platform || "")
+.toLowerCase()
+.includes(search)
+
+);
+
+
+if(filtered.length===0){
+
+box.innerHTML=`
+
+<div class="message">
+
+No campaigns available.
+
+<br><br>
+
+Check again later for new earning opportunities.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML =
+filtered.map(c => {
+
+const campaignData =
+encodeURIComponent(
+JSON.stringify(c)
+);
+
+return `
+
+<div class="card">
+
+<div class="top">
+
+<div>
+
+<div class="platform">
+${escapeHTML(c.platform)}
+</div>
+
+<div class="name">
+${escapeHTML(c.title)}
+</div>
+
+</div>
+
+<div class="reward">
+$${Number(c.reward || 0).toFixed(2)}
+</div>
+
+</div>
+
+<div class="description">
+${escapeHTML(c.description)}
+</div>
+
+<div class="type">
+${escapeHTML(c.task_type)}
+</div>
+
+<a
+class="view"
+href="task.html?campaign=${campaignData}">
+
+View Task
+
+</a>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+async function loadCampaigns(){
+
+const box =
+document.getElementById("tasks");
+
+const {
+data,
+error
+} =
+await client
+.from("campaigns")
+.select(
+"id,title,description,platform,task_type,target_url,reward,budget,status,created_at"
+)
+.eq("status","active")
+.order(
+"created_at",
+{ascending:false}
+);
+
+
+if(error){
+
+box.innerHTML=`
+
+<div class="error">
+
+<b>Unable to load campaigns.</b>
+
+<br><br>
+
+${escapeHTML(error.message)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+campaigns=data || [];
+
+render();
+
+}
+
+
+document
+.getElementById("search")
+.addEventListener(
+"input",
+render
+);
+
+
+loadCampaigns();
+
+</script>
+
+</body>
+</html>
