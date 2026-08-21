@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+width:100%;
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.logout{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 13px;
+font-weight:bold
+}
+
+.welcome{
+margin:15px 0 25px
+}
+
+.welcome small{
+color:#777
+}
+
+.welcome h1{
+font-size:28px;
+margin-top:6px
+}
+
+.balance{
+background:#111;
+color:#fff;
+border-radius:20px;
+padding:24px;
+margin-bottom:20px
+}
+
+.balance small{
+color:#ccc
+}
+
+.balance h2{
+font-size:36px;
+margin:8px 0
+}
+
+.balance p{
+color:#aaa;
+font-size:13px
+}
+
+.actions{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.action{
+border:1px solid #ddd;
+border-radius:16px;
+padding:20px;
+background:#fff;
+cursor:pointer
+}
+
+.action:active{
+transform:scale(.98)
+}
+
+.icon{
+font-size:27px;
+margin-bottom:12px
+}
+
+.action h3{
+font-size:16px;
+margin-bottom:6px
+}
+
+.action p{
+font-size:13px;
+color:#777;
+line-height:1.4
+}
+
+.section{
+margin-top:30px
+}
+
+.section h2{
+font-size:20px;
+margin-bottom:15px
+}
+
+.quick{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px
+}
+
+.quick p{
+font-size:13px;
+color:#777;
+margin-top:7px
+}
+
+.quick button{
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:13px;
+border-radius:10px;
+font-weight:bold;
+margin-top:15px
+}
+
+.ad{
+margin-top:25px;
+border:1px dashed #aaa;
+border-radius:14px;
+padding:20px;
+text-align:center;
+color:#777;
+font-size:13px
+}
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+.loading{
+text-align:center;
+padding:80px 20px
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading" class="loading">
+Loading EarningHub...
+</div>
+
+
+<div class="app" id="dashboard" style="display:none">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</header>
+
+
+<div class="welcome">
+
+<small>Welcome back</small>
+
+<h1 id="username">
+User
+</h1>
+
+</div>
+
+
+<div class="balance">
+
+<small>Available balance</small>
+
+<h2 id="balance">
+$0.00
+</h2>
+
+<p>
+Your current EarningHub rewards balance
+</p>
+
+</div>
+
+
+<div class="actions">
+
+
+<div class="action" onclick="openTasks()">
+
+<div class="icon">📋</div>
+
+<h3>Tasks</h3>
+
+<p>
+Find available earning tasks.
+</p>
+
+</div>
+
+
+<div class="action" onclick="createCampaign()">
+
+<div class="icon">🚀</div>
+
+<h3>Create Campaign</h3>
+
+<p>
+Promote your content.
+</p>
+
+</div>
+
+
+<div class="action" onclick="openWallet()">
+
+<div class="icon">💳</div>
+
+<h3>Wallet</h3>
+
+<p>
+View your transactions.
+</p>
+
+</div>
+
+
+<div class="action" onclick="withdraw()">
+
+<div class="icon">📤</div>
+
+<h3>Withdraw</h3>
+
+<p>
+Request your earnings.
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="section">
+
+<h2>
+Quick Start
+</h2>
+
+<div class="quick">
+
+<strong>
+Want to earn?
+</strong>
+
+<p>
+Browse available campaigns and complete eligible tasks.
+</p>
+
+<button onclick="openTasks()">
+Browse Tasks
+</button>
+
+</div>
+
+</div>
+
+
+<div class="ad">
+Advertisement
+</div>
+
+
+<footer>
+© 2026 EarningHub
+</footer>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+async function loadDashboard(){
+
+const {
+data,
+error
+} =
+await supabaseClient.auth.getSession();
+
+
+if(error || !data.session){
+
+window.location.href="index.html";
+
+return;
+
+}
+
+
+const user=data.session.user;
+
+
+const {
+data:profile
+} =
+await supabaseClient
+.from("profiles")
+.select("username")
+.eq("id",user.id)
+.maybeSingle();
+
+
+document.getElementById("username")
+.textContent =
+profile?.username ||
+user.email.split("@")[0];
+
+
+document.getElementById("loading")
+.style.display="none";
+
+document.getElementById("dashboard")
+.style.display="block";
+
+}
+
+
+function openTasks(){
+
+window.location.href=
+"tasks.html";
+
+}
+
+
+function createCampaign(){
+
+window.location.href=
+"create-campaign.html";
+
+}
+
+
+function openWallet(){
+
+alert(
+"Wallet will be available next."
+);
+
+}
+
+
+function withdraw(){
+
+alert(
+"Withdrawal system will be available next."
+);
+
+}
+
+
+async function logout(){
+
+await supabaseClient.auth.signOut();
+
+window.location.href=
+"index.html";
+
+}
+
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>
