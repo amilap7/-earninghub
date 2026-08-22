@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Task</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:20px;
+padding:20px
+}
+
+.platform{
+font-size:12px;
+color:#777;
+margin-bottom:8px
+}
+
+h1{
+font-size:27px;
+margin-bottom:12px
+}
+
+.description{
+font-size:14px;
+color:#666;
+line-height:1.6
+}
+
+.reward{
+background:#111;
+color:#fff;
+border-radius:14px;
+padding:18px;
+margin-top:20px
+}
+
+.reward small{
+color:#bbb
+}
+
+.reward strong{
+display:block;
+font-size:30px;
+margin-top:5px
+}
+
+.info{
+margin-top:18px
+}
+
+.info p{
+font-size:13px;
+color:#666;
+margin-top:7px
+}
+
+.target{
+display:block;
+width:100%;
+text-align:center;
+text-decoration:none;
+background:#111;
+color:#fff;
+padding:14px;
+border-radius:11px;
+font-weight:bold;
+margin-top:20px
+}
+
+.proof{
+border-top:1px solid #ddd;
+margin-top:22px;
+padding-top:20px
+}
+
+.proof h2{
+font-size:19px;
+margin-bottom:8px
+}
+
+.proof p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-bottom:12px
+}
+
+textarea{
+display:block;
+width:100%;
+min-height:110px;
+padding:13px;
+border:1px solid #bbb;
+border-radius:12px;
+outline:none;
+resize:vertical;
+background:#fff;
+color:#111;
+font-size:14px
+}
+
+input[type="file"]{
+display:block;
+width:100%;
+padding:12px;
+border:1px solid #bbb;
+border-radius:12px;
+background:#fff;
+color:#111;
+font-size:13px;
+margin-bottom:12px
+}
+
+.screenshot-label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:7px
+}
+
+.submit{
+display:block;
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:15px;
+border-radius:11px;
+font-weight:bold;
+margin-top:12px;
+cursor:pointer;
+font-size:15px
+}
+
+.submit:disabled{
+opacity:.5
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#777
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="earn-tasks2.html">
+Back
+</a>
+
+</header>
+
+<div id="content">
+
+<div class="empty">
+Loading task...
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const encoded =
+params.get("campaign");
+
+let selectedCampaign = null;
+
+
+if(!encoded){
+
+showEmpty(
+"Task not found",
+"Please go back and select a task again."
+);
+
+}else{
+
+try{
+
+selectedCampaign =
+JSON.parse(
+decodeURIComponent(encoded)
+);
+
+checkDailyLimit();
+
+}catch(error){
+
+showEmpty(
+"Unable to open task",
+"Please return to Tasks and try again."
+);
+
+}
+
+}
+
+
+function showEmpty(title,text){
+
+document.getElementById("content").innerHTML=`
+
+<div class="empty">
+
+<h3>${escapeHTML(title)}</h3>
+
+<p style="margin-top:10px">
+${escapeHTML(text)}
+</p>
+
+</div>
+
+`;
+
+}
+
+
+async function checkDailyLimit(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showEmpty(
+"Session error",
+sessionError.message
+);
+
+return;
+
+}
+
+
+if(!sessionData.session){
+
+renderTask();
+
+return;
+
+}
+
+
+const workerId =
+sessionData.session.user.id;
+
+
+/*
+Count today's submitted tasks.
+*/
+
+const today =
+new Date();
+
+today.setHours(
+0,0,0,0
+);
+
+const tomorrow =
+new Date(today);
+
+tomorrow.setDate(
+tomorrow.getDate()+1
+);
+
+
+const {
+count,
+error
+} =
+await client
+.from("task_submissions")
+.select(
+"id",
+{
+count:"exact",
+head:true
+}
+)
+.eq(
+"worker_id",
+workerId
+)
+.gte(
+"created_at",
+today.toISOString()
+)
+.lt(
+"created_at",
+tomorrow.toISOString()
+);
+
+
+if(error){
+
+showEmpty(
+"Unable to check today's tasks",
+error.message
+);
+
+return;
+
+}
+
+
+if((count || 0) >= 20){
+
+showEmpty(
+"Daily task limit reached",
+"You have completed all your tasks for today. Come back tomorrow."
+);
+
+return;
+
+}
+
+
+renderTask();
+
+}
+
+
+function renderTask(){
+
+document.getElementById("content").innerHTML=`
+
+<div class="card">
+
+<div class="platform">
+${escapeHTML(selectedCampaign.platform)}
+</div>
+
+<h1>
+${escapeHTML(selectedCampaign.title)}
+</h1>
+
+<div class="description">
+${escapeHTML(selectedCampaign.description)}
+</div>
+
+<div class="reward">
+
+<small>
+Reward
+</small>
+
+<strong>
+$${Number(
+selectedCampaign.reward || 0
+).toFixed(2)}
+</strong>
+
+</div>
+
+<div class="info">
+
+<strong>
+Task type
+</strong>
+
+<p>
+${escapeHTML(selectedCampaign.task_type)}
+</p>
+
+</div>
+
+<a
+class="target"
+href="${escapeHTML(selectedCampaign.target_url)}"
+target="_blank"
+rel="noopener noreferrer">
+
+Open Target
+
+</a>
+
+<div class="proof">
+
+<h2>
+Submit Proof
+</h2>
+
+<p>
+Complete the task first, then upload a screenshot and enter your proof details.
+</p>
+
+<form id="proofForm">
+
+<label class="screenshot-label">
+Screenshot
+</label>
+
+<input
+id="screenshot"
+type="file"
+accept="image/png,image/jpeg,image/jpg"
+required>
+
+<textarea
+id="proof"
+name="proof"
+placeholder="Enter proof details or proof link..."
+required></textarea>
+
+<button
+type="submit"
+class="submit">
+
+Submit Task
+
+</button>
+
+</form>
+
+<div
+id="message"
+class="message">
+</div>
+
+</div>
+
+</div>
+
+`;
+
+document
+.getElementById("proofForm")
+.addEventListener(
+"submit",
+submitProof
+);
+
+}
+
+
+async function submitProof(event){
+
+event.preventDefault();
+
+const message =
+document.getElementById("message");
+
+const button =
+document.querySelector(".submit");
+
+const proof =
+document.getElementById("proof")
+.value
+.trim();
+
+const screenshot =
+document.getElementById("screenshot")
+.files[0];
+
+
+if(!screenshot){
+
+message.textContent =
+"Please upload a screenshot first.";
+
+message.style.display="block";
+
+return;
+
+}
+
+
+if(!proof){
+
+message.textContent =
+"Please enter your proof details.";
+
+message.style.display="block";
+
+return;
+
+}
+
+
+/*
+Only image files are allowed.
+*/
+
+if(!screenshot.type.startsWith("image/")){
+
+message.textContent =
+"Please upload a valid image screenshot.";
+
+message.style.display="block";
+
+return;
+
+}
+
+
+/*
+Maximum screenshot size: 2MB.
+*/
+
+if(screenshot.size > 2 * 1024 * 1024){
+
+message.textContent =
+"Screenshot must be smaller than 2MB.";
+
+message.style.display="block";
+
+return;
+
+}
+
+
+button.disabled=true;
+
+button.textContent="Submitting...";
+
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showError(
+message,
+"Session error: " +
+sessionError.message,
+button
+);
+
+return;
+
+}
+
+
+if(!sessionData.session){
+
+showError(
+message,
+"Please login before submitting your task.",
+button
+);
+
+return;
+
+}
+
+
+const workerId =
+sessionData.session.user.id;
+
+
+/*
+Check daily limit again before inserting.
+This prevents a user from submitting
+more than 20 tasks.
+*/
+
+const today =
+new Date();
+
+today.setHours(
+0,0,0,0
+);
+
+const tomorrow =
+new Date(today);
+
+tomorrow.setDate(
+tomorrow.getDate()+1
+);
+
+
+const {
+count:todayCount,
+error:countError
+} =
+await client
+.from("task_submissions")
+.select(
+"id",
+{
+count:"exact",
+head:true
+}
+)
+.eq(
+"worker_id",
+workerId
+)
+.gte(
+"created_at",
+today.toISOString()
+)
+.lt(
+"created_at",
+tomorrow.toISOString()
+);
+
+
+if(countError){
+
+showError(
+message,
+"Unable to check daily task limit: " +
+countError.message,
+button
+);
+
+return;
+
+}
+
+
+if((todayCount || 0) >= 20){
+
+showError(
+message,
+"You have completed all your tasks for today. Come back tomorrow.",
+button
+);
+
+return;
+
+}
+
+
+const {
+data:task,
+error:taskError
+} =
+await client
+.from("tasks")
+.select("id")
+.eq(
+"campaign_id",
+selectedCampaign.id
+)
+.maybeSingle();
+
+
+if(taskError){
+
+showError(
+message,
+"Task lookup error: " +
+taskError.message,
+button
+);
+
+return;
+
+}
+
+
+if(!task){
+
+showError(
+message,
+"This campaign does not have a task record yet.",
+button
+);
+
+return;
+
+}
+
+
+/*
+Convert screenshot to data URL so the
+existing proof column can store it.
+*/
+
+let screenshotData;
+
+try{
+
+screenshotData =
+await fileToDataURL(
+screenshot
+);
+
+}catch(error){
+
+showError(
+message,
+"Unable to read screenshot.",
+button
+);
+
+return;
+
+}
+
+
+/*
+Store proof details + screenshot together.
+*/
+
+const finalProof =
+JSON.stringify({
+
+details:proof,
+
+screenshot:screenshotData
+
+});
+
+
+const {
+error:insertError
+} =
+await client
+.from("task_submissions")
+.insert({
+
+task_id:
+task.id,
+
+worker_id:
+workerId,
+
+proof:
+finalProof,
+
+status:
+"pending",
+
+reward:
+Number(
+selectedCampaign.reward || 0
+)
+
+});
+
+
+/*
+Handle duplicate submission.
+*/
+
+if(insertError){
+
+if(
+insertError.code === "23505" &&
+insertError.message.includes(
+"task_submissions_task_id_worker_id_key"
+)
+){
+
+showError(
+message,
+"You have already submitted this task. Please wait for review.",
+button
+);
+
+return;
+
+}
+
+showError(
+message,
+"Submit error: " +
+insertError.message,
+button
+);
+
+return;
+
+}
+
+
+message.textContent =
+"Task submitted successfully! Your screenshot is pending review.";
+
+message.style.display="block";
+
+document
+.getElementById("proofForm")
+.reset();
+
+button.disabled=false;
+
+button.textContent="Submit Task";
+
+}
+
+
+function fileToDataURL(file){
+
+return new Promise(
+function(resolve,reject){
+
+const reader =
+new FileReader();
+
+reader.onload =
+function(){
+
+resolve(
+reader.result
+);
+
+};
+
+reader.onerror =
+function(){
+
+reject(
+reader.error
+);
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+
+function showError(
+message,
+text,
+button
+){
+
+message.textContent=text;
+
+message.style.display="block";
+
+button.disabled=false;
+
+button.textContent="Submit Task";
+
+}
+
+</script>
+
+</body>
+</html>
