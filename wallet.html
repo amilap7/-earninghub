@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Wallet</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:30px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:22px
+}
+
+.balance{
+background:#111;
+color:#fff;
+border-radius:20px;
+padding:24px;
+margin-bottom:18px
+}
+
+.balance small{
+color:#ccc
+}
+
+.balance h2{
+font-size:38px;
+margin-top:8px
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:15px
+}
+
+.card h3{
+font-size:17px;
+margin-bottom:7px
+}
+
+.card p{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+.withdraw{
+display:block;
+width:100%;
+text-align:center;
+background:#111;
+color:#fff;
+padding:14px;
+border-radius:11px;
+text-decoration:none;
+font-weight:bold;
+margin-top:15px
+}
+
+.message{
+display:none;
+padding:14px;
+background:#f3f3f3;
+border-radius:12px;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#777
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="dashboard.html">
+Back
+</a>
+
+</header>
+
+<h1>
+Wallet
+</h1>
+
+<p class="subtitle">
+Your EarningHub rewards balance.
+</p>
+
+<div
+id="message"
+class="message">
+</div>
+
+<div class="balance">
+
+<small>
+Available balance
+</small>
+
+<h2 id="balance">
+$0.00
+</h2>
+
+</div>
+
+<div class="card">
+
+<h3>
+Withdraw your earnings
+</h3>
+
+<p>
+Once you have enough available balance, you can request a withdrawal.
+</p>
+
+<a
+class="withdraw"
+href="withdraw.html">
+Withdraw
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+function showMessage(text){
+
+const message =
+document.getElementById("message");
+
+message.textContent =
+text;
+
+message.style.display =
+"block";
+
+}
+
+
+async function loadWallet(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showMessage(
+"Session error: " +
+sessionError.message
+);
+
+return;
+
+}
+
+
+if(!sessionData.session){
+
+showMessage(
+"Please login first."
+);
+
+return;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+const {
+data,
+error
+} =
+await client
+.from("wallets")
+.select(
+"user_id,balance,created_at"
+)
+.eq(
+"user_id",
+userId
+)
+.maybeSingle();
+
+
+if(error){
+
+showMessage(
+"Unable to load wallet: " +
+error.message
+);
+
+return;
+
+}
+
+
+if(!data){
+
+document.getElementById(
+"balance"
+).textContent =
+"$0.00";
+
+return;
+
+}
+
+
+document.getElementById(
+"balance"
+).textContent =
+"$" +
+Number(
+data.balance || 0
+).toFixed(2);
+
+}
+
+
+loadWallet();
+
+</script>
+
+</body>
+</html>
