@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Your Data</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:25px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* DATA */
+
+.data{
+display:flex;
+flex-direction:column;
+gap:12px
+}
+
+.data-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+background:#fff
+}
+
+.data-button{
+display:flex;
+align-items:center;
+justify-content:space-between;
+width:100%;
+border:0;
+background:#fff;
+color:#111;
+padding:0;
+text-align:left;
+cursor:pointer
+}
+
+.data-left{
+display:flex;
+align-items:center;
+gap:13px;
+flex:1
+}
+
+.data-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+flex-shrink:0
+}
+
+.data-text h2{
+font-size:16px;
+margin-bottom:6px
+}
+
+.data-text p{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+.data-arrow{
+font-size:20px;
+color:#777;
+margin-left:10px
+}
+
+
+/* DETAILS */
+
+.details{
+display:none;
+margin-top:15px;
+padding-top:15px;
+border-top:1px solid #eee
+}
+
+.details.show{
+display:block
+}
+
+.details p{
+font-size:13px;
+color:#666;
+line-height:1.6;
+margin-bottom:8px
+}
+
+.details strong{
+color:#111
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.6;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+<button
+class="back-button"
+type="button"
+onclick="goPrivacy()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Your Data
+</h1>
+
+</div>
+
+
+<div class="data">
+
+
+<!-- ACCOUNT DATA -->
+
+<div class="data-card">
+
+<button
+class="data-button"
+type="button"
+onclick="toggleDetails('accountData')"
+>
+
+<div class="data-left">
+
+<div class="data-icon">
+👤
+</div>
+
+<div class="data-text">
+
+<h2>
+Account Data
+</h2>
+
+<p>
+Information connected to your EarningHub account.
+</p>
+
+</div>
+
+</div>
+
+<div class="data-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="accountData"
+class="details"
+>
+
+<p>
+<strong>Account information</strong>
+</p>
+
+<p>
+Your account may contain information such as your account ID, email address and profile information.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- ACTIVITY DATA -->
+
+<div class="data-card">
+
+<button
+class="data-button"
+type="button"
+onclick="toggleDetails('activityData')"
+>
+
+<div class="data-left">
+
+<div class="data-icon">
+📋
+</div>
+
+<div class="data-text">
+
+<h2>
+Activity Data
+</h2>
+
+<p>
+Information related to your EarningHub activity.
+</p>
+
+</div>
+
+</div>
+
+<div class="data-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="activityData"
+class="details"
+>
+
+<p>
+<strong>Your activity</strong>
+</p>
+
+<p>
+Your EarningHub activity may include completed tasks, campaigns, wallet activity and other actions performed on the platform.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- WALLET DATA -->
+
+<div class="data-card">
+
+<button
+class="data-button"
+type="button"
+onclick="toggleDetails('walletData')"
+>
+
+<div class="data-left">
+
+<div class="data-icon">
+💳
+</div>
+
+<div class="data-text">
+
+<h2>
+Wallet Data
+</h2>
+
+<p>
+Information related to your rewards and wallet activity.
+</p>
+
+</div>
+
+</div>
+
+<div class="data-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="walletData"
+class="details"
+>
+
+<p>
+<strong>Wallet information</strong>
+</p>
+
+<p>
+Your wallet may contain your current balance, rewards and transaction information related to EarningHub.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- DATA USE -->
+
+<div class="data-card">
+
+<button
+class="data-button"
+type="button"
+onclick="toggleDetails('dataUse')"
+>
+
+<div class="data-left">
+
+<div class="data-icon">
+🛡️
+</div>
+
+<div class="data-text">
+
+<h2>
+How Your Data Is Used
+</h2>
+
+<p>
+Learn how account information is used by EarningHub.
+</p>
+
+</div>
+
+</div>
+
+<div class="data-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="dataUse"
+class="details"
+>
+
+<p>
+<strong>Data usage</strong>
+</p>
+
+<p>
+EarningHub uses account information to provide account features, manage tasks and rewards, maintain security and improve the service.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+EarningHub Your Data
+</strong>
+
+<p>
+Your data helps EarningHub provide account, task, wallet and security features. We aim to handle account information responsibly.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/*
+GO TO PRIVACY
+*/
+
+function goPrivacy(){
+
+window.location.href =
+"privacy.html";
+
+}
+
+
+/*
+TOGGLE DETAILS
+*/
+
+function toggleDetails(id){
+
+const element =
+document.getElementById(id);
+
+element.classList.toggle(
+"show"
+);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
