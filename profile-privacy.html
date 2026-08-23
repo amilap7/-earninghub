@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Profile Privacy</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:25px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* PRIVACY */
+
+.privacy{
+display:flex;
+flex-direction:column;
+gap:12px
+}
+
+.privacy-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+background:#fff
+}
+
+.privacy-button{
+display:flex;
+align-items:center;
+justify-content:space-between;
+width:100%;
+border:0;
+background:#fff;
+color:#111;
+padding:0;
+text-align:left;
+cursor:pointer
+}
+
+.privacy-left{
+display:flex;
+align-items:center;
+gap:13px;
+flex:1
+}
+
+.privacy-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+flex-shrink:0
+}
+
+.privacy-text h2{
+font-size:16px;
+margin-bottom:6px
+}
+
+.privacy-text p{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+
+/* SWITCH */
+
+.switch{
+width:48px;
+height:27px;
+border:0;
+border-radius:20px;
+background:#ddd;
+position:relative;
+flex-shrink:0;
+cursor:pointer;
+transition:.2s
+}
+
+.switch::after{
+content:"";
+position:absolute;
+width:21px;
+height:21px;
+background:#fff;
+border-radius:50%;
+top:3px;
+left:3px;
+transition:.2s;
+box-shadow:0 1px 3px rgba(0,0,0,.2)
+}
+
+.switch.active{
+background:#111
+}
+
+.switch.active::after{
+left:24px
+}
+
+
+/* MESSAGE */
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:10px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.6;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+
+<button
+class="back-button"
+type="button"
+onclick="goPrivacy()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Profile Privacy
+</h1>
+
+</div>
+
+
+<div class="privacy">
+
+
+<!-- PROFILE VISIBILITY -->
+
+<div class="privacy-card">
+
+<button
+class="privacy-button"
+type="button"
+onclick="toggleSetting('profileVisibility','Profile Visibility')"
+>
+
+<div class="privacy-left">
+
+<div class="privacy-icon">
+👤
+</div>
+
+<div class="privacy-text">
+
+<h2>
+Profile Visibility
+</h2>
+
+<p>
+Allow other EarningHub users to view your profile.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="profileVisibility"
+class="switch active"
+></div>
+
+</button>
+
+</div>
+
+
+<!-- SHOW EMAIL -->
+
+<div class="privacy-card">
+
+<button
+class="privacy-button"
+type="button"
+onclick="toggleSetting('showEmail','Show Email')"
+>
+
+<div class="privacy-left">
+
+<div class="privacy-icon">
+📧
+</div>
+
+<div class="privacy-text">
+
+<h2>
+Show Email
+</h2>
+
+<p>
+Control whether your email address is visible on your profile.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="showEmail"
+class="switch"
+></div>
+
+</button>
+
+</div>
+
+
+<!-- PROFILE IMAGE -->
+
+<div class="privacy-card">
+
+<button
+class="privacy-button"
+type="button"
+onclick="toggleSetting('profileImage','Profile Image')"
+>
+
+<div class="privacy-left">
+
+<div class="privacy-icon">
+🖼️
+</div>
+
+<div class="privacy-text">
+
+<h2>
+Profile Image
+</h2>
+
+<p>
+Allow your profile image to be visible to other users.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="profileImage"
+class="switch active"
+></div>
+
+</button>
+
+</div>
+
+
+<!-- PRIVATE PROFILE -->
+
+<div class="privacy-card">
+
+<button
+class="privacy-button"
+type="button"
+onclick="togglePrivateProfile()"
+>
+
+<div class="privacy-left">
+
+<div class="privacy-icon">
+🔒
+</div>
+
+<div class="privacy-text">
+
+<h2>
+Private Profile
+</h2>
+
+<p>
+Make your EarningHub profile private.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="privateProfile"
+class="switch"
+></div>
+
+</button>
+
+</div>
+
+
+</div>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+Profile Privacy
+</strong>
+
+<p>
+Use these settings to control how your EarningHub profile information is visible to other users.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/*
+GO TO PRIVACY
+*/
+
+function goPrivacy(){
+
+window.location.href =
+"privacy.html";
+
+}
+
+
+/*
+SHOW MESSAGE
+*/
+
+function showMessage(message){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+message;
+
+box.style.display =
+"block";
+
+
+clearTimeout(
+window.messageTimer
+);
+
+
+window.messageTimer =
+setTimeout(
+function(){
+
+box.style.display =
+"none";
+
+},
+2000
+);
+
+}
+
+
+/*
+TOGGLE SETTING
+*/
+
+function toggleSetting(
+id,
+name
+){
+
+const setting =
+document.getElementById(
+id
+);
+
+
+setting.classList.toggle(
+"active"
+);
+
+
+const enabled =
+setting.classList.contains(
+"active"
+);
+
+
+showMessage(
+name +
+(enabled ? " enabled." : " disabled.")
+);
+
+}
+
+
+/*
+PRIVATE PROFILE
+*/
+
+function togglePrivateProfile(){
+
+const setting =
+document.getElementById(
+"privateProfile"
+);
+
+setting.classList.toggle(
+"active"
+);
+
+
+const enabled =
+setting.classList.contains(
+"active"
+);
+
+
+showMessage(
+enabled
+?
+"Private Profile enabled."
+:
+"Private Profile disabled."
+);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
