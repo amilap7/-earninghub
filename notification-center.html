@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Notifications</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff;
+position:sticky;
+top:0;
+z-index:100
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:20px
+}
+
+.page-title-top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* MARK ALL */
+
+.mark-all{
+border:0;
+background:#fff;
+color:#111;
+font-size:12px;
+font-weight:bold;
+cursor:pointer;
+padding:8px 0
+}
+
+.mark-all:active{
+opacity:.6
+}
+
+
+/* NOTIFICATION LIST */
+
+.notifications{
+display:flex;
+flex-direction:column;
+gap:10px
+}
+
+.notification-card{
+position:relative;
+display:flex;
+align-items:flex-start;
+gap:13px;
+border:1px solid #ddd;
+border-radius:16px;
+padding:16px;
+background:#fff;
+cursor:pointer;
+transition:.15s
+}
+
+.notification-card:active{
+transform:scale(.99);
+background:#f8f8f8
+}
+
+.notification-card.unread{
+background:#fafafa;
+border-color:#bbb
+}
+
+.notification-icon{
+width:42px;
+height:42px;
+border-radius:11px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:21px;
+flex-shrink:0
+}
+
+.notification-content{
+flex:1;
+min-width:0
+}
+
+.notification-title{
+font-size:15px;
+font-weight:bold;
+padding-right:10px
+}
+
+.notification-message{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:5px
+}
+
+.notification-time{
+font-size:11px;
+color:#999;
+margin-top:8px
+}
+
+.unread-dot{
+width:8px;
+height:8px;
+background:#111;
+border-radius:50%;
+position:absolute;
+right:14px;
+top:17px
+}
+
+
+/* DELETE */
+
+.delete-button{
+width:30px;
+height:30px;
+border:0;
+background:#fff;
+border-radius:8px;
+font-size:16px;
+color:#777;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+flex-shrink:0
+}
+
+.delete-button:active{
+background:#eee
+}
+
+
+/* EMPTY */
+
+.empty{
+display:none;
+border:1px solid #ddd;
+border-radius:16px;
+padding:35px 20px;
+text-align:center
+}
+
+.empty-icon{
+font-size:38px;
+margin-bottom:12px
+}
+
+.empty h2{
+font-size:17px
+}
+
+.empty p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:7px
+}
+
+
+/* LOADING */
+
+.loading{
+border:1px solid #ddd;
+border-radius:16px;
+padding:25px;
+text-align:center;
+font-size:13px;
+color:#777
+}
+
+
+/* ERROR */
+
+.error{
+display:none;
+border:1px solid #ddd;
+border-radius:16px;
+padding:15px;
+font-size:13px;
+line-height:1.5;
+margin-bottom:12px;
+background:#f8f8f8
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+.notification-card{
+padding:15px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+<button
+class="back-button"
+type="button"
+onclick="goDashboard()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<div class="page-title-top">
+
+<div>
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Notifications
+</h1>
+
+</div>
+
+
+<button
+class="mark-all"
+type="button"
+onclick="markAllAsRead()"
+>
+
+Mark all as read
+
+</button>
+
+</div>
+
+</div>
+
+
+<div
+id="errorMessage"
+class="error">
+</div>
+
+
+<div
+id="loading"
+class="loading"
+>
+
+Loading notifications...
+
+</div>
+
+
+<div
+id="notifications"
+class="notifications">
+</div>
+
+
+<div
+id="empty"
+class="empty"
+>
+
+<div class="empty-icon">
+🔔
+</div>
+
+<h2>
+No notifications yet
+</h2>
+
+<p>
+When you receive updates about tasks, rewards, withdrawals or your account, they will appear here.
+</p>
+
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+EarningHub Notifications
+</strong>
+
+<p>
+Important updates about your tasks, rewards, withdrawals, daily bonuses, campaigns and account activity will appear here.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+/*
+SUPABASE
+*/
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+GO TO DASHBOARD
+*/
+
+function goDashboard(){
+
+window.location.href =
+"dashboard.html";
+
+}
+
+
+/*
+ESCAPE HTML
+*/
+
+function escapeHtml(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/*
+GET ICON
+*/
+
+function getNotificationIcon(type){
+
+switch(String(type || "").toLowerCase()){
+
+case "withdrawal":
+return "📤";
+
+case "task":
+return "📋";
+
+case "reward":
+return "💰";
+
+case "bonus":
+case "daily_bonus":
+return "🎁";
+
+case "campaign":
+return "🚀";
+
+case "security":
+return "🔐";
+
+case "account":
+return "👤";
+
+default:
+return "🔔";
+
+}
+
+}
+
+
+/*
+TIME FORMAT
+*/
+
+function formatTime(dateValue){
+
+if(!dateValue){
+
+return "";
+
+}
+
+const date =
+new Date(dateValue);
+
+if(isNaN(date.getTime())){
+
+return "";
+
+}
+
+const now =
+new Date();
+
+const seconds =
+Math.floor(
+(now - date) / 1000
+);
+
+
+if(seconds < 0){
+
+return "Just now";
+
+}
+
+
+if(seconds < 60){
+
+return "Just now";
+
+}
+
+
+const minutes =
+Math.floor(
+seconds / 60
+);
+
+
+if(minutes < 60){
+
+return minutes +
+(minutes === 1
+?
+" minute ago"
+:
+" minutes ago");
+
+}
+
+
+const hours =
+Math.floor(
+minutes / 60
+);
+
+
+if(hours < 24){
+
+return hours +
+(hours === 1
+?
+" hour ago"
+:
+" hours ago");
+
+}
+
+
+const days =
+Math.floor(
+hours / 24
+);
+
+
+if(days < 7){
+
+return days +
+(days === 1
+?
+" day ago"
+:
+" days ago");
+
+}
+
+
+return date.toLocaleDateString();
+
+}
+
+
+/*
+SHOW ERROR
+*/
+
+function showError(message){
+
+const errorBox =
+document.getElementById(
+"errorMessage"
+);
+
+errorBox.textContent =
+message;
+
+errorBox.style.display =
+"block";
+
+}
+
+
+/*
+LOAD NOTIFICATIONS
+*/
+
+async function loadNotifications(){
+
+const loading =
+document.getElementById(
+"loading"
+);
+
+const list =
+document.getElementById(
+"notifications"
+);
+
+const empty =
+document.getElementById(
+"empty"
+);
+
+const errorBox =
+document.getElementById(
+"errorMessage"
+);
+
+
+loading.style.display =
+"block";
+
+list.innerHTML =
+"";
+
+empty.style.display =
+"none";
+
+errorBox.style.display =
+"none";
+
+
+/*
+GET CURRENT USER
+*/
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+loading.style.display =
+"none";
+
+showError(
+"Unable to load your account."
+);
+
+return;
+
+}
+
+
+const session =
+sessionData?.session;
+
+
+if(!session){
+
+loading.style.display =
+"none";
+
+empty.style.display =
+"block";
+
+return;
+
+}
+
+
+const userId =
+session.user.id;
+
+
+/*
+LOAD USER NOTIFICATIONS
+*/
+
+const {
+data,
+error
+} =
+await client
+.from("notifications")
+.select(
+"id,user_id,type,title,message,link,is_read,created_at"
+)
+.eq(
+"user_id",
+userId
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+loading.style.display =
+"none";
+
+
+if(error){
+
+console.log(
+"Notification error:",
+error
+);
+
+showError(
+"Unable to load notifications. Please try again."
+);
+
+return;
+
+}
+
+
+if(!data || data.length === 0){
+
+empty.style.display =
+"block";
+
+return;
+
+}
+
+
+renderNotifications(data);
+
+}
+
+
+/*
+RENDER NOTIFICATIONS
+*/
+
+function renderNotifications(items){
+
+const list =
+document.getElementById(
+"notifications"
+);
+
+const empty =
+document.getElementById(
+"empty"
+);
+
+
+list.innerHTML =
+"";
+
+
+if(!items || items.length === 0){
+
+empty.style.display =
+"block";
+
+return;
+
+}
+
+
+empty.style.display =
+"none";
+
+
+items.forEach(function(item){
+
+const card =
+document.createElement("div");
+
+
+card.className =
+"notification-card" +
+(
+item.is_read === false
+?
+" unread"
+:
+""
+);
+
+
+card.dataset.id =
+item.id;
+
+
+const icon =
+getNotificationIcon(
+item.type
+);
+
+
+const title =
+escapeHtml(
+item.title ||
+"EarningHub Notification"
+);
+
+
+const message =
+escapeHtml(
+item.message ||
+""
+);
+
+
+const time =
+formatTime(
+item.created_at
+);
+
+
+card.innerHTML = `
+
+<div class="notification-icon">
+${icon}
+</div>
+
+<div class="notification-content">
+
+<div class="notification-title">
+${title}
+</div>
+
+<div class="notification-message">
+${message}
+</div>
+
+<div class="notification-time">
+${time}
+</div>
+
+</div>
+
+<button
+class="delete-button"
+type="button"
+aria-label="Delete notification"
+>
+×
+</button>
+
+${
+item.is_read === false
+?
+'<div class="unread-dot"></div>'
+:
+''
+}
+
+`;
+
+
+card.addEventListener(
+"click",
+function(){
+
+openNotification(item);
+
+}
+);
+
+
+const deleteButton =
+card.querySelector(
+".delete-button"
+);
+
+
+deleteButton.addEventListener(
+"click",
+function(event){
+
+event.stopPropagation();
+
+deleteNotification(
+item.id
+);
+
+}
+);
+
+
+list.appendChild(card);
+
+});
+
+}
+
+
+/*
+OPEN NOTIFICATION
+*/
+
+async function openNotification(item){
+
+/*
+MARK AS READ
+*/
+
+if(item.is_read === false){
+
+const {
+error
+} =
+await client
+.from("notifications")
+.update({
+is_read:true
+})
+.eq(
+"id",
+item.id
+)
+.eq(
+"user_id",
+item.user_id
+);
+
+
+if(error){
+
+console.log(
+"Read notification error:",
+error
+);
+
+}
+
+}
+
+
+/*
+OPEN CUSTOM LINK
+*/
+
+if(item.link){
+
+window.location.href =
+item.link;
+
+return;
+
+}
+
+
+/*
+DEFAULT PAGES
+*/
+
+switch(
+String(item.type || "").toLowerCase()
+){
+
+case "withdrawal":
+
+window.location.href =
+"withdraw.html";
+
+break;
+
+
+case "task":
+
+window.location.href =
+"earn-tasks2.html";
+
+break;
+
+
+case "reward":
+
+window.location.href =
+"wallet.html";
+
+break;
+
+
+case "bonus":
+
+case "daily_bonus":
+
+window.location.href =
+"dashboard.html";
+
+break;
+
+
+case "campaign":
+
+window.location.href =
+"create-campaign.html";
+
+break;
+
+
+case "security":
+
+window.location.href =
+"security.html";
+
+break;
+
+
+case "account":
+
+window.location.href =
+"account.html";
+
+break;
+
+
+default:
+
+await loadNotifications();
+
+break;
+
+}
+
+}
+
+
+/*
+MARK ALL AS READ
+*/
+
+async function markAllAsRead(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+alert(
+"Unable to check your account."
+);
+
+return;
+
+}
+
+
+const session =
+sessionData?.session;
+
+
+if(!session){
+
+alert(
+"Please login first."
+);
+
+return;
+
+}
+
+
+const userId =
+session.user.id;
+
+
+const {
+error
+} =
+await client
+.from("notifications")
+.update({
+is_read:true
+})
+.eq(
+"user_id",
+userId
+)
+.eq(
+"is_read",
+false
+);
+
+
+if(error){
+
+console.log(
+"Mark all read error:",
+error
+);
+
+alert(
+"Unable to mark notifications as read."
+);
+
+return;
+
+}
+
+
+await loadNotifications();
+
+}
+
+
+/*
+DELETE NOTIFICATION
+*/
+
+async function deleteNotification(id){
+
+if(!id){
+
+return;
+
+}
+
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+alert(
+"Unable to check your account."
+);
+
+return;
+
+}
+
+
+const session =
+sessionData?.session;
+
+
+if(!session){
+
+return;
+
+}
+
+
+const userId =
+session.user.id;
+
+
+const {
+error
+} =
+await client
+.from("notifications")
+.delete()
+.eq(
+"id",
+id
+)
+.eq(
+"user_id",
+userId
+);
+
+
+if(error){
+
+console.log(
+"Delete notification error:",
+error
+);
+
+alert(
+"Unable to delete notification."
+);
+
+return;
+
+}
+
+
+await loadNotifications();
+
+}
+
+
+/*
+REAL-TIME NOTIFICATIONS
+*/
+
+let notificationChannel =
+null;
+
+
+function listenForNotifications(){
+
+if(notificationChannel){
+
+return;
+
+}
+
+
+notificationChannel =
+client
+.channel(
+"earninghub-notifications-" +
+Date.now()
+)
+.on(
+"postgres_changes",
+{
+event:"INSERT",
+schema:"public",
+table:"notifications"
+},
+async function(payload){
+
+/*
+Only refresh when the new
+notification belongs to
+the currently logged-in user.
+*/
+
+const {
+data:sessionData
+} =
+await client.auth.getSession();
+
+
+const userId =
+sessionData?.session?.user?.id;
+
+
+if(
+userId &&
+payload?.new?.user_id === userId
+){
+
+await loadNotifications();
+
+}
+
+}
+)
+.on(
+"postgres_changes",
+{
+event:"UPDATE",
+schema:"public",
+table:"notifications"
+},
+async function(payload){
+
+const {
+data:sessionData
+} =
+await client.auth.getSession();
+
+
+const userId =
+sessionData?.session?.user?.id;
+
+
+if(
+userId &&
+payload?.new?.user_id === userId
+){
+
+await loadNotifications();
+
+}
+
+}
+)
+.on(
+"postgres_changes",
+{
+event:"DELETE",
+schema:"public",
+table:"notifications"
+},
+async function(payload){
+
+const {
+data:sessionData
+} =
+await client.auth.getSession();
+
+
+const userId =
+sessionData?.session?.user?.id;
+
+
+if(
+userId &&
+payload?.old?.user_id === userId
+){
+
+await loadNotifications();
+
+}
+
+}
+)
+.subscribe();
+
+}
+
+
+/*
+AUTH STATE
+*/
+
+client.auth.onAuthStateChange(
+function(event){
+
+if(
+event === "SIGNED_IN" ||
+event === "TOKEN_REFRESHED"
+){
+
+loadNotifications();
+
+}
+
+
+if(
+event === "SIGNED_OUT"
+){
+
+window.location.href =
+"index.html";
+
+}
+
+}
+);
+
+
+/*
+START
+*/
+
+async function start(){
+
+await loadNotifications();
+
+listenForNotifications();
+
+}
+
+
+start();
+
+</script>
+
+
+</body>
+
+</html>
