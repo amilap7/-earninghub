@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Privacy & Security</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:25px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* SECURITY */
+
+.security{
+display:flex;
+flex-direction:column;
+gap:12px
+}
+
+.security-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+background:#fff
+}
+
+.security-button{
+display:flex;
+align-items:center;
+justify-content:space-between;
+width:100%;
+border:0;
+background:#fff;
+color:#111;
+padding:0;
+text-align:left;
+cursor:pointer
+}
+
+.security-left{
+display:flex;
+align-items:center;
+gap:13px;
+flex:1
+}
+
+.security-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+flex-shrink:0
+}
+
+.security-text h2{
+font-size:16px;
+margin-bottom:6px
+}
+
+.security-text p{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+.security-arrow{
+font-size:20px;
+color:#777;
+margin-left:10px
+}
+
+
+/* DETAILS */
+
+.details{
+display:none;
+margin-top:15px;
+padding-top:15px;
+border-top:1px solid #eee
+}
+
+.details.show{
+display:block
+}
+
+.details p{
+font-size:13px;
+color:#666;
+line-height:1.6;
+margin-bottom:8px
+}
+
+.details strong{
+color:#111
+}
+
+
+/* SWITCH */
+
+.switch{
+width:48px;
+height:27px;
+border:0;
+border-radius:20px;
+background:#ddd;
+position:relative;
+flex-shrink:0;
+cursor:pointer;
+transition:.2s
+}
+
+.switch::after{
+content:"";
+position:absolute;
+width:21px;
+height:21px;
+background:#fff;
+border-radius:50%;
+top:3px;
+left:3px;
+transition:.2s;
+box-shadow:0 1px 3px rgba(0,0,0,.2)
+}
+
+.switch.active{
+background:#111
+}
+
+.switch.active::after{
+left:24px
+}
+
+
+/* MESSAGE */
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:10px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.6;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+<button
+class="back-button"
+type="button"
+onclick="goPrivacy()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Privacy & Security
+</h1>
+
+</div>
+
+
+<div class="security">
+
+
+<!-- PROFILE PROTECTION -->
+
+<div class="security-card">
+
+<button
+class="security-button"
+type="button"
+onclick="toggleSetting('profileProtection','Profile Protection')"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+👤
+</div>
+
+<div class="security-text">
+
+<h2>
+Profile Protection
+</h2>
+
+<p>
+Help keep your profile information protected.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="profileProtection"
+class="switch active"
+></div>
+
+</button>
+
+</div>
+
+
+<!-- ACCOUNT SECURITY -->
+
+<div class="security-card">
+
+<button
+class="security-button"
+type="button"
+onclick="toggleSetting('accountSecurity','Account Security')"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+🔐
+</div>
+
+<div class="security-text">
+
+<h2>
+Account Security
+</h2>
+
+<p>
+Use security controls to help protect your account.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="accountSecurity"
+class="switch active"
+></div>
+
+</button>
+
+</div>
+
+
+<!-- DATA PROTECTION -->
+
+<div class="security-card">
+
+<button
+class="security-button"
+type="button"
+onclick="toggleDetails('dataProtection')"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+🛡️
+</div>
+
+<div class="security-text">
+
+<h2>
+Data Protection
+</h2>
+
+<p>
+Learn how EarningHub helps protect account information.
+</p>
+
+</div>
+
+</div>
+
+<div class="security-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="dataProtection"
+class="details"
+>
+
+<p>
+<strong>Data protection</strong>
+</p>
+
+<p>
+EarningHub uses account access controls and security measures to help protect your account information and platform activity.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- SESSION SECURITY -->
+
+<div class="security-card">
+
+<button
+class="security-button"
+type="button"
+onclick="toggleDetails('sessionSecurity')"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+🔒
+</div>
+
+<div class="security-text">
+
+<h2>
+Session Security
+</h2>
+
+<p>
+Information about keeping your account sessions secure.
+</p>
+
+</div>
+
+</div>
+
+<div class="security-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="sessionSecurity"
+class="details"
+>
+
+<p>
+<strong>Session security</strong>
+</p>
+
+<p>
+Your login session is used to keep you signed in and allow EarningHub to provide authenticated account features.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+EarningHub Privacy & Security
+</strong>
+
+<p>
+Protect your account by keeping your login information private and using the available security controls responsibly.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/*
+GO TO PRIVACY
+*/
+
+function goPrivacy(){
+
+window.location.href =
+"privacy.html";
+
+}
+
+
+/*
+TOGGLE SETTING
+*/
+
+function toggleSetting(
+id,
+name
+){
+
+const setting =
+document.getElementById(
+id
+);
+
+setting.classList.toggle(
+"active"
+);
+
+const enabled =
+setting.classList.contains(
+"active"
+);
+
+showMessage(
+name +
+(enabled ? " enabled." : " disabled.")
+);
+
+}
+
+
+/*
+TOGGLE DETAILS
+*/
+
+function toggleDetails(id){
+
+const element =
+document.getElementById(id);
+
+element.classList.toggle(
+"show"
+);
+
+}
+
+
+/*
+MESSAGE
+*/
+
+function showMessage(message){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+message;
+
+box.style.display =
+"block";
+
+clearTimeout(
+window.messageTimer
+);
+
+window.messageTimer =
+setTimeout(
+function(){
+
+box.style.display =
+"none";
+
+},
+2000
+);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
