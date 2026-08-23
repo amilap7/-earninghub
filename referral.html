@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub - Referral</title>
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* HEADER */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff;
+position:sticky;
+top:0;
+z-index:100
+}
+
+.back{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+text-decoration:none
+}
+
+.back svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.back:active{
+background:#f3f3f3
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.title small{
+font-size:13px;
+color:#777
+}
+
+.title h1{
+font-size:28px;
+margin-top:6px
+}
+
+.subtitle{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:7px
+}
+
+
+/* REFERRAL CARD */
+
+.referral-card{
+background:#111;
+color:#fff;
+border-radius:20px;
+padding:22px;
+margin-top:22px
+}
+
+.referral-card small{
+color:#ccc;
+font-size:12px
+}
+
+.referral-code{
+font-size:30px;
+font-weight:800;
+letter-spacing:2px;
+margin-top:8px;
+word-break:break-all
+}
+
+.copy-button{
+width:100%;
+border:0;
+background:#fff;
+color:#111;
+padding:13px;
+border-radius:10px;
+font-weight:bold;
+margin-top:16px;
+cursor:pointer;
+font-size:14px
+}
+
+.copy-button:active{
+transform:scale(.98)
+}
+
+
+/* LINK */
+
+.link-box{
+border:1px solid #ddd;
+border-radius:16px;
+padding:17px;
+margin-top:15px
+}
+
+.link-label{
+font-size:13px;
+font-weight:bold
+}
+
+.referral-link{
+font-size:12px;
+color:#777;
+line-height:1.5;
+margin-top:8px;
+word-break:break-all
+}
+
+
+/* STATS */
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:15px
+}
+
+.stat{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px
+}
+
+.stat small{
+display:block;
+font-size:12px;
+color:#777
+}
+
+.stat strong{
+display:block;
+font-size:25px;
+margin-top:7px
+}
+
+
+/* APPLY */
+
+.apply-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:15px
+}
+
+.apply-card h2{
+font-size:18px
+}
+
+.apply-card p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:6px
+}
+
+.apply-row{
+display:flex;
+gap:8px;
+margin-top:14px
+}
+
+.apply-row input{
+flex:1;
+min-width:0;
+padding:13px;
+border:1px solid #bbb;
+border-radius:10px;
+font-size:14px;
+outline:none;
+text-transform:uppercase
+}
+
+.apply-row button{
+border:0;
+background:#111;
+color:#fff;
+padding:0 16px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer
+}
+
+.apply-row button:disabled{
+opacity:.5
+}
+
+
+/* MESSAGE */
+
+.message{
+display:none;
+margin-top:12px;
+padding:12px;
+border-radius:10px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* REFERRALS */
+
+.section{
+margin-top:28px
+}
+
+.section h2{
+font-size:20px;
+margin-bottom:13px
+}
+
+.referral-list{
+display:flex;
+flex-direction:column;
+gap:10px
+}
+
+.referral-item{
+border:1px solid #ddd;
+border-radius:15px;
+padding:15px
+}
+
+.referral-item-top{
+display:flex;
+justify-content:space-between;
+gap:10px
+}
+
+.referral-user{
+font-size:14px;
+font-weight:bold;
+word-break:break-all
+}
+
+.status{
+font-size:11px;
+font-weight:bold;
+padding:5px 8px;
+border-radius:7px;
+background:#eee;
+white-space:nowrap
+}
+
+.status.rewarded{
+background:#111;
+color:#fff
+}
+
+.status.qualified{
+background:#ddd;
+color:#111
+}
+
+.referral-item small{
+display:block;
+font-size:11px;
+color:#999;
+margin-top:8px
+}
+
+
+/* EMPTY */
+
+.empty{
+display:none;
+border:1px solid #ddd;
+border-radius:16px;
+padding:30px 20px;
+text-align:center;
+color:#777
+}
+
+.empty-icon{
+font-size:35px;
+margin-bottom:10px
+}
+
+.empty strong{
+display:block;
+color:#111;
+font-size:16px
+}
+
+.empty p{
+font-size:13px;
+line-height:1.5;
+margin-top:6px
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:25px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+.referral-code{
+font-size:26px
+}
+
+.apply-row{
+flex-direction:column
+}
+
+.apply-row button{
+height:45px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<header>
+
+<a
+class="back"
+href="dashboard.html"
+aria-label="Back">
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</a>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<div class="main">
+
+
+<div class="title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Refer & Earn
+</h1>
+
+<p class="subtitle">
+Invite friends to EarningHub and track your referrals here.
+</p>
+
+</div>
+
+
+<!-- REFERRAL CODE -->
+
+<div class="referral-card">
+
+<small>
+Your Referral Code
+</small>
+
+<div
+id="referralCode"
+class="referral-code">
+
+Loading...
+
+</div>
+
+<button
+id="copyButton"
+class="copy-button"
+type="button"
+onclick="copyReferralLink()">
+
+Copy Referral Link
+
+</button>
+
+</div>
+
+
+<!-- REFERRAL LINK -->
+
+<div class="link-box">
+
+<div class="link-label">
+Your Referral Link
+</div>
+
+<div
+id="referralLink"
+class="referral-link">
+
+Loading...
+
+</div>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+<div class="stat">
+
+<small>
+Total Referrals
+</small>
+
+<strong
+id="totalReferrals">
+
+0
+
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Rewarded Referrals
+</small>
+
+<strong
+id="rewardedReferrals">
+
+0
+
+</strong>
+
+</div>
+
+</div>
+
+
+<!-- APPLY REFERRAL -->
+
+<div class="apply-card">
+
+<h2>
+Have a Referral Code?
+</h2>
+
+<p>
+If someone invited you to EarningHub, enter their referral code below.
+</p>
+
+<div class="apply-row">
+
+<input
+id="referralInput"
+type="text"
+maxlength="20"
+placeholder="Enter referral code"
+autocomplete="off"
+>
+
+<button
+id="applyButton"
+type="button"
+onclick="applyReferral()">
+
+Apply
+
+</button>
+
+</div>
+
+<div
+id="message"
+class="message">
+</div>
+
+</div>
+
+
+<!-- REFERRAL LIST -->
+
+<div class="section">
+
+<h2>
+Your Referrals
+</h2>
+
+<div
+id="referralList"
+class="referral-list">
+</div>
+
+<div
+id="empty"
+class="empty">
+
+<div class="empty-icon">
+👥
+</div>
+
+<strong>
+No referrals yet
+</strong>
+
+<p>
+Share your referral link with friends to start building your referral network.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+How referrals work
+</strong>
+
+<p>
+Share your unique referral link with friends. When someone joins using your link, the referral is recorded. Eligible referrals can later receive rewards according to EarningHub's referral rules.
+</p>
+
+</div>
+
+
+<footer>
+© 2026 EarningHub
+</footer>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+/*
+SUPABASE
+*/
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+STATE
+*/
+
+let currentUserId =
+null;
+
+let currentReferralCode =
+"";
+
+
+/*
+MESSAGE
+*/
+
+function showMessage(text){
+
+const message =
+document.getElementById(
+"message"
+);
+
+message.textContent =
+text;
+
+message.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const message =
+document.getElementById(
+"message"
+);
+
+message.textContent =
+"";
+
+message.style.display =
+"none";
+
+}
+
+
+/*
+ESCAPE HTML
+*/
+
+function escapeHtml(value){
+
+return String(value || "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/*
+GET SESSION
+*/
+
+async function getCurrentUser(){
+
+const {
+data,
+error
+} =
+await client.auth.getSession();
+
+
+if(error){
+
+showMessage(
+"Unable to load your account."
+);
+
+return null;
+
+}
+
+
+if(!data.session){
+
+showMessage(
+"Please login first."
+);
+
+return null;
+
+}
+
+
+return data.session.user;
+
+}
+
+
+/*
+CREATE / LOAD REFERRAL PROFILE
+*/
+
+async function loadReferralProfile(){
+
+const user =
+await getCurrentUser();
+
+
+if(!user){
+
+return;
+
+}
+
+
+currentUserId =
+user.id;
+
+
+/*
+Try existing profile first.
+*/
+
+let {
+data,
+error
+} =
+await client
+.from("referral_profiles")
+.select(
+"user_id,referral_code,referred_by,created_at"
+)
+.eq(
+"user_id",
+currentUserId
+)
+.maybeSingle();
+
+
+if(error){
+
+console.log(
+"Referral profile error:",
+error.message
+);
+
+showMessage(
+"Unable to load referral profile."
+);
+
+return;
+
+}
+
+
+/*
+Create one if it does not exist.
+*/
+
+if(!data){
+
+const {
+data:created,
+error:createError
+} =
+await client.rpc(
+"create_my_referral_profile"
+);
+
+
+if(createError){
+
+console.log(
+"Create referral profile error:",
+createError.message
+);
+
+showMessage(
+"Unable to create your referral code: " +
+createError.message
+);
+
+return;
+
+}
+
+
+data =
+created;
+
+}
+
+
+if(!data){
+
+showMessage(
+"Unable to create referral profile."
+);
+
+return;
+
+}
+
+
+currentReferralCode =
+data.referral_code;
+
+
+/*
+Display code.
+*/
+
+document.getElementById(
+"referralCode"
+).textContent =
+currentReferralCode;
+
+
+/*
+Create referral URL.
+*/
+
+const referralUrl =
+window.location.origin +
+window.location.pathname.replace(
+"referral.html",
+"signup.html"
+) +
+"?ref=" +
+encodeURIComponent(
+currentReferralCode
+);
+
+
+document.getElementById(
+"referralLink"
+).textContent =
+referralUrl;
+
+
+/*
+Load referrals.
+*/
+
+await loadReferrals();
+
+}
+
+
+/*
+LOAD REFERRALS
+*/
+
+async function loadReferrals(){
+
+const {
+data,
+error
+} =
+await client
+.from("referrals")
+.select(
+"id,referred_user_id,referral_code,status,created_at,qualified_at,rewarded_at"
+)
+.eq(
+"referrer_id",
+currentUserId
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+console.log(
+"Referral list error:",
+error.message
+);
+
+return;
+
+}
+
+
+const list =
+document.getElementById(
+"referralList"
+);
+
+const empty =
+document.getElementById(
+"empty"
+);
+
+
+list.innerHTML =
+"";
+
+
+const referrals =
+data || [];
+
+
+/*
+Stats
+*/
+
+document.getElementById(
+"totalReferrals"
+).textContent =
+referrals.length;
+
+
+document.getElementById(
+"rewardedReferrals"
+).textContent =
+referrals.filter(
+function(item){
+
+return item.status === "rewarded";
+
+}
+).length;
+
+
+if(referrals.length === 0){
+
+empty.style.display =
+"block";
+
+return;
+
+}
+
+
+empty.style.display =
+"none";
+
+
+referrals.forEach(
+function(item){
+
+const div =
+document.createElement("div");
+
+div.className =
+"referral-item";
+
+
+const status =
+String(
+item.status || "pending"
+);
+
+
+const statusClass =
+status === "rewarded"
+?
+"rewarded"
+:
+status === "qualified"
+?
+"qualified"
+:
+"";
+
+
+const date =
+item.created_at
+?
+new Date(
+item.created_at
+).toLocaleDateString()
+:
+"";
+
+
+div.innerHTML = `
+
+<div class="referral-item-top">
+
+<div class="referral-user">
+Referral User
+</div>
+
+<div class="status ${statusClass}">
+${escapeHtml(status)}
+</div>
+
+</div>
+
+<small>
+Joined: ${escapeHtml(date)}
+</small>
+
+`;
+
+
+list.appendChild(div);
+
+});
+
+}
+
+
+/*
+COPY REFERRAL LINK
+*/
+
+async function copyReferralLink(){
+
+if(!currentReferralCode){
+
+return;
+
+}
+
+
+const referralUrl =
+window.location.origin +
+window.location.pathname.replace(
+"referral.html",
+"signup.html"
+) +
+"?ref=" +
+encodeURIComponent(
+currentReferralCode
+);
+
+
+try{
+
+await navigator.clipboard.writeText(
+referralUrl
+);
+
+const button =
+document.getElementById(
+"copyButton"
+);
+
+button.textContent =
+"Copied ✓";
+
+
+setTimeout(
+function(){
+
+button.textContent =
+"Copy Referral Link";
+
+},
+1800
+);
+
+
+}catch(error){
+
+showMessage(
+"Unable to copy the referral link."
+);
+
+}
+
+}
+
+
+/*
+APPLY REFERRAL
+*/
+
+async function applyReferral(){
+
+hideMessage();
+
+
+const input =
+document.getElementById(
+"referralInput"
+);
+
+const button =
+document.getElementById(
+"applyButton"
+);
+
+
+const code =
+input.value
+.trim()
+.toUpperCase();
+
+
+if(!code){
+
+showMessage(
+"Please enter a referral code."
+);
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+button.textContent =
+"Applying...";
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"apply_referral_code",
+{
+input_code:code
+}
+);
+
+
+if(error){
+
+showMessage(
+"Unable to apply referral code: " +
+error.message
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Apply";
+
+return;
+
+}
+
+
+if(!data){
+
+showMessage(
+"Unable to apply referral code."
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Apply";
+
+return;
+
+}
+
+
+if(data.success){
+
+showMessage(
+data.message ||
+"Referral code applied successfully."
+);
+
+input.value =
+"";
+
+}else{
+
+showMessage(
+data.message ||
+"Referral code could not be applied."
+);
+
+}
+
+
+button.disabled =
+false;
+
+button.textContent =
+"Apply";
+
+
+await loadReferralProfile();
+
+}
+
+
+/*
+READ REFERRAL FROM URL
+*/
+
+async function checkReferralFromUrl(){
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const ref =
+params.get("ref");
+
+
+if(!ref){
+
+return;
+
+}
+
+
+/*
+If the referral code exists,
+place it into the input box.
+*/
+
+const input =
+document.getElementById(
+"referralInput"
+);
+
+if(input){
+
+input.value =
+ref.toUpperCase();
+
+}
+
+}
+
+
+/*
+START
+*/
+
+async function start(){
+
+await checkReferralFromUrl();
+
+await loadReferralProfile();
+
+}
+
+
+start();
+
+</script>
+
+</body>
+
+</html>
