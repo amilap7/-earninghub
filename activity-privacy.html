@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Activity Privacy</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:25px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* ACTIVITY */
+
+.activity{
+display:flex;
+flex-direction:column;
+gap:12px
+}
+
+.activity-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+background:#fff
+}
+
+.activity-button{
+display:flex;
+align-items:center;
+justify-content:space-between;
+width:100%;
+border:0;
+background:#fff;
+color:#111;
+padding:0;
+text-align:left;
+cursor:pointer
+}
+
+.activity-left{
+display:flex;
+align-items:center;
+gap:13px;
+flex:1
+}
+
+.activity-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+flex-shrink:0
+}
+
+.activity-text h2{
+font-size:16px;
+margin-bottom:6px
+}
+
+.activity-text p{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+.activity-arrow{
+font-size:20px;
+color:#777;
+margin-left:10px
+}
+
+
+/* DETAILS */
+
+.details{
+display:none;
+margin-top:15px;
+padding-top:15px;
+border-top:1px solid #eee
+}
+
+.details.show{
+display:block
+}
+
+.details p{
+font-size:13px;
+color:#666;
+line-height:1.6;
+margin-bottom:8px
+}
+
+.details strong{
+color:#111
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.6;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+<button
+class="back-button"
+type="button"
+onclick="goPrivacy()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Activity Privacy
+</h1>
+
+</div>
+
+
+<div class="activity">
+
+
+<!-- TASK ACTIVITY -->
+
+<div class="activity-card">
+
+<button
+class="activity-button"
+type="button"
+onclick="toggleDetails('taskActivity')"
+>
+
+<div class="activity-left">
+
+<div class="activity-icon">
+📋
+</div>
+
+<div class="activity-text">
+
+<h2>
+Task Activity
+</h2>
+
+<p>
+Information about your completed and submitted tasks.
+</p>
+
+</div>
+
+</div>
+
+<div class="activity-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="taskActivity"
+class="details"
+>
+
+<p>
+<strong>Task activity</strong>
+</p>
+
+<p>
+EarningHub may keep information about tasks you view, start, submit or complete so that task rewards and submissions can be managed correctly.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- CAMPAIGN ACTIVITY -->
+
+<div class="activity-card">
+
+<button
+class="activity-button"
+type="button"
+onclick="toggleDetails('campaignActivity')"
+>
+
+<div class="activity-left">
+
+<div class="activity-icon">
+🚀
+</div>
+
+<div class="activity-text">
+
+<h2>
+Campaign Activity
+</h2>
+
+<p>
+Information related to campaigns and promotions you interact with.
+</p>
+
+</div>
+
+</div>
+
+<div class="activity-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="campaignActivity"
+class="details"
+>
+
+<p>
+<strong>Campaign activity</strong>
+</p>
+
+<p>
+Information related to campaigns you create or interact with may be used to provide campaign and task features.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- WALLET ACTIVITY -->
+
+<div class="activity-card">
+
+<button
+class="activity-button"
+type="button"
+onclick="toggleDetails('walletActivity')"
+>
+
+<div class="activity-left">
+
+<div class="activity-icon">
+💳
+</div>
+
+<div class="activity-text">
+
+<h2>
+Wallet Activity
+</h2>
+
+<p>
+Information about rewards, transactions and withdrawals.
+</p>
+
+</div>
+
+</div>
+
+<div class="activity-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="walletActivity"
+class="details"
+>
+
+<p>
+<strong>Wallet activity</strong>
+</p>
+
+<p>
+Wallet activity may include rewards, balance changes and withdrawal requests needed to maintain accurate account records.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- LOGIN ACTIVITY -->
+
+<div class="activity-card">
+
+<button
+class="activity-button"
+type="button"
+onclick="toggleDetails('loginActivity')"
+>
+
+<div class="activity-left">
+
+<div class="activity-icon">
+🔐
+</div>
+
+<div class="activity-text">
+
+<h2>
+Login Activity
+</h2>
+
+<p>
+Information related to your account sign-ins and sessions.
+</p>
+
+</div>
+
+</div>
+
+<div class="activity-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="loginActivity"
+class="details"
+>
+
+<p>
+<strong>Login activity</strong>
+</p>
+
+<p>
+Account sign-in and session information may be used to help protect your EarningHub account and maintain account security.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+EarningHub Activity Privacy
+</strong>
+
+<p>
+Your activity information helps EarningHub provide task, campaign, wallet and account security features.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/*
+GO TO PRIVACY
+*/
+
+function goPrivacy(){
+
+window.location.href =
+"privacy.html";
+
+}
+
+
+/*
+TOGGLE DETAILS
+*/
+
+function toggleDetails(id){
+
+const element =
+document.getElementById(id);
+
+element.classList.toggle(
+"show"
+);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
