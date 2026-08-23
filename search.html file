@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Search</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:800px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.title{
+margin-bottom:20px
+}
+
+.title small{
+color:#777;
+font-size:13px
+}
+
+.title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* SEARCH BOX */
+
+.search-box{
+display:flex;
+gap:8px;
+margin-bottom:25px
+}
+
+.search-input{
+flex:1;
+height:48px;
+border:1px solid #ccc;
+border-radius:12px;
+padding:0 15px;
+font-size:15px;
+outline:none
+}
+
+.search-input:focus{
+border-color:#111
+}
+
+.search-button{
+width:48px;
+height:48px;
+border:0;
+border-radius:12px;
+background:#111;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.search-button:active{
+opacity:.85
+}
+
+.search-button svg{
+width:21px;
+height:21px;
+stroke:#fff;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+
+/* RESULTS */
+
+.results-title{
+font-size:18px;
+font-weight:bold;
+margin-bottom:12px
+}
+
+.result-count{
+font-size:12px;
+color:#777;
+margin-left:5px;
+font-weight:normal
+}
+
+.results{
+display:flex;
+flex-direction:column;
+gap:10px
+}
+
+.result{
+display:block;
+border:1px solid #ddd;
+border-radius:16px;
+padding:17px;
+background:#fff;
+text-decoration:none;
+color:#111
+}
+
+.result:active{
+transform:scale(.99);
+background:#f8f8f8
+}
+
+.result-type{
+font-size:11px;
+font-weight:bold;
+color:#777;
+text-transform:uppercase;
+margin-bottom:7px
+}
+
+.result-title{
+font-size:16px;
+font-weight:bold;
+margin-bottom:6px
+}
+
+.result-description{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+.result-meta{
+display:flex;
+flex-wrap:wrap;
+gap:7px;
+margin-top:10px
+}
+
+.meta{
+font-size:11px;
+background:#f3f3f3;
+padding:5px 8px;
+border-radius:7px
+}
+
+
+/* LOADING */
+
+.loading{
+display:none;
+text-align:center;
+padding:30px 10px;
+color:#777;
+font-size:13px
+}
+
+
+/* EMPTY */
+
+.empty{
+display:none;
+border:1px dashed #bbb;
+border-radius:15px;
+padding:25px 15px;
+text-align:center;
+color:#777;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* START MESSAGE */
+
+.start-message{
+border:1px solid #ddd;
+border-radius:16px;
+padding:20px;
+color:#777;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* ERROR */
+
+.error{
+display:none;
+border:1px solid #ddd;
+border-radius:15px;
+padding:15px;
+color:#555;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+
+<button
+class="back-button"
+type="button"
+onclick="goDashboard()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12"
+></line>
+
+<polyline
+points="12 19 5 12 12 5"
+></polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Search
+</h1>
+
+</div>
+
+
+<!-- SEARCH FORM -->
+
+<form
+class="search-box"
+onsubmit="performSearch(event)"
+>
+
+<input
+id="searchInput"
+class="search-input"
+type="search"
+placeholder="Search tasks, campaigns, users..."
+autocomplete="off"
+>
+
+<button
+class="search-button"
+type="submit"
+aria-label="Search"
+>
+
+<svg viewBox="0 0 24 24">
+
+<circle
+cx="11"
+cy="11"
+r="6.5"
+></circle>
+
+<line
+x1="16"
+y1="16"
+x2="21"
+y2="21"
+></line>
+
+</svg>
+
+</button>
+
+</form>
+
+
+<!-- ERROR -->
+
+<div
+id="errorMessage"
+class="error"
+></div>
+
+
+<!-- START -->
+
+<div
+id="startMessage"
+class="start-message"
+>
+
+Search for tasks, campaigns, or EarningHub users.
+
+</div>
+
+
+<!-- LOADING -->
+
+<div
+id="loading"
+class="loading"
+>
+
+Searching EarningHub...
+
+</div>
+
+
+<!-- RESULTS TITLE -->
+
+<div
+id="resultsTitle"
+class="results-title"
+style="display:none"
+>
+
+Search Results
+
+<span
+id="resultCount"
+class="result-count"
+></span>
+
+</div>
+
+
+<!-- RESULTS -->
+
+<div
+id="results"
+class="results"
+></div>
+
+
+<!-- EMPTY -->
+
+<div
+id="empty"
+class="empty"
+>
+
+No matching results found.
+
+<br>
+
+Try a different search word.
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+
+/*
+SUPABASE CONFIG
+*/
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+GO TO DASHBOARD
+*/
+
+function goDashboard(){
+
+window.location.href =
+"dashboard.html";
+
+}
+
+
+/*
+PERFORM SEARCH
+*/
+
+async function performSearch(event){
+
+event.preventDefault();
+
+
+const input =
+document.getElementById(
+"searchInput"
+);
+
+
+const query =
+input.value.trim();
+
+
+if(!query){
+
+return;
+
+}
+
+
+await searchEarningHub(
+query
+);
+
+}
+
+
+/*
+SEARCH EARNINGHUB
+*/
+
+async function searchEarningHub(query){
+
+const loading =
+document.getElementById(
+"loading"
+);
+
+const startMessage =
+document.getElementById(
+"startMessage"
+);
+
+const results =
+document.getElementById(
+"results"
+);
+
+const empty =
+document.getElementById(
+"empty"
+);
+
+const resultsTitle =
+document.getElementById(
+"resultsTitle"
+);
+
+const resultCount =
+document.getElementById(
+"resultCount"
+);
+
+const errorMessage =
+document.getElementById(
+"errorMessage"
+);
+
+
+/*
+RESET
+*/
+
+loading.style.display =
+"block";
+
+startMessage.style.display =
+"none";
+
+results.style.display =
+"none";
+
+results.innerHTML =
+"";
+
+empty.style.display =
+"none";
+
+resultsTitle.style.display =
+"none";
+
+errorMessage.style.display =
+"none";
+
+
+/*
+TASKS
+*/
+
+const {
+data:tasks,
+error:taskError
+} =
+await client
+.from("tasks")
+.select(
+"id,title,instructions,reward,status,created_at"
+)
+.or(
+"title.ilike.%" +
+query +
+"%,instructions.ilike.%" +
+query +
+"%"
+)
+.eq(
+"status",
+"active"
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(20);
+
+
+/*
+CAMPAIGNS
+*/
+
+const {
+data:campaigns,
+error:campaignError
+} =
+await client
+.from("campaigns")
+.select(
+"id,title,description,paltform,task_type,reward,budjet,status,created_at"
+)
+.or(
+"title.ilike.%" +
+query +
+"%,description.ilike.%" +
+query +
+"%,paltform.ilike.%" +
+query +
+"%,task_type.ilike.%" +
+query +
+"%"
+)
+.eq(
+"status",
+"active"
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(20);
+
+
+/*
+PROFILES
+*/
+
+const {
+data:profiles,
+error:profileError
+} =
+await client
+.from("profiles")
+.select(
+"id,username,avatar_url,created_at"
+)
+.ilike(
+"username",
+"%" +
+query +
+"%"
+)
+.limit(20);
+
+
+/*
+STOP LOADING
+*/
+
+loading.style.display =
+"none";
+
+
+/*
+CHECK ERRORS
+*/
+
+if(
+taskError ||
+campaignError ||
+profileError
+){
+
+console.log(
+"Task search error:",
+taskError?.message
+);
+
+console.log(
+"Campaign search error:",
+campaignError?.message
+);
+
+console.log(
+"Profile search error:",
+profileError?.message
+);
+
+errorMessage.textContent =
+"Some search results could not be loaded.";
+
+errorMessage.style.display =
+"block";
+
+}
+
+
+/*
+ALL RESULTS
+*/
+
+const allResults = [];
+
+
+/*
+ADD TASKS
+*/
+
+if(tasks){
+
+tasks.forEach(
+task => {
+
+allResults.push({
+
+type:
+"Task",
+
+title:
+task.title ||
+"Untitled Task",
+
+description:
+task.instructions ||
+"Complete this task to earn rewards.",
+
+reward:
+task.reward,
+
+id:
+task.id
+
+});
+
+});
+
+}
+
+
+/*
+ADD CAMPAIGNS
+*/
+
+if(campaigns){
+
+campaigns.forEach(
+campaign => {
+
+allResults.push({
+
+type:
+"Campaign",
+
+title:
+campaign.title ||
+"Untitled Campaign",
+
+description:
+campaign.description ||
+"Creator campaign",
+
+reward:
+campaign.reward,
+
+platform:
+campaign.paltform,
+
+taskType:
+campaign.task_type,
+
+id:
+campaign.id
+
+});
+
+});
+
+}
+
+
+/*
+ADD PROFILES
+*/
+
+if(profiles){
+
+profiles.forEach(
+profile => {
+
+allResults.push({
+
+type:
+"User",
+
+title:
+profile.username ||
+"User",
+
+description:
+"EarningHub user profile",
+
+avatar:
+profile.avatar_url,
+
+id:
+profile.id
+
+});
+
+});
+
+}
+
+
+/*
+NO RESULTS
+*/
+
+if(
+allResults.length === 0
+){
+
+empty.style.display =
+"block";
+
+return;
+
+}
+
+
+/*
+RESULT TITLE
+*/
+
+resultsTitle.style.display =
+"block";
+
+
+resultCount.textContent =
+"(" +
+allResults.length +
+")";
+
+
+/*
+RENDER RESULTS
+*/
+
+allResults.forEach(
+item => {
+
+
+const card =
+document.createElement(
+"div"
+);
+
+card.className =
+"result";
+
+
+/*
+TYPE
+*/
+
+const type =
+document.createElement(
+"div"
+);
+
+type.className =
+"result-type";
+
+type.textContent =
+item.type;
+
+
+/*
+TITLE
+*/
+
+const title =
+document.createElement(
+"div"
+);
+
+title.className =
+"result-title";
+
+title.textContent =
+item.title;
+
+
+/*
+DESCRIPTION
+*/
+
+const description =
+document.createElement(
+"div"
+);
+
+description.className =
+"result-description";
+
+description.textContent =
+item.description;
+
+
+card.appendChild(
+type
+);
+
+card.appendChild(
+title
+);
+
+card.appendChild(
+description
+);
+
+
+/*
+META
+*/
+
+const metaBox =
+document.createElement(
+"div"
+);
+
+metaBox.className =
+"result-meta";
+
+
+/*
+TASK META
+*/
+
+if(
+item.type === "Task"
+){
+
+if(
+item.reward !== null &&
+typeof item.reward !==
+"undefined"
+){
+
+addMeta(
+metaBox,
+"Reward $" +
+Number(item.reward)
+.toFixed(2)
+);
+
+}
+
+addMeta(
+metaBox,
+"Task"
+);
+
+}
+
+
+/*
+CAMPAIGN META
+*/
+
+if(
+item.type === "Campaign"
+){
+
+if(item.platform){
+
+addMeta(
+metaBox,
+item.platform
+);
+
+}
+
+if(item.taskType){
+
+addMeta(
+metaBox,
+item.taskType
+);
+
+}
+
+if(
+item.reward !== null &&
+typeof item.reward !==
+"undefined"
+){
+
+addMeta(
+metaBox,
+"Reward $" +
+Number(item.reward)
+.toFixed(2)
+);
+
+}
+
+}
+
+
+/*
+USER META
+*/
+
+if(
+item.type === "User"
+){
+
+addMeta(
+metaBox,
+"Profile"
+);
+
+}
+
+
+/*
+ADD META BOX
+*/
+
+if(
+metaBox.children.length > 0
+){
+
+card.appendChild(
+metaBox
+);
+
+}
+
+
+/*
+ADD CARD
+*/
+
+results.appendChild(
+card
+);
+
+});
+
+
+results.style.display =
+"flex";
+
+}
+
+
+/*
+ADD META
+*/
+
+function addMeta(
+container,
+text
+){
+
+const meta =
+document.createElement(
+"span"
+);
+
+meta.className =
+"meta";
+
+meta.textContent =
+text;
+
+container.appendChild(
+meta
+);
+
+}
+
+
+/*
+SEARCH FROM URL
+*/
+
+function loadSearchFromURL(){
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const query =
+params.get(
+"search"
+);
+
+
+if(query){
+
+const input =
+document.getElementById(
+"searchInput"
+);
+
+input.value =
+query;
+
+
+searchEarningHub(
+query
+);
+
+}
+
+}
+
+
+/*
+START
+*/
+
+loadSearchFromURL();
+
+</script>
+
+</body>
+
+</html>
