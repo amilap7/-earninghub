@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Notifications</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:25px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* SETTINGS */
+
+.settings{
+display:flex;
+flex-direction:column;
+gap:12px
+}
+
+.setting-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+background:#fff
+}
+
+.setting-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:15px
+}
+
+.setting-left{
+display:flex;
+align-items:center;
+gap:13px
+}
+
+.setting-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+flex-shrink:0
+}
+
+.setting-title{
+font-size:15px;
+font-weight:bold
+}
+
+.setting-description{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:5px
+}
+
+
+/* SWITCH */
+
+.switch{
+position:relative;
+width:48px;
+height:27px;
+flex-shrink:0
+}
+
+.switch input{
+opacity:0;
+width:0;
+height:0
+}
+
+.slider{
+position:absolute;
+cursor:pointer;
+inset:0;
+background:#ddd;
+border-radius:30px;
+transition:.2s
+}
+
+.slider:before{
+content:"";
+position:absolute;
+height:21px;
+width:21px;
+left:3px;
+top:3px;
+background:#fff;
+border-radius:50%;
+transition:.2s
+}
+
+.switch input:checked + .slider{
+background:#111
+}
+
+.switch input:checked + .slider:before{
+transform:translateX(21px)
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:7px
+}
+
+
+/* SAVE MESSAGE */
+
+.message{
+display:none;
+margin-top:15px;
+padding:12px;
+border-radius:10px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+
+<button
+class="back-button"
+type="button"
+onclick="goSettings()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Notifications
+</h1>
+
+</div>
+
+
+<div class="settings">
+
+
+<!-- TASK NOTIFICATIONS -->
+
+<div class="setting-card">
+
+<div class="setting-row">
+
+<div class="setting-left">
+
+<div class="setting-icon">
+📋
+</div>
+
+<div>
+
+<div class="setting-title">
+Task Notifications
+</div>
+
+<div class="setting-description">
+Get notified about available tasks and task updates.
+</div>
+
+</div>
+
+</div>
+
+
+<label class="switch">
+
+<input
+type="checkbox"
+id="taskNotifications"
+checked
+onchange="saveSettings()"
+>
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+</div>
+
+
+<!-- REWARD NOTIFICATIONS -->
+
+<div class="setting-card">
+
+<div class="setting-row">
+
+<div class="setting-left">
+
+<div class="setting-icon">
+💰
+</div>
+
+<div>
+
+<div class="setting-title">
+Reward Notifications
+</div>
+
+<div class="setting-description">
+Receive notifications when you earn rewards.
+</div>
+
+</div>
+
+</div>
+
+
+<label class="switch">
+
+<input
+type="checkbox"
+id="rewardNotifications"
+checked
+onchange="saveSettings()"
+>
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+</div>
+
+
+<!-- CAMPAIGN NOTIFICATIONS -->
+
+<div class="setting-card">
+
+<div class="setting-row">
+
+<div class="setting-left">
+
+<div class="setting-icon">
+🚀
+</div>
+
+<div>
+
+<div class="setting-title">
+Campaign Notifications
+</div>
+
+<div class="setting-description">
+Get updates about campaigns and promotional opportunities.
+</div>
+
+</div>
+
+</div>
+
+
+<label class="switch">
+
+<input
+type="checkbox"
+id="campaignNotifications"
+checked
+onchange="saveSettings()"
+>
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+</div>
+
+
+<!-- WITHDRAWAL NOTIFICATIONS -->
+
+<div class="setting-card">
+
+<div class="setting-row">
+
+<div class="setting-left">
+
+<div class="setting-icon">
+📤
+</div>
+
+<div>
+
+<div class="setting-title">
+Withdrawal Notifications
+</div>
+
+<div class="setting-description">
+Get notified about withdrawal requests and their status.
+</div>
+
+</div>
+
+</div>
+
+
+<label class="switch">
+
+<input
+type="checkbox"
+id="withdrawalNotifications"
+checked
+onchange="saveSettings()"
+>
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+</div>
+
+
+<!-- SYSTEM NOTIFICATIONS -->
+
+<div class="setting-card">
+
+<div class="setting-row">
+
+<div class="setting-left">
+
+<div class="setting-icon">
+🔔
+</div>
+
+<div>
+
+<div class="setting-title">
+System Notifications
+</div>
+
+<div class="setting-description">
+Receive important EarningHub system announcements.
+</div>
+
+</div>
+
+</div>
+
+
+<label class="switch">
+
+<input
+type="checkbox"
+id="systemNotifications"
+checked
+onchange="saveSettings()"
+>
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div
+id="message"
+class="message"
+>
+Notification settings saved.
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+EarningHub Notifications
+</strong>
+
+<p>
+Choose which types of EarningHub notifications you want to receive. Your preferences are saved on this device.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/*
+GO TO SETTINGS
+*/
+
+function goSettings(){
+
+window.location.href =
+"settings.html";
+
+}
+
+
+/*
+SAVE NOTIFICATION SETTINGS
+*/
+
+function saveSettings(){
+
+const settings = {
+
+task:
+document.getElementById(
+"taskNotifications"
+).checked,
+
+reward:
+document.getElementById(
+"rewardNotifications"
+).checked,
+
+campaign:
+document.getElementById(
+"campaignNotifications"
+).checked,
+
+withdrawal:
+document.getElementById(
+"withdrawalNotifications"
+).checked,
+
+system:
+document.getElementById(
+"systemNotifications"
+).checked
+
+};
+
+
+localStorage.setItem(
+"earninghub_notifications",
+JSON.stringify(settings)
+);
+
+
+const message =
+document.getElementById(
+"message"
+);
+
+message.style.display =
+"block";
+
+
+setTimeout(
+function(){
+
+message.style.display =
+"none";
+
+},
+1500
+);
+
+}
+
+
+/*
+LOAD SAVED SETTINGS
+*/
+
+function loadSettings(){
+
+const saved =
+localStorage.getItem(
+"earninghub_notifications"
+);
+
+
+if(!saved){
+
+return;
+
+}
+
+
+try{
+
+const settings =
+JSON.parse(saved);
+
+
+if(
+typeof settings.task !==
+"undefined"
+){
+
+document.getElementById(
+"taskNotifications"
+).checked =
+settings.task;
+
+}
+
+
+if(
+typeof settings.reward !==
+"undefined"
+){
+
+document.getElementById(
+"rewardNotifications"
+).checked =
+settings.reward;
+
+}
+
+
+if(
+typeof settings.campaign !==
+"undefined"
+){
+
+document.getElementById(
+"campaignNotifications"
+).checked =
+settings.campaign;
+
+}
+
+
+if(
+typeof settings.withdrawal !==
+"undefined"
+){
+
+document.getElementById(
+"withdrawalNotifications"
+).checked =
+settings.withdrawal;
+
+}
+
+
+if(
+typeof settings.system !==
+"undefined"
+){
+
+document.getElementById(
+"systemNotifications"
+).checked =
+settings.system;
+
+}
+
+}catch(error){
+
+console.log(
+"Notification settings error:",
+error
+);
+
+}
+
+}
+
+
+/*
+START
+*/
+
+loadSettings();
+
+</script>
+
+
+</body>
+
+</html>
