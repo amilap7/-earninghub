@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Admin Review</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:28px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:22px
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:16px
+}
+
+.status{
+font-size:12px;
+color:#777;
+margin-bottom:8px
+}
+
+.reward{
+font-size:20px;
+font-weight:800;
+margin-top:10px
+}
+
+.proof{
+margin-top:16px;
+font-size:13px;
+color:#555;
+line-height:1.5;
+white-space:pre-wrap
+}
+
+.screenshot{
+display:block;
+width:100%;
+max-height:400px;
+object-fit:contain;
+margin-top:15px;
+border:1px solid #ddd;
+border-radius:12px;
+background:#f5f5f5
+}
+
+.buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:18px
+}
+
+button{
+border:0;
+border-radius:11px;
+padding:13px;
+font-weight:bold;
+cursor:pointer
+}
+
+.approve{
+background:#111;
+color:#fff
+}
+
+.reject{
+background:#eee;
+color:#111
+}
+
+button:disabled{
+opacity:.5
+}
+
+.message{
+display:none;
+margin-bottom:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#777;
+line-height:1.5
+}
+
+.error{
+padding:15px;
+background:#f3f3f3;
+border-radius:12px;
+font-size:13px;
+line-height:1.5
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="dashboard.html">
+Back
+</a>
+
+</header>
+
+<h1>
+Task Review
+</h1>
+
+<p class="subtitle">
+Review submitted task proofs.
+</p>
+
+<div
+id="message"
+class="message">
+</div>
+
+<div id="submissions">
+
+<div class="empty">
+Loading submissions...
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+async function checkAdmin(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showError(
+sessionError.message
+);
+
+return false;
+
+}
+
+
+if(!sessionData.session){
+
+showError(
+"Please login first."
+);
+
+return false;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+const {
+data:profile,
+error
+} =
+await client
+.from("profiles")
+.select("is_admin")
+.eq("id",userId)
+.maybeSingle();
+
+
+if(error){
+
+showError(
+error.message
+);
+
+return false;
+
+}
+
+
+if(!profile || profile.is_admin !== true){
+
+showError(
+"Access denied. Admin access is required."
+);
+
+return false;
+
+}
+
+
+return true;
+
+}
+
+
+function showError(text){
+
+const box =
+document.getElementById("message");
+
+box.textContent=text;
+
+box.style.display="block";
+
+document.getElementById(
+"submissions"
+).innerHTML="";
+
+}
+
+
+/*
+Read proof details and screenshot.
+*/
+
+function getProofData(proof){
+
+let details = "";
+let screenshot = "";
+
+
+if(!proof){
+
+return {
+details:"",
+screenshot:""
+};
+
+}
+
+
+try{
+
+const parsed =
+typeof proof === "string"
+?
+JSON.parse(proof)
+:
+proof;
+
+
+if(parsed && typeof parsed === "object"){
+
+details =
+parsed.details || "";
+
+screenshot =
+parsed.screenshot || "";
+
+}
+
+}catch(error){
+
+details =
+String(proof);
+
+
+const imageMatch =
+String(proof).match(
+/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/
+);
+
+if(imageMatch){
+
+screenshot =
+imageMatch[0];
+
+}
+
+}
+
+
+return {
+details,
+screenshot
+};
+
+}
+
+
+/*
+LOAD SUBMISSIONS
+*/
+
+async function loadSubmissions(){
+
+const isAdmin =
+await checkAdmin();
+
+if(!isAdmin){
+
+return;
+
+}
+
+
+const box =
+document.getElementById("submissions");
+
+
+/*
+IMPORTANT:
+Do NOT use tasks(...) relationship here.
+First load submissions directly.
+*/
+
+const {
+data,
+error
+} =
+await client
+.from("task_submissions")
+.select(`
+id,
+task_id,
+worker_id,
+proof,
+status,
+reward,
+created_at
+`)
+.eq(
+"status",
+"pending"
+)
+.order(
+"created_at",
+{ascending:false}
+);
+
+
+if(error){
+
+box.innerHTML=`
+
+<div class="error">
+
+<b>Database error</b>
+
+<br><br>
+
+${escapeHTML(error.message)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(!data || data.length===0){
+
+box.innerHTML=`
+
+<div class="empty">
+
+No pending submissions.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+/*
+Load task information separately.
+*/
+
+const taskIds =
+[
+...new Set(
+data.map(
+submission =>
+submission.task_id
+)
+)
+];
+
+
+let tasksMap = {};
+
+
+if(taskIds.length > 0){
+
+const {
+data:tasks,
+error:tasksError
+} =
+await client
+.from("tasks")
+.select(`
+id,
+title,
+campaign_id
+`)
+.in(
+"id",
+taskIds
+);
+
+
+if(tasksError){
+
+box.innerHTML=`
+
+<div class="error">
+
+<b>Task database error</b>
+
+<br><br>
+
+${escapeHTML(tasksError.message)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+(tasks || []).forEach(
+task => {
+
+tasksMap[
+task.id
+] =
+task;
+
+});
+
+}
+
+
+/*
+Render submissions.
+*/
+
+box.innerHTML =
+data.map(
+submission => {
+
+const proofData =
+getProofData(
+submission.proof
+);
+
+const details =
+proofData.details;
+
+const screenshot =
+proofData.screenshot;
+
+
+const task =
+tasksMap[
+submission.task_id
+];
+
+
+return `
+
+<div
+class="card"
+id="submission-${escapeHTML(
+submission.id
+)}">
+
+<div class="status">
+
+Status: Pending
+
+</div>
+
+<strong>
+Task
+</strong>
+
+<div style="margin-top:6px">
+
+${escapeHTML(
+task?.title ||
+"Task"
+)}
+
+</div>
+
+<div class="reward">
+
+Reward:
+$${Number(
+submission.reward || 0
+).toFixed(2)}
+
+</div>
+
+<div class="proof">
+
+<strong>
+Proof details
+</strong>
+
+<br><br>
+
+${escapeHTML(details)}
+
+</div>
+
+${
+screenshot
+?
+`<img
+class="screenshot"
+src="${escapeHTML(
+screenshot
+)}"
+alt="Task proof screenshot">`
+:
+`<div class="proof">
+No screenshot uploaded.
+</div>`
+}
+
+<div class="buttons">
+
+<button
+class="approve"
+onclick="approveSubmission(
+'${escapeHTML(submission.id)}'
+)">
+
+Approve
+
+</button>
+
+<button
+class="reject"
+onclick="rejectSubmission(
+'${escapeHTML(submission.id)}'
+)">
+
+Reject
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+/*
+APPROVE
+*/
+
+async function approveSubmission(
+submissionId
+){
+
+const card =
+document.getElementById(
+"submission-" + submissionId
+);
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll("button");
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"approve_task_submission",
+{
+submission_id:
+submissionId
+}
+);
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Approve failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+if(data === true || data === null){
+
+card.remove();
+
+
+if(
+document.querySelectorAll(
+"#submissions .card"
+).length === 0
+){
+
+document.getElementById(
+"submissions"
+).innerHTML=`
+
+<div class="empty">
+
+No pending submissions.
+
+</div>
+
+`;
+
+}
+
+}else{
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Unable to approve submission."
+);
+
+}
+
+}
+
+
+/*
+REJECT
+*/
+
+async function rejectSubmission(
+submissionId
+){
+
+const confirmed =
+confirm(
+"Reject this task submission?"
+);
+
+
+if(!confirmed){
+
+return;
+
+}
+
+
+const card =
+document.getElementById(
+"submission-" + submissionId
+);
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll("button");
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"reject_task_submission",
+{
+submission_id:
+submissionId
+}
+);
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Reject failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+/*
+Accept true or null as successful RPC.
+*/
+
+if(data === true || data === null){
+
+card.remove();
+
+
+if(
+document.querySelectorAll(
+"#submissions .card"
+).length === 0
+){
+
+document.getElementById(
+"submissions"
+).innerHTML=`
+
+<div class="empty">
+
+No pending submissions.
+
+</div>
+
+`;
+
+}
+
+}else{
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Unable to reject submission."
+);
+
+}
+
+}
+
+
+/*
+START
+*/
+
+loadSubmissions();
+
+</script>
+
+</body>
+</html>
