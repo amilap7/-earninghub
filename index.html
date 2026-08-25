@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub</title>
+
+<!-- Monetag website verification -->
+<meta name="monetag" content="abbae48d7b31cbfae2887bd2a05df5f2">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:24px 20px
+}
+
+.logo{
+font-size:30px;
+font-weight:800;
+margin:15px 0 45px
+}
+
+.hero h1{
+font-size:34px;
+line-height:1.1;
+margin-bottom:12px
+}
+
+.hero p{
+color:#777;
+font-size:14px;
+line-height:1.5;
+margin-bottom:28px
+}
+
+.tabs{
+display:grid;
+grid-template-columns:1fr 1fr;
+border:1px solid #ddd;
+border-radius:12px;
+padding:4px;
+margin-bottom:20px
+}
+
+.tab{
+border:0;
+background:#fff;
+padding:12px;
+border-radius:9px;
+font-weight:bold;
+cursor:pointer
+}
+
+.tab.active{
+background:#111;
+color:#fff
+}
+
+.form{
+display:none
+}
+
+.form.active{
+display:block
+}
+
+.group{
+margin-bottom:15px
+}
+
+label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:7px
+}
+
+input{
+width:100%;
+padding:14px;
+border:1px solid #ccc;
+border-radius:12px;
+outline:none;
+background:#fff;
+color:#111
+}
+
+.button{
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:15px;
+border-radius:12px;
+font-weight:bold;
+margin-top:5px;
+cursor:pointer
+}
+
+.button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* ================================
+ADVERTISEMENT
+================================ */
+
+.ad{
+margin-top:30px;
+border:1px dashed #aaa;
+border-radius:14px;
+padding:20px;
+text-align:center;
+font-size:13px;
+color:#777;
+min-height:100px;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden
+}
+
+.ad-label{
+font-size:12px;
+color:#999;
+}
+
+
+/* ================================
+MOBILE
+================================ */
+
+@media(max-width:600px){
+
+.app{
+padding:24px 20px
+}
+
+.logo{
+margin-bottom:40px
+}
+
+.hero h1{
+font-size:32px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<div class="logo">
+EarningHub
+</div>
+
+
+<div class="hero">
+
+<h1>
+Earn by completing tasks.
+</h1>
+
+<p>
+Complete legitimate campaigns, discover content,
+and earn rewards through EarningHub.
+</p>
+
+</div>
+
+
+<div class="tabs">
+
+<button
+class="tab active"
+id="loginTab"
+type="button"
+onclick="showForm('login')">
+
+Login
+
+</button>
+
+
+<button
+class="tab"
+id="signupTab"
+type="button"
+onclick="showForm('signup')">
+
+Sign Up
+
+</button>
+
+</div>
+
+
+<!-- ================================
+LOGIN
+================================ -->
+
+<form
+id="loginForm"
+class="form active">
+
+<div class="group">
+
+<label>
+Email
+</label>
+
+<input
+id="loginEmail"
+type="email"
+placeholder="you@example.com"
+autocomplete="email"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Password
+</label>
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Your password"
+autocomplete="current-password"
+required>
+
+</div>
+
+
+<button
+class="button"
+id="loginButton"
+type="submit">
+
+Login
+
+</button>
+
+</form>
+
+
+<!-- ================================
+SIGN UP
+================================ -->
+
+<form
+id="signupForm"
+class="form">
+
+<div class="group">
+
+<label>
+Username
+</label>
+
+<input
+id="signupUsername"
+type="text"
+placeholder="Your username"
+autocomplete="username"
+maxlength="30"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Email
+</label>
+
+<input
+id="signupEmail"
+type="email"
+placeholder="you@example.com"
+autocomplete="email"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Password
+</label>
+
+<input
+id="signupPassword"
+type="password"
+placeholder="At least 6 characters"
+autocomplete="new-password"
+minlength="6"
+required>
+
+</div>
+
+
+<button
+class="button"
+id="signupButton"
+type="submit">
+
+Create Account
+
+</button>
+
+</form>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<!-- ================================
+ADVERTISEMENT
+================================ -->
+
+<div
+class="ad"
+id="advertisement">
+
+<div class="ad-label">
+Advertisement
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/*
+================================================
+SUPABASE
+================================================
+*/
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+
+/*
+IMPORTANT:
+Replace this with your actual
+Supabase Publishable/Anon key.
+*/
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+================================================
+REFERRAL STATE
+================================================
+*/
+
+let referralCode = null;
+
+
+/*
+================================================
+GET REFERRAL CODE FROM URL
+================================================
+*/
+
+function getReferralCodeFromUrl(){
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const ref =
+params.get("ref");
+
+
+if(!ref){
+
+return null;
+
+}
+
+
+const cleanCode =
+ref
+.trim()
+.toUpperCase();
+
+
+if(!cleanCode){
+
+return null;
+
+}
+
+
+if(
+!cleanCode.startsWith("EH")
+){
+
+return null;
+
+}
+
+
+return cleanCode;
+
+}
+
+
+/*
+================================================
+SAVE REFERRAL CODE
+================================================
+*/
+
+function saveReferralCode(code){
+
+if(!code){
+
+return;
+
+}
+
+try{
+
+localStorage.setItem(
+"earninghub_referral_code",
+code
+);
+
+}catch(error){
+
+console.log(
+"Unable to save referral code."
+);
+
+}
+
+}
+
+
+/*
+================================================
+LOAD SAVED REFERRAL CODE
+================================================
+*/
+
+function loadSavedReferralCode(){
+
+try{
+
+return localStorage.getItem(
+"earninghub_referral_code"
+);
+
+}catch(error){
+
+return null;
+
+}
+
+}
+
+
+/*
+================================================
+CLEAR REFERRAL CODE
+================================================
+*/
+
+function clearReferralCode(){
+
+try{
+
+localStorage.removeItem(
+"earninghub_referral_code"
+);
+
+}catch(error){
+
+}
+
+}
+
+
+/*
+================================================
+GO TO REFERRAL PAGE
+================================================
+*/
+
+function goToReferralPage(code){
+
+if(!code){
+
+return false;
+
+}
+
+
+window.location.href =
+"referral.html?ref=" +
+encodeURIComponent(code);
+
+
+return true;
+
+}
+
+
+/*
+================================================
+INITIALIZE REFERRAL
+================================================
+*/
+
+function initializeReferral(){
+
+const urlCode =
+getReferralCodeFromUrl();
+
+
+if(urlCode){
+
+referralCode =
+urlCode;
+
+
+saveReferralCode(
+urlCode
+);
+
+
+showForm("signup");
+
+
+return true;
+
+}
+
+
+const savedCode =
+loadSavedReferralCode();
+
+
+if(savedCode){
+
+referralCode =
+savedCode;
+
+}
+
+
+return false;
+
+}
+
+
+/*
+================================================
+MESSAGE
+================================================
+*/
+
+function showMessage(text){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+text;
+
+box.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+"";
+
+box.style.display =
+"none";
+
+}
+
+
+/*
+================================================
+FORM SWITCH
+================================================
+*/
+
+function showForm(type){
+
+hideMessage();
+
+
+document
+.getElementById("loginTab")
+.classList.toggle(
+"active",
+type === "login"
+);
+
+
+document
+.getElementById("signupTab")
+.classList.toggle(
+"active",
+type === "signup"
+);
+
+
+document
+.getElementById("loginForm")
+.classList.toggle(
+"active",
+type === "login"
+);
+
+
+document
+.getElementById("signupForm")
+.classList.toggle(
+"active",
+type === "signup"
+);
+
+}
+
+
+/*
+================================================
+LOGIN
+================================================
+*/
+
+document
+.getElementById("loginForm")
+.addEventListener(
+"submit",
+async function(event){
+
+event.preventDefault();
+
+
+const button =
+document.getElementById(
+"loginButton"
+);
+
+
+button.disabled = true;
+
+button.textContent =
+"Logging in...";
+
+
+const email =
+document
+.getElementById("loginEmail")
+.value
+.trim();
+
+
+const password =
+document
+.getElementById("loginPassword")
+.value;
+
+
+try{
+
+const {
+data,
+error
+} =
+await client.auth.signInWithPassword({
+
+email: email,
+
+password: password
+
+});
+
+
+if(error){
+
+showMessage(
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Login";
+
+return;
+
+}
+
+
+if(!data.session){
+
+showMessage(
+"Login completed, but no session was created. Please try again."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Login";
+
+return;
+
+}
+
+
+/*
+============================================
+MAKE SURE PROFILE EXISTS
+============================================
+*/
+
+const user =
+data.user;
+
+
+const {
+data:profile
+} =
+await client
+.from("profiles")
+.select("id")
+.eq(
+"id",
+user.id
+)
+.maybeSingle();
+
+
+if(!profile){
+
+const {
+error:profileError
+} =
+await client
+.from("profiles")
+.insert({
+
+id: user.id,
+
+username:
+user.user_metadata?.username ||
+email.split("@")[0]
+
+});
+
+
+if(profileError){
+
+console.log(
+"Profile creation error:",
+profileError.message
+);
+
+}
+
+}
+
+
+/*
+============================================
+CHECK REFERRAL
+============================================
+*/
+
+const savedReferralCode =
+loadSavedReferralCode();
+
+
+if(savedReferralCode){
+
+goToReferralPage(
+savedReferralCode
+);
+
+return;
+
+}
+
+
+/*
+============================================
+NORMAL LOGIN
+============================================
+*/
+
+window.location.href =
+"dashboard.html";
+
+
+}catch(error){
+
+showMessage(
+"Login error: " +
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Login";
+
+}
+
+});
+
+
+/*
+================================================
+SIGN UP
+================================================
+*/
+
+document
+.getElementById("signupForm")
+.addEventListener(
+"submit",
+async function(event){
+
+event.preventDefault();
+
+
+const button =
+document.getElementById(
+"signupButton"
+);
+
+
+button.disabled = true;
+
+button.textContent =
+"Creating account...";
+
+
+const username =
+document
+.getElementById("signupUsername")
+.value
+.trim();
+
+
+const email =
+document
+.getElementById("signupEmail")
+.value
+.trim();
+
+
+const password =
+document
+.getElementById("signupPassword")
+.value;
+
+
+/*
+============================================
+VALIDATION
+============================================
+*/
+
+if(!username){
+
+showMessage(
+"Please enter a username."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+if(!email){
+
+showMessage(
+"Please enter your email."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+if(password.length < 6){
+
+showMessage(
+"Password must be at least 6 characters."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+/*
+============================================
+GET REFERRAL
+============================================
+*/
+
+const signupReferralCode =
+getReferralCodeFromUrl() ||
+loadSavedReferralCode();
+
+
+if(signupReferralCode){
+
+referralCode =
+signupReferralCode;
+
+
+saveReferralCode(
+signupReferralCode
+);
+
+}
+
+
+/*
+============================================
+CREATE ACCOUNT
+============================================
+*/
+
+try{
+
+const {
+data,
+error
+} =
+await client.auth.signUp({
+
+email: email,
+
+password: password,
+
+options:{
+
+data:{
+
+username: username
+
+},
+
+emailRedirectTo:
+window.location.origin +
+"/index.html"
+
+}
+
+});
+
+
+if(error){
+
+showMessage(
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+/*
+============================================
+EMAIL CONFIRMATION
+============================================
+*/
+
+if(!data.session){
+
+showMessage(
+"Account created. Please check your email and confirm your email address. After confirmation, return to EarningHub and login."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+/*
+============================================
+CREATE PROFILE
+============================================
+*/
+
+const user =
+data.user;
+
+
+const {
+error:profileError
+} =
+await client
+.from("profiles")
+.upsert({
+
+id: user.id,
+
+username: username
+
+});
+
+
+if(profileError){
+
+console.log(
+"Profile creation error:",
+profileError.message
+);
+
+}
+
+
+/*
+============================================
+REFERRAL
+============================================
+*/
+
+const savedReferralCode =
+loadSavedReferralCode();
+
+
+if(savedReferralCode){
+
+goToReferralPage(
+savedReferralCode
+);
+
+return;
+
+}
+
+
+/*
+============================================
+NORMAL SIGNUP
+============================================
+*/
+
+showMessage(
+"Account created successfully."
+);
+
+
+setTimeout(
+function(){
+
+window.location.href =
+"dashboard.html";
+
+},
+1000
+);
+
+}catch(error){
+
+showMessage(
+"Signup error: " +
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+}
+
+});
+
+
+/*
+================================================
+START
+================================================
+*/
+
+(async function(){
+
+const referralFromUrl =
+initializeReferral();
+
+
+if(referralFromUrl){
+
+return;
+
+}
+
+
+/*
+============================================
+CHECK EXISTING SESSION
+============================================
+*/
+
+const {
+data,
+error
+} =
+await client.auth.getSession();
+
+
+if(error){
+
+console.log(
+"Session check error:",
+error.message
+);
+
+return;
+
+}
+
+
+if(data.session){
+
+const savedReferralCode =
+loadSavedReferralCode();
+
+
+if(savedReferralCode){
+
+goToReferralPage(
+savedReferralCode
+);
+
+return;
+
+}
+
+
+window.location.href =
+"dashboard.html";
+
+}
+
+})();
+
+</script>
+
+</body>
+</html>
