@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>My Campaigns - EarningHub</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+cursor:pointer
+}
+
+h1{
+font-size:30px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+line-height:1.5;
+margin-bottom:20px
+}
+
+.create{
+display:block;
+width:100%;
+padding:14px;
+background:#111;
+color:#fff;
+border-radius:12px;
+text-align:center;
+text-decoration:none;
+font-weight:bold;
+margin-bottom:20px
+}
+
+.message{
+display:none;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+.loading{
+text-align:center;
+padding:40px 10px;
+color:#777
+}
+
+.empty{
+text-align:center;
+padding:40px 20px;
+color:#777;
+border:1px solid #ddd;
+border-radius:16px;
+background:#fafafa
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:17px;
+margin-bottom:15px;
+background:#fff
+}
+
+.title{
+font-size:19px;
+font-weight:bold;
+margin-bottom:10px;
+line-height:1.3
+}
+
+.status{
+display:inline-block;
+padding:6px 9px;
+border-radius:8px;
+background:#eee;
+font-size:11px;
+font-weight:bold;
+margin-bottom:14px
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+gap:15px;
+font-size:13px;
+margin-bottom:9px
+}
+
+.row span{
+color:#777
+}
+
+.row strong{
+text-align:right;
+word-break:break-word
+}
+
+.amount{
+font-size:24px;
+font-weight:800;
+margin:13px 0
+}
+
+.view{
+display:block;
+width:100%;
+padding:12px;
+border:1px solid #111;
+border-radius:10px;
+background:#fff;
+color:#111;
+text-align:center;
+text-decoration:none;
+font-weight:bold;
+margin-top:13px
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<button
+class="back"
+onclick="goBack()">
+Back
+</button>
+
+</header>
+
+<h1>
+My Campaigns
+</h1>
+
+<p class="subtitle">
+View and track all campaigns you have created.
+</p>
+
+<a
+class="create"
+href="create-campaign.html">
++ Create Campaign
+</a>
+
+<div
+id="message"
+class="message">
+</div>
+
+<div
+id="loading"
+class="loading">
+Loading campaigns...
+</div>
+
+<div
+id="campaigns">
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+/*
+Use the same Supabase Publishable Key
+already used by your other EarningHub pages.
+
+Do NOT put the Supabase secret/service_role
+key here.
+*/
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text){
+
+const box =
+document.getElementById("message");
+
+box.textContent =
+text;
+
+box.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const box =
+document.getElementById("message");
+
+box.textContent =
+"";
+
+box.style.display =
+"none";
+
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack(){
+
+window.location.href =
+"dashboard.html";
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
+
+async function getCurrentUser(){
+
+const {
+data,
+error
+} =
+await supabaseClient.auth.getSession();
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+if(
+data.session &&
+data.session.user
+){
+
+return data.session.user;
+
+}
+
+
+return null;
+
+}
+
+
+/* =========================
+   LOAD CAMPAIGNS
+========================= */
+
+async function loadCampaigns(){
+
+hideMessage();
+
+const loading =
+document.getElementById(
+"loading"
+);
+
+const container =
+document.getElementById(
+"campaigns"
+);
+
+loading.style.display =
+"block";
+
+container.innerHTML =
+"";
+
+
+try{
+
+const user =
+await getCurrentUser();
+
+
+if(!user){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+/*
+Only campaigns created by
+the currently logged-in user.
+*/
+
+const {
+data:campaigns,
+error
+} =
+await supabaseClient
+.from("campaigns")
+.select(`
+id,
+title,
+description,
+platform,
+task_type,
+target_url,
+reward,
+budget,
+status,
+created_at
+`)
+.eq(
+"creator_id",
+user.id
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+loading.style.display =
+"none";
+
+
+if(
+!campaigns ||
+campaigns.length === 0
+){
+
+container.innerHTML = `
+<div class="empty">
+You have not created any campaigns yet.
+</div>
+`;
+
+return;
+
+}
+
+
+for(
+const campaign of campaigns
+){
+
+renderCampaign(
+campaign,
+container
+);
+
+}
+
+
+}catch(error){
+
+loading.style.display =
+"none";
+
+showMessage(
+"Unable to load campaigns: " +
+error.message
+);
+
+}
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderCampaign(
+campaign,
+container
+){
+
+const card =
+document.createElement(
+"div"
+);
+
+card.className =
+"card";
+
+
+const budget =
+Number(
+campaign.budget || 0
+);
+
+const reward =
+Number(
+campaign.reward || 0
+);
+
+
+const createdAt =
+campaign.created_at
+?
+new Date(
+campaign.created_at
+).toLocaleString()
+:
+"-";
+
+
+card.innerHTML = `
+
+<div class="title">
+${escapeHtml(
+campaign.title || "Campaign"
+)}
+</div>
+
+<div class="status">
+${escapeHtml(
+formatStatus(
+campaign.status
+)
+)}
+</div>
+
+<div class="row">
+<span>Platform</span>
+<strong>
+${escapeHtml(
+campaign.platform || "-"
+)}
+</strong>
+</div>
+
+<div class="row">
+<span>Task type</span>
+<strong>
+${escapeHtml(
+formatTaskType(
+campaign.task_type
+)
+)}
+</strong>
+</div>
+
+<div class="row">
+<span>Reward</span>
+<strong>
+$${reward.toFixed(2)}
+</strong>
+</div>
+
+<div class="row">
+<span>Budget</span>
+<strong>
+$${budget.toFixed(2)}
+</strong>
+</div>
+
+<div class="row">
+<span>Created</span>
+<strong>
+${escapeHtml(
+createdAt
+)}
+</strong>
+</div>
+
+<div class="amount">
+$${budget.toFixed(2)}
+</div>
+
+<a
+class="view"
+href="campaign-details.html?id=${encodeURIComponent(
+campaign.id
+)}">
+View Campaign
+</a>
+
+`;
+
+
+container.appendChild(
+card
+);
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function formatStatus(status){
+
+switch(status){
+
+case "pending_payment":
+return "PENDING PAYMENT";
+
+case "payment_review":
+return "PAYMENT REVIEW";
+
+case "active":
+return "ACTIVE";
+
+case "rejected":
+return "REJECTED";
+
+case "completed":
+return "COMPLETED";
+
+default:
+return String(
+status || "UNKNOWN"
+).toUpperCase();
+
+}
+
+}
+
+
+/* =========================
+   TASK TYPE
+========================= */
+
+function formatTaskType(type){
+
+switch(type){
+
+case "video_watch":
+return "Video Watch";
+
+case "website_visit":
+return "Website Visit";
+
+case "feedback":
+return "Feedback";
+
+case "survey":
+return "Survey";
+
+case "content_discovery":
+return "Content Discovery";
+
+default:
+return type || "-";
+
+}
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value){
+
+return String(
+value ?? ""
+)
+.replace(
+/&/g,
+"&amp;"
+)
+.replace(
+/</g,
+"&lt;"
+)
+.replace(
+/>/g,
+"&gt;"
+)
+.replace(
+/"/g,
+"&quot;"
+)
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadCampaigns();
+
+</script>
+
+</body>
+</html>
