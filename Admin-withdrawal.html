@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Withdrawal Review</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:28px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:22px
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:16px
+}
+
+.status{
+font-size:12px;
+color:#777;
+margin-bottom:10px
+}
+
+.amount{
+font-size:25px;
+font-weight:800;
+margin-top:8px
+}
+
+.info{
+margin-top:15px;
+font-size:13px;
+line-height:1.6
+}
+
+.info strong{
+display:block;
+margin-bottom:3px
+}
+
+.details{
+background:#f5f5f5;
+border-radius:10px;
+padding:12px;
+margin-top:5px;
+white-space:pre-wrap;
+word-break:break-word
+}
+
+.buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:18px
+}
+
+button{
+border:0;
+border-radius:11px;
+padding:13px;
+font-weight:bold;
+cursor:pointer
+}
+
+.approve{
+background:#111;
+color:#fff
+}
+
+.reject{
+background:#eee;
+color:#111
+}
+
+button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#777;
+line-height:1.5
+}
+
+.error{
+padding:15px;
+background:#f3f3f3;
+border-radius:12px;
+font-size:13px;
+line-height:1.5
+}
+
+.message{
+display:none;
+margin-bottom:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="dashboard.html">
+Back
+</a>
+
+</header>
+
+<h1>
+Withdrawal Review
+</h1>
+
+<p class="subtitle">
+Review pending withdrawal requests.
+</p>
+
+<div
+id="message"
+class="message">
+</div>
+
+<div id="withdrawals">
+
+<div class="empty">
+Loading withdrawal requests...
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+================================================
+ESCAPE HTML
+================================================
+*/
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/*
+================================================
+ERROR MESSAGE
+================================================
+*/
+
+function showError(text){
+
+const message =
+document.getElementById("message");
+
+message.textContent =
+text;
+
+message.style.display =
+"block";
+
+}
+
+
+/*
+================================================
+CHECK ADMIN
+================================================
+*/
+
+async function checkAdmin(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showError(
+sessionError.message
+);
+
+return false;
+
+}
+
+
+if(!sessionData.session){
+
+showError(
+"Please login first."
+);
+
+return false;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+const {
+data:profile,
+error
+} =
+await client
+.from("profiles")
+.select("is_admin")
+.eq(
+"id",
+userId
+)
+.maybeSingle();
+
+
+if(error){
+
+showError(
+error.message
+);
+
+return false;
+
+}
+
+
+if(
+!profile ||
+profile.is_admin !== true
+){
+
+showError(
+"Access denied. Admin access is required."
+);
+
+return false;
+
+}
+
+
+return true;
+
+}
+
+
+/*
+================================================
+LOAD WITHDRAWALS
+================================================
+*/
+
+async function loadWithdrawals(){
+
+const isAdmin =
+await checkAdmin();
+
+if(!isAdmin){
+
+document.getElementById(
+"withdrawals"
+).innerHTML="";
+
+return;
+
+}
+
+
+const box =
+document.getElementById(
+"withdrawals"
+);
+
+
+const {
+data,
+error
+} =
+await client
+.from("withdrawals")
+.select(
+"id,user_id,amount,method,account_details,status,created_at"
+)
+.eq(
+"status",
+"pending"
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+box.innerHTML=`
+
+<div class="error">
+
+<b>Database error</b>
+
+<br><br>
+
+${escapeHTML(
+error.message
+)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(
+!data ||
+data.length === 0
+){
+
+box.innerHTML=`
+
+<div class="empty">
+
+No pending withdrawal requests.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML =
+data.map(
+withdrawal => {
+
+return `
+
+<div
+class="card"
+id="withdrawal-${escapeHTML(
+withdrawal.id
+)}">
+
+<div class="status">
+
+Status: Pending
+
+</div>
+
+<strong>
+Withdrawal amount
+</strong>
+
+<div class="amount">
+
+$${Number(
+withdrawal.amount || 0
+).toFixed(2)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Payment method
+</strong>
+
+${escapeHTML(
+withdrawal.method
+)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Account details
+</strong>
+
+<div class="details">
+
+${escapeHTML(
+withdrawal.account_details
+)}
+
+</div>
+
+</div>
+
+<div class="info">
+
+<strong>
+User ID
+</strong>
+
+${escapeHTML(
+withdrawal.user_id
+)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Requested
+</strong>
+
+${escapeHTML(
+new Date(
+withdrawal.created_at
+).toLocaleString()
+)}
+
+</div>
+
+<div class="buttons">
+
+<button
+class="approve"
+onclick="approveWithdrawal(
+'${escapeHTML(
+withdrawal.id
+)}'
+)">
+
+Approve
+
+</button>
+
+<button
+class="reject"
+onclick="rejectWithdrawal(
+'${escapeHTML(
+withdrawal.id
+)}'
+)">
+
+Reject
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+/*
+================================================
+APPROVE WITHDRAWAL
+================================================
+
+IMPORTANT:
+
+The database function handles:
+
+1. Admin verification
+2. Pending-status verification
+3. Wallet balance check
+4. Wallet deduction
+5. Withdrawal approval
+6. Transaction record
+
+Therefore the browser does NOT directly
+update the wallet.
+================================================
+*/
+
+async function approveWithdrawal(
+withdrawalId
+){
+
+const confirmed =
+confirm(
+"Approve this withdrawal request?"
+);
+
+if(!confirmed){
+
+return;
+
+}
+
+
+const card =
+document.getElementById(
+"withdrawal-" +
+withdrawalId
+);
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll(
+"button"
+);
+
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+/*
+Call secure database function.
+*/
+
+const {
+data,
+error
+} =
+await client.rpc(
+"approve_withdrawal",
+{
+withdrawal_id:
+withdrawalId
+}
+);
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Approve failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+/*
+Successful approval.
+*/
+
+if(
+data === true ||
+data === null
+){
+
+card.remove();
+
+checkEmpty();
+
+alert(
+"Withdrawal approved successfully. Wallet balance updated."
+);
+
+return;
+
+}
+
+
+/*
+Unexpected result.
+*/
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Unable to approve withdrawal."
+);
+
+}
+
+
+/*
+================================================
+REJECT WITHDRAWAL
+================================================
+
+Reject does NOT deduct wallet balance.
+================================================
+*/
+
+async function rejectWithdrawal(
+withdrawalId
+){
+
+const confirmed =
+confirm(
+"Reject this withdrawal request?"
+);
+
+if(!confirmed){
+
+return;
+
+}
+
+
+const card =
+document.getElementById(
+"withdrawal-" +
+withdrawalId
+);
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll(
+"button"
+);
+
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+/*
+Only change pending withdrawal
+to rejected.
+
+No wallet deduction.
+*/
+
+const {
+data,
+error
+} =
+await client
+.from("withdrawals")
+.update({
+status:"rejected"
+})
+.eq(
+"id",
+withdrawalId
+)
+.eq(
+"status",
+"pending"
+)
+.select("id");
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Reject failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+if(
+!data ||
+data.length === 0
+){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"This withdrawal is no longer pending."
+);
+
+return;
+
+}
+
+
+card.remove();
+
+checkEmpty();
+
+alert(
+"Withdrawal rejected."
+);
+
+}
+
+
+/*
+================================================
+CHECK EMPTY
+================================================
+*/
+
+function checkEmpty(){
+
+if(
+document.querySelectorAll(
+"#withdrawals .card"
+).length === 0
+){
+
+document.getElementById(
+"withdrawals"
+).innerHTML=`
+
+<div class="empty">
+
+No pending withdrawal requests.
+
+</div>
+
+`;
+
+}
+
+}
+
+
+/*
+================================================
+START
+================================================
+*/
+
+loadWithdrawals();
+
+</script>
+
+</body>
+</html>
