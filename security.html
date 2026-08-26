@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>EarningHub Security</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:700px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 30px
+}
+
+
+/* APP BAR */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:3px solid #111;
+background:#fff
+}
+
+.back-button{
+width:40px;
+height:40px;
+border:0;
+background:#fff;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer
+}
+
+.back-button:active{
+background:#f3f3f3
+}
+
+.back-button svg{
+width:23px;
+height:23px;
+stroke:#111;
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain
+}
+
+.header-space{
+width:40px
+}
+
+
+/* MAIN */
+
+.main{
+padding-top:25px
+}
+
+.page-title{
+margin-bottom:25px
+}
+
+.page-title small{
+color:#777;
+font-size:13px
+}
+
+.page-title h1{
+font-size:28px;
+margin-top:6px
+}
+
+
+/* SECURITY */
+
+.security{
+display:flex;
+flex-direction:column;
+gap:12px
+}
+
+.security-card{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+background:#fff;
+cursor:pointer
+}
+
+.security-card:active{
+background:#f8f8f8
+}
+
+.security-button{
+display:flex;
+align-items:center;
+justify-content:space-between;
+width:100%;
+border:0;
+background:#fff;
+color:#111;
+padding:0;
+text-align:left;
+cursor:pointer;
+pointer-events:none
+}
+
+.security-left{
+display:flex;
+align-items:center;
+gap:13px
+}
+
+.security-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+flex-shrink:0
+}
+
+.security-text h2{
+font-size:16px;
+margin-bottom:6px
+}
+
+.security-text p{
+font-size:13px;
+color:#777;
+line-height:1.5
+}
+
+.security-arrow{
+font-size:20px;
+color:#777
+}
+
+
+/* CHANGE PASSWORD */
+
+.password-section{
+display:none;
+margin-top:12px;
+border-top:1px solid #eee;
+padding-top:16px;
+cursor:default
+}
+
+.password-section.show{
+display:block
+}
+
+.password-label{
+display:block;
+font-size:12px;
+color:#777;
+margin-bottom:6px
+}
+
+.password-input{
+width:100%;
+height:46px;
+border:1px solid #ccc;
+border-radius:10px;
+padding:0 13px;
+font-size:14px;
+outline:none;
+margin-bottom:12px
+}
+
+.password-input:focus{
+border-color:#111
+}
+
+.password-button{
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:13px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+pointer-events:auto
+}
+
+.password-button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.password-message{
+display:none;
+margin-top:12px;
+padding:12px;
+border-radius:10px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* ACCOUNT EMAIL */
+
+.email-section{
+display:none;
+margin-top:12px;
+border-top:1px solid #eee;
+padding-top:16px;
+cursor:default
+}
+
+.email-section.show{
+display:block
+}
+
+.email-label{
+display:block;
+font-size:12px;
+color:#777;
+margin-bottom:6px
+}
+
+.email-current{
+font-size:14px;
+font-weight:bold;
+padding:13px;
+border:1px solid #ddd;
+border-radius:10px;
+background:#fafafa;
+margin-bottom:12px;
+word-break:break-word
+}
+
+.email-input{
+width:100%;
+height:46px;
+border:1px solid #ccc;
+border-radius:10px;
+padding:0 13px;
+font-size:14px;
+outline:none;
+margin-bottom:12px
+}
+
+.email-input:focus{
+border-color:#111
+}
+
+.email-button{
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:13px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer
+}
+
+.email-button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.email-message{
+display:none;
+margin-top:12px;
+padding:12px;
+border-radius:10px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+
+/* INFO */
+
+.info{
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px
+}
+
+.info strong{
+font-size:15px
+}
+
+.info p{
+font-size:13px;
+color:#777;
+line-height:1.5;
+margin-top:7px
+}
+
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#888;
+font-size:12px
+}
+
+
+/* SIGN OUT MODAL */
+
+.logout-overlay{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:9999
+}
+
+.logout-overlay.show{
+display:flex
+}
+
+.logout-box{
+width:100%;
+max-width:360px;
+background:#fff;
+border-radius:18px;
+padding:22px;
+box-shadow:0 10px 35px rgba(0,0,0,.2)
+}
+
+.logout-box h2{
+font-size:20px;
+margin-bottom:8px
+}
+
+.logout-box p{
+font-size:14px;
+color:#777;
+line-height:1.5;
+margin-bottom:20px
+}
+
+.logout-buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.logout-cancel,
+.logout-confirm{
+border:0;
+border-radius:11px;
+padding:13px;
+font-weight:bold;
+font-size:14px;
+cursor:pointer
+}
+
+.logout-cancel{
+background:#eee;
+color:#111
+}
+
+.logout-confirm{
+background:#111;
+color:#fff
+}
+
+.logout-confirm:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+max-width:480px;
+padding:0 20px 20px
+}
+
+header{
+height:90px
+}
+
+.logo{
+width:105px
+}
+
+.page-title h1{
+font-size:26px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- APP BAR -->
+
+<header>
+
+<button
+class="back-button"
+type="button"
+onclick="goSettings()"
+aria-label="Back"
+>
+
+<svg viewBox="0 0 24 24">
+
+<line
+x1="19"
+y1="12"
+x2="5"
+y2="12">
+</line>
+
+<polyline
+points="12 19 5 12 12 5">
+</polyline>
+
+</svg>
+
+</button>
+
+
+<img
+class="logo"
+src="./logo.PNG"
+alt="EarningHub Logo"
+>
+
+
+<div class="header-space"></div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+<div class="page-title">
+
+<small>
+EarningHub
+</small>
+
+<h1>
+Security
+</h1>
+
+</div>
+
+
+<div class="security">
+
+
+<!-- PASSWORD -->
+
+<div
+class="security-card"
+onclick="togglePassword()"
+>
+
+<button
+class="security-button"
+type="button"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+🔑
+</div>
+
+<div class="security-text">
+
+<h2>
+Change Password
+</h2>
+
+<p>
+Update your EarningHub account password.
+</p>
+
+</div>
+
+</div>
+
+<div class="security-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="passwordSection"
+class="password-section"
+onclick="event.stopPropagation()"
+>
+
+<label
+class="password-label"
+for="newPassword">
+
+New Password
+
+</label>
+
+<input
+id="newPassword"
+class="password-input"
+type="password"
+placeholder="Enter new password"
+autocomplete="new-password"
+>
+
+
+<label
+class="password-label"
+for="confirmPassword">
+
+Confirm New Password
+
+</label>
+
+<input
+id="confirmPassword"
+class="password-input"
+type="password"
+placeholder="Confirm new password"
+autocomplete="new-password"
+>
+
+
+<button
+id="passwordButton"
+class="password-button"
+type="button"
+onclick="changePassword()"
+>
+
+Update Password
+
+</button>
+
+
+<div
+id="passwordMessage"
+class="password-message">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ACCOUNT EMAIL -->
+
+<div
+class="security-card"
+onclick="toggleAccountEmail()"
+>
+
+<button
+class="security-button"
+type="button"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+📧
+</div>
+
+<div class="security-text">
+
+<h2>
+Account Email
+</h2>
+
+<p id="accountEmailDescription">
+View the email address connected to your account.
+</p>
+
+</div>
+
+</div>
+
+<div class="security-arrow">
+›
+</div>
+
+</button>
+
+
+<div
+id="emailSection"
+class="email-section"
+onclick="event.stopPropagation()"
+>
+
+<label class="email-label">
+
+Current Account Email
+
+</label>
+
+<div
+id="currentEmail"
+class="email-current">
+
+Loading...
+
+</div>
+
+<label
+class="email-label"
+for="newEmail">
+
+New Email
+
+</label>
+
+<input
+id="newEmail"
+class="email-input"
+type="email"
+placeholder="Enter new email address"
+autocomplete="email"
+>
+
+
+<button
+id="emailButton"
+class="email-button"
+type="button"
+onclick="changeEmail()"
+>
+
+Change Email
+
+</button>
+
+<div
+id="emailMessage"
+class="email-message">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SESSION -->
+
+<div
+class="security-card"
+>
+
+<button
+class="security-button"
+type="button"
+onclick="signOut()"
+>
+
+<div class="security-left">
+
+<div class="security-icon">
+🚪
+</div>
+
+<div class="security-text">
+
+<h2>
+Sign Out
+</h2>
+
+<p>
+Sign out from your current EarningHub account.
+</p>
+
+</div>
+
+</div>
+
+<div class="security-arrow">
+›
+</div>
+
+</button>
+
+</div>
+
+
+</div>
+
+
+<!-- INFO -->
+
+<div class="info">
+
+<strong>
+EarningHub Account Security
+</strong>
+
+<p>
+Keep your password private and use a strong password that you do not use on other websites.
+</p>
+
+</div>
+
+
+<footer>
+
+© 2026 EarningHub
+
+</footer>
+
+
+</div>
+
+</div>
+
+
+<!-- SIGN OUT CONFIRMATION -->
+
+<div
+id="logoutOverlay"
+class="logout-overlay"
+>
+
+<div
+class="logout-box"
+onclick="event.stopPropagation()"
+>
+
+<h2>
+Are you sure you want to sign out?
+</h2>
+
+<p>
+You will be signed out from your current EarningHub account.
+</p>
+
+<div class="logout-buttons">
+
+<button
+type="button"
+class="logout-cancel"
+onclick="closeLogout()"
+>
+
+Cancel
+
+</button>
+
+<button
+type="button"
+id="logoutConfirmButton"
+class="logout-confirm"
+onclick="confirmSignOut()"
+>
+
+Sign Out
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+/*
+SUPABASE
+*/
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+let client = null;
+
+
+/*
+CREATE SUPABASE CLIENT
+*/
+
+function getClient(){
+
+if(client){
+
+return client;
+
+}
+
+
+if(
+!window.supabase ||
+typeof window.supabase.createClient !==
+"function"
+){
+
+alert(
+"Unable to connect to EarningHub."
+);
+
+return null;
+
+}
+
+
+client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+return client;
+
+}
+
+
+/*
+GO TO SETTINGS
+*/
+
+function goSettings(){
+
+window.location.href =
+"settings.html";
+
+}
+
+
+/*
+TOGGLE PASSWORD
+*/
+
+function togglePassword(){
+
+const section =
+document.getElementById(
+"passwordSection"
+);
+
+section.classList.toggle(
+"show"
+);
+
+}
+
+
+/*
+CHANGE PASSWORD
+
+UNCHANGED
+*/
+
+async function changePassword(){
+
+const supabaseClient =
+getClient();
+
+if(!supabaseClient){
+
+return;
+
+}
+
+
+const newPassword =
+document.getElementById(
+"newPassword"
+).value;
+
+const confirmPassword =
+document.getElementById(
+"confirmPassword"
+).value;
+
+const button =
+document.getElementById(
+"passwordButton"
+);
+
+const message =
+document.getElementById(
+"passwordMessage"
+);
+
+
+message.style.display =
+"none";
+
+
+if(!newPassword){
+
+message.textContent =
+"Please enter a new password.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+if(newPassword.length < 6){
+
+message.textContent =
+"Password must contain at least 6 characters.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+if(newPassword !== confirmPassword){
+
+message.textContent =
+"Passwords do not match.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+button.textContent =
+"Updating...";
+
+
+const {
+error
+} =
+await supabaseClient.auth.updateUser({
+
+password:
+newPassword
+
+});
+
+
+if(error){
+
+message.textContent =
+"Unable to update password: " +
+error.message;
+
+message.style.display =
+"block";
+
+button.disabled =
+false;
+
+button.textContent =
+"Update Password";
+
+return;
+
+}
+
+
+message.textContent =
+"Your password has been updated successfully.";
+
+message.style.display =
+"block";
+
+
+document.getElementById(
+"newPassword"
+).value =
+"";
+
+document.getElementById(
+"confirmPassword"
+).value =
+"";
+
+
+button.disabled =
+false;
+
+button.textContent =
+"Update Password";
+
+}
+
+
+/*
+ACCOUNT EMAIL
+*/
+
+async function toggleAccountEmail(){
+
+const section =
+document.getElementById(
+"emailSection"
+);
+
+section.classList.toggle(
+"show"
+);
+
+if(
+section.classList.contains("show")
+){
+
+await loadAccountEmail();
+
+}
+
+}
+
+
+/*
+LOAD CURRENT ACCOUNT EMAIL
+*/
+
+async function loadAccountEmail(){
+
+const supabaseClient =
+getClient();
+
+if(!supabaseClient){
+
+return;
+
+}
+
+
+const currentEmail =
+document.getElementById(
+"currentEmail"
+);
+
+
+currentEmail.textContent =
+"Loading...";
+
+
+try{
+
+const {
+data,
+error
+} =
+await supabaseClient.auth.getSession();
+
+
+if(error){
+
+currentEmail.textContent =
+"Unable to load email.";
+
+return;
+
+}
+
+
+const session =
+data &&
+data.session;
+
+
+if(
+!session ||
+!session.user
+){
+
+currentEmail.textContent =
+"Not signed in";
+
+return;
+
+}
+
+
+currentEmail.textContent =
+session.user.email ||
+"Not available";
+
+
+}catch(error){
+
+console.log(
+"Email error:",
+error
+);
+
+currentEmail.textContent =
+"Unable to load email.";
+
+}
+
+}
+
+
+/*
+CHANGE ACCOUNT EMAIL
+*/
+
+async function changeEmail(){
+
+const supabaseClient =
+getClient();
+
+if(!supabaseClient){
+
+return;
+
+}
+
+
+const input =
+document.getElementById(
+"newEmail"
+);
+
+const button =
+document.getElementById(
+"emailButton"
+);
+
+const message =
+document.getElementById(
+"emailMessage"
+);
+
+const newEmail =
+input.value.trim();
+
+
+message.style.display =
+"none";
+
+
+if(!newEmail){
+
+message.textContent =
+"Please enter your new email address.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+const emailPattern =
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+if(!emailPattern.test(newEmail)){
+
+message.textContent =
+"Please enter a valid email address.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await supabaseClient.auth.getSession();
+
+
+if(sessionError){
+
+message.textContent =
+"Unable to check your account: " +
+sessionError.message;
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+if(
+!sessionData.session ||
+!sessionData.session.user
+){
+
+message.textContent =
+"Please login again before changing your email.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+const currentEmail =
+sessionData.session.user.email ||
+"";
+
+
+if(
+newEmail.toLowerCase() ===
+currentEmail.toLowerCase()
+){
+
+message.textContent =
+"This is already your current email address.";
+
+message.style.display =
+"block";
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+button.textContent =
+"Updating...";
+
+
+const {
+error
+} =
+await supabaseClient.auth.updateUser({
+
+email:
+newEmail
+
+});
+
+
+if(error){
+
+message.textContent =
+"Unable to change email: " +
+error.message;
+
+message.style.display =
+"block";
+
+button.disabled =
+false;
+
+button.textContent =
+"Change Email";
+
+return;
+
+}
+
+
+message.textContent =
+"Email change requested successfully. Please check your email and follow the confirmation link if required.";
+
+message.style.display =
+"block";
+
+input.value =
+"";
+
+button.disabled =
+false;
+
+button.textContent =
+"Change Email";
+
+}
+
+
+/*
+SIGN OUT
+*/
+
+function signOut(){
+
+const overlay =
+document.getElementById(
+"logoutOverlay"
+);
+
+overlay.classList.add(
+"show"
+);
+
+}
+
+
+/*
+CLOSE SIGN OUT POPUP
+*/
+
+function closeLogout(){
+
+const overlay =
+document.getElementById(
+"logoutOverlay"
+);
+
+overlay.classList.remove(
+"show"
+);
+
+}
+
+
+/*
+CONFIRM SIGN OUT
+*/
+
+async function confirmSignOut(){
+
+const supabaseClient =
+getClient();
+
+if(!supabaseClient){
+
+return;
+
+}
+
+
+const button =
+document.getElementById(
+"logoutConfirmButton"
+);
+
+button.disabled =
+true;
+
+button.textContent =
+"Signing Out...";
+
+
+try{
+
+const {
+error
+} =
+await supabaseClient.auth.signOut();
+
+
+if(error){
+
+alert(
+"Unable to sign out:\n\n" +
+error.message
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Sign Out";
+
+return;
+
+}
+
+
+window.location.href =
+"index.html";
+
+
+}catch(error){
+
+console.log(
+"Sign out error:",
+error
+);
+
+alert(
+"Unable to sign out. Please try again."
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Sign Out";
+
+}
+
+}
+
+</script>
+
+
+</body>
+
+</html>
