@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Watch Ads & Earn - EarningHub</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Monetag MultiTag -->
+<script
+src="https://quge5.com/88/tag.min.js"
+data-zone="276483"
+async
+data-cfasync="false">
+</script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#fff;
+  color:#111;
+  min-height:100vh;
+}
+
+header{
+  height:64px;
+  border-bottom:1px solid #eee;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:10;
+}
+
+.logo{
+  height:38px;
+  width:auto;
+}
+
+.back{
+  text-decoration:none;
+  color:#111;
+  font-size:14px;
+  font-weight:600;
+}
+
+.container{
+  width:100%;
+  max-width:600px;
+  margin:auto;
+  padding:22px 16px 40px;
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:22px;
+}
+
+.hero-icon{
+  font-size:48px;
+  margin-bottom:10px;
+}
+
+.hero h1{
+  font-size:25px;
+  margin-bottom:8px;
+}
+
+.hero p{
+  color:#666;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.balance-card{
+  background:#111;
+  color:#fff;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+}
+
+.balance-title{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:7px;
+}
+
+.balance{
+  font-size:30px;
+  font-weight:700;
+}
+
+.balance-sub{
+  margin-top:5px;
+  font-size:13px;
+  opacity:.7;
+}
+
+.progress-card{
+  border:1px solid #eee;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.progress-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.progress-top strong{
+  font-size:15px;
+}
+
+.progress-top span{
+  font-size:13px;
+  color:#666;
+}
+
+.progress{
+  width:100%;
+  height:9px;
+  background:#eee;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#111;
+  transition:.3s;
+}
+
+.ads-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.ad-card{
+  border:1px solid #eee;
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.ad-icon{
+  width:52px;
+  height:52px;
+  border-radius:14px;
+  background:#f5f5f5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+  flex-shrink:0;
+}
+
+.ad-content{
+  flex:1;
+}
+
+.ad-content h3{
+  font-size:16px;
+  margin-bottom:5px;
+}
+
+.ad-content p{
+  font-size:12px;
+  color:#777;
+}
+
+.watch-btn{
+  border:0;
+  background:#111;
+  color:#fff;
+  padding:11px 15px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.watch-btn:disabled{
+  background:#ccc;
+  cursor:not-allowed;
+}
+
+.status{
+  margin:15px 0;
+  padding:12px;
+  border-radius:12px;
+  background:#f7f7f7;
+  font-size:13px;
+  line-height:1.5;
+  display:none;
+}
+
+.success{
+  color:#16803c;
+}
+
+.error{
+  color:#c62828;
+}
+
+.info{
+  background:#f7f7f7;
+  border-radius:14px;
+  padding:15px;
+  font-size:13px;
+  color:#555;
+  line-height:1.6;
+  margin-top:18px;
+}
+
+.completed{
+  text-align:center;
+  padding:30px 15px;
+  border:1px solid #eee;
+  border-radius:18px;
+  display:none;
+}
+
+.completed-icon{
+  font-size:45px;
+  margin-bottom:10px;
+}
+
+.completed h2{
+  margin-bottom:8px;
+}
+
+.completed p{
+  color:#666;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.login-box{
+  text-align:center;
+  padding:30px 10px;
+}
+
+.login-box a{
+  display:inline-block;
+  margin-top:15px;
+  background:#111;
+  color:#fff;
+  text-decoration:none;
+  padding:12px 22px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:600;
+}
+
+@media(max-width:480px){
+
+  .ad-card{
+    padding:14px;
+  }
+
+  .ad-icon{
+    width:45px;
+    height:45px;
+    font-size:23px;
+  }
+
+  .watch-btn{
+    padding:10px 12px;
+    font-size:12px;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<a href="dashboard.html">
+
+<img
+src="./logo.PNG"
+class="logo">
+
+</a>
+
+<a
+href="dashboard.html"
+class="back">
+
+← Dashboard
+
+</a>
+
+</header>
+
+
+<div class="container">
+
+<div class="hero">
+
+<div class="hero-icon">
+💰
+</div>
+
+<h1>
+Watch Ads & Earn
+</h1>
+
+<p>
+Watch available advertisements and earn points.
+</p>
+
+</div>
+
+
+<div
+id="loginBox"
+class="login-box"
+style="display:none;">
+
+<h2>
+Please Login
+</h2>
+
+<p
+style="margin-top:8px;color:#666;font-size:14px;">
+
+You must be logged in to use
+Watch Ads & Earn.
+
+</p>
+
+<a href="login.html">
+Login
+</a>
+
+</div>
+
+
+<div
+id="mainContent"
+style="display:none;">
+
+
+<div class="balance-card">
+
+<div class="balance-title">
+Current Wallet Balance
+</div>
+
+<div
+class="balance"
+id="walletBalance">
+
+$0.00
+
+</div>
+
+<div class="balance-sub">
+
+50 Points = $0.10
+
+</div>
+
+</div>
+
+
+<div class="progress-card">
+
+<div class="progress-top">
+
+<strong>
+Today's Ads
+</strong>
+
+<span id="adsCount">
+0 / 10
+</span>
+
+</div>
+
+<div class="progress">
+
+<div
+class="progress-bar"
+id="progressBar">
+</div>
+
+</div>
+
+</div>
+
+
+<div
+id="status"
+class="status">
+</div>
+
+
+<div
+id="adsList"
+class="ads-list">
+</div>
+
+
+<div
+id="completedBox"
+class="completed">
+
+<div class="completed-icon">
+🎉
+</div>
+
+<h2>
+All Ads Completed
+</h2>
+
+<p>
+You have completed all 10 ads for today.
+Come back tomorrow for more rewards.
+</p>
+
+</div>
+
+
+<div class="info">
+
+<strong>
+How it works
+</strong>
+
+<br><br>
+
+• 10 advertisements are available each day.<br>
+
+• Watch an ad and return to EarningHub.<br>
+
+• Each completed ad earns 50 Points.<br>
+
+• 50 Points = $0.10.<br>
+
+• Maximum daily reward = $1.00.<br>
+
+• Each advertisement can only be rewarded once.
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
+
+let currentUser = null;
+
+let completedAds = [];
+
+let isProcessingReward = false;
+
+
+/* =====================================================
+   AD LINKS
+===================================================== */
+
+const AD_LINKS = [
+
+  "https://omg10.com/4/11727627",
+
+  "https://omg10.com/4/10129779",
+
+  "https://omg10.com/4/10129777",
+
+  "https://omg10.com/4/10127654",
+
+  "https://omg10.com/4/10129784",
+
+  "https://omg10.com/4/11727639",
+
+  "https://omg10.com/4/11727642",
+
+  "https://omg10.com/4/11727645",
+
+  "https://omg10.com/4/10127655",
+
+  "https://omg10.com/4/10130120"
+
+];
+
+
+/* Backup links */
+
+const BACKUP_LINKS = [
+
+  "https://omg10.com/4/11595365",
+
+  "https://omg10.com/4/11694885"
+
+];
+
+
+/* =====================================================
+   CONSTANTS
+===================================================== */
+
+const MAX_ADS = 10;
+
+const REWARD_POINTS = 50;
+
+const REWARD_AMOUNT = 0.10;
+
+const SESSION_KEY =
+"earninghub_active_ad";
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+async function init(){
+
+  try{
+
+    const {
+      data,
+      error
+    } = await client.auth.getSession();
+
+
+    if(error){
+
+      console.error(
+        "Auth session error:",
+        error
+      );
+
+      showStatus(
+        "Unable to check login session.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const session =
+      data?.session;
+
+
+    if(!session){
+
+      document
+        .getElementById("loginBox")
+        .style.display =
+        "block";
+
+      return;
+
+    }
+
+
+    currentUser =
+      session.user;
+
+
+    document
+      .getElementById("mainContent")
+      .style.display =
+      "block";
+
+
+    /*
+      First load database state.
+    */
+
+    await loadCompletedAds();
+
+    await loadWallet();
+
+
+    /*
+      Then check whether the user
+      has returned from an ad.
+    */
+
+    await checkReturnFromAd();
+
+  }catch(error){
+
+    console.error(
+      "Initialization error:",
+      error
+    );
+
+    showStatus(
+      "Something went wrong. Please refresh the page.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SRI LANKA DATE
+===================================================== */
+
+function getSriLankaDate(){
+
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone:"Asia/Colombo",
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit"
+      }
+    ).formatToParts(
+      new Date()
+    );
+
+
+  const year =
+    parts.find(
+      part =>
+        part.type === "year"
+    )?.value;
+
+
+  const month =
+    parts.find(
+      part =>
+        part.type === "month"
+    )?.value;
+
+
+  const day =
+    parts.find(
+      part =>
+        part.type === "day"
+    )?.value;
+
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+/* =====================================================
+   LOAD TODAY'S COMPLETED ADS
+===================================================== */
+
+async function loadCompletedAds(){
+
+  if(!currentUser){
+
+    return;
+
+  }
+
+
+  const today =
+    getSriLankaDate();
+
+
+  console.log(
+    "Loading ads for Sri Lanka date:",
+    today
+  );
+
+
+  const {
+    data,
+    error
+  } = await client
+
+    .from("ad_watch_rewards")
+
+    .select(
+      "ad_number, watch_date"
+    )
+
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+
+    .eq(
+      "watch_date",
+      today
+    )
+
+    .order(
+      "ad_number",
+      {
+        ascending:true
+      }
+    );
+
+
+  if(error){
+
+    console.error(
+      "Load completed ads error:",
+      error
+    );
+
+
+    showStatus(
+      "Unable to load today's ads.",
+      "error"
+    );
+
+
+    completedAds = [];
+
+    updateUI();
+
+    return;
+
+  }
+
+
+  completedAds =
+    data
+      ? data
+          .map(
+            row =>
+              Number(
+                row.ad_number
+              )
+          )
+          .filter(
+            number =>
+              Number.isInteger(number) &&
+              number >= 1 &&
+              number <= MAX_ADS
+          )
+      : [];
+
+
+  /*
+    Remove duplicates just in case.
+  */
+
+  completedAds =
+    [...new Set(completedAds)];
+
+
+  console.log(
+    "Today's completed ads:",
+    completedAds
+  );
+
+
+  updateUI();
+
+}
+
+
+/* =====================================================
+   LOAD WALLET
+===================================================== */
+
+async function loadWallet(){
+
+  if(!currentUser){
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } = await client
+
+    .from("wallets")
+
+    .select(
+      "balance"
+    )
+
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+
+    .maybeSingle();
+
+
+  if(error){
+
+    console.error(
+      "Wallet loading error:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  if(data){
+
+    document
+      .getElementById(
+        "walletBalance"
+      )
+      .textContent =
+      "$" +
+      Number(
+        data.balance || 0
+      ).toFixed(2);
+
+  }
+
+}
+
+
+/* =====================================================
+   UPDATE UI
+===================================================== */
+
+function updateUI(){
+
+  const count =
+    completedAds.length;
+
+
+  document
+    .getElementById(
+      "adsCount"
+    )
+    .textContent =
+    count +
+    " / " +
+    MAX_ADS;
+
+
+  const percentage =
+    Math.min(
+      (count / MAX_ADS) * 100,
+      100
+    );
+
+
+  document
+    .getElementById(
+      "progressBar"
+    )
+    .style.width =
+    percentage + "%";
+
+
+  const adsList =
+    document.getElementById(
+      "adsList"
+    );
+
+
+  adsList.innerHTML = "";
+
+
+  /*
+    Display only ads that have
+    NOT been completed today.
+  */
+
+  for(
+    let i = 1;
+    i <= MAX_ADS;
+    i++
+  ){
+
+    if(
+      completedAds.includes(i)
+    ){
+
+      continue;
+
+    }
+
+
+    const card =
+      document.createElement(
+        "div"
+      );
+
+
+    card.className =
+      "ad-card";
+
+
+    card.innerHTML = `
+
+      <div class="ad-icon">
+        📺
+      </div>
+
+      <div class="ad-content">
+
+        <h3>
+          Ad #${i}
+        </h3>
+
+        <p>
+          Watch advertisement and earn
+          ${REWARD_POINTS} Points
+        </p>
+
+      </div>
+
+      <button
+        class="watch-btn"
+        onclick="watchAd(${i})">
+
+        Watch Ad
+
+      </button>
+
+    `;
+
+
+    adsList.appendChild(
+      card
+    );
+
+  }
+
+
+  /*
+    All 10 completed.
+  */
+
+  if(
+    count >= MAX_ADS
+  ){
+
+    adsList.style.display =
+      "none";
+
+
+    document
+      .getElementById(
+        "completedBox"
+      )
+      .style.display =
+      "block";
+
+  }else{
+
+    adsList.style.display =
+      "flex";
+
+
+    document
+      .getElementById(
+        "completedBox"
+      )
+      .style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =====================================================
+   START SPECIFIC AD
+===================================================== */
+
+function watchAd(
+  adNumber
+){
+
+  if(!currentUser){
+
+    return;
+
+  }
+
+
+  adNumber =
+    Number(adNumber);
+
+
+  /*
+    Validate ad number.
+  */
+
+  if(
+    !Number.isInteger(adNumber) ||
+    adNumber < 1 ||
+    adNumber > MAX_ADS
+  ){
+
+    showStatus(
+      "Invalid advertisement.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Already completed?
+  */
+
+  if(
+    completedAds.includes(
+      adNumber
+    )
+  ){
+
+    showStatus(
+      "You have already completed Ad #" +
+      adNumber +
+      " today.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Daily limit.
+  */
+
+  if(
+    completedAds.length >=
+    MAX_ADS
+  ){
+
+    showStatus(
+      "You have completed today's 10 ads.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Get exact link for exact ad.
+  */
+
+  let adUrl =
+    AD_LINKS[
+      adNumber - 1
+    ];
+
+
+  /*
+    Backup links are only used
+    if a main link is missing.
+  */
+
+  if(!adUrl){
+
+    const backupIndex =
+      adNumber -
+      AD_LINKS.length -
+      1;
+
+
+    adUrl =
+      BACKUP_LINKS[
+        backupIndex
+      ];
+
+  }
+
+
+  if(!adUrl){
+
+    showStatus(
+      "Advertisement is unavailable.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Save EXACT ad number.
+  */
+
+  const now =
+    Date.now();
+
+
+  const adSession = {
+
+    userId:
+      currentUser.id,
+
+    adNumber:
+      adNumber,
+
+    startedAt:
+      now,
+
+    expiresAt:
+      now +
+      (30 * 60 * 1000)
+
+  };
+
+
+  sessionStorage.setItem(
+    SESSION_KEY,
+    JSON.stringify(
+      adSession
+    )
+  );
+
+
+  /*
+    Open exact advertisement.
+  */
+
+  window.location.href =
+    adUrl;
+
+}
+
+
+/* =====================================================
+   CHECK RETURN FROM AD
+===================================================== */
+
+async function checkReturnFromAd(){
+
+  if(!currentUser){
+
+    return;
+
+  }
+
+
+  const saved =
+    sessionStorage.getItem(
+      SESSION_KEY
+    );
+
+
+  if(!saved){
+
+    return;
+
+  }
+
+
+  let adSession;
+
+
+  try{
+
+    adSession =
+      JSON.parse(
+        saved
+      );
+
+  }catch(error){
+
+    console.error(
+      "Invalid ad session:",
+      error
+    );
+
+
+    sessionStorage.removeItem(
+      SESSION_KEY
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Verify user.
+  */
+
+  if(
+    adSession.userId !==
+    currentUser.id
+  ){
+
+    sessionStorage.removeItem(
+      SESSION_KEY
+    );
+
+    return;
+
+  }
+
+
+  const adNumber =
+    Number(
+      adSession.adNumber
+    );
+
+
+  /*
+    Validate exact ad number.
+  */
+
+  if(
+    !Number.isInteger(adNumber) ||
+    adNumber < 1 ||
+    adNumber > MAX_ADS
+  ){
+
+    sessionStorage.removeItem(
+      SESSION_KEY
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Validate expiry.
+  */
+
+  if(
+    Date.now() >
+    Number(
+      adSession.expiresAt
+    )
+  ){
+
+    sessionStorage.removeItem(
+      SESSION_KEY
+    );
+
+
+    showStatus(
+      "This ad session expired. Please watch the ad again.",
+      "error"
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+    Prevent duplicate reward.
+  */
+
+  if(
+    completedAds.includes(
+      adNumber
+    )
+  ){
+
+    sessionStorage.removeItem(
+      SESSION_KEY
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Remove session before
+    reward request.
+  */
+
+  sessionStorage.removeItem(
+    SESSION_KEY
+  );
+
+
+  /*
+    Reward exact advertisement.
+  */
+
+  await claimReward(
+    adNumber
+  );
+
+}
+
+
+/* =====================================================
+   CLAIM EXACT AD REWARD
+===================================================== */
+
+async function claimReward(
+  adNumber
+){
+
+  if(
+    isProcessingReward
+  ){
+
+    return;
+
+  }
+
+
+  isProcessingReward =
+    true;
+
+
+  showStatus(
+    "Checking your ad session...",
+    ""
+  );
+
+
+  try{
+
+    const {
+      data,
+      error
+    } = await client.rpc(
+      "watch_ad_and_earn",
+      {
+        p_ad_number:
+          Number(adNumber)
+      }
+    );
+
+
+    if(error){
+
+      console.error(
+        "Reward RPC error:",
+        error
+      );
+
+
+      showStatus(
+        "Unable to process your reward.",
+        "error"
+      );
+
+
+      await loadCompletedAds();
+
+
+      return;
+
+    }
+
+
+    console.log(
+      "Reward response:",
+      data
+    );
+
+
+    /*
+      Reward successfully credited.
+    */
+
+    if(
+      data &&
+      data.success === true
+    ){
+
+      /*
+        Add EXACT ad number.
+      */
+
+      if(
+        !completedAds.includes(
+          adNumber
+        )
+      ){
+
+        completedAds.push(
+          adNumber
+        );
+
+      }
+
+
+      /*
+        Sort completed ads.
+      */
+
+      completedAds.sort(
+        (a,b) => a - b
+      );
+
+
+      showStatus(
+        "Congratulations! Ad #" +
+        adNumber +
+        " completed. You earned " +
+        REWARD_POINTS +
+        " Points ($" +
+        REWARD_AMOUNT.toFixed(2) +
+        ").",
+        "success"
+      );
+
+
+      await loadWallet();
+
+
+      updateUI();
+
+
+      return;
+
+    }
+
+
+    /*
+      Database rejected reward.
+    */
+
+    showStatus(
+      data?.message ||
+      "Reward was not credited.",
+      "error"
+    );
+
+
+    /*
+      Always reload database state
+      after a rejected reward.
+    */
+
+    await loadCompletedAds();
+
+  }catch(error){
+
+    console.error(
+      "Claim reward error:",
+      error
+    );
+
+
+    showStatus(
+      "Something went wrong while processing your reward.",
+      "error"
+    );
+
+
+    await loadCompletedAds();
+
+  }finally{
+
+    isProcessingReward =
+      false;
+
+  }
+
+}
+
+
+/* =====================================================
+   STATUS MESSAGE
+===================================================== */
+
+function showStatus(
+  message,
+  type
+){
+
+  const status =
+    document.getElementById(
+      "status"
+    );
+
+
+  status.textContent =
+    message;
+
+
+  status.style.display =
+    "block";
+
+
+  status.className =
+    "status";
+
+
+  if(
+    type === "success"
+  ){
+
+    status.classList.add(
+      "success"
+    );
+
+  }
+
+
+  if(
+    type === "error"
+  ){
+
+    status.classList.add(
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+init();
+
+</script>
+
+</body>
+</html>
