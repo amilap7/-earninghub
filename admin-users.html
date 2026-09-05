@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - User Management</title>
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:28px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:20px
+}
+
+.search{
+width:100%;
+border:1px solid #ddd;
+border-radius:13px;
+padding:14px;
+font-size:15px;
+outline:none;
+margin-bottom:16px
+}
+
+.search:focus{
+border-color:#111
+}
+
+.count{
+font-size:13px;
+color:#777;
+margin-bottom:14px
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:14px
+}
+
+.user-top{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px
+}
+
+.username{
+font-size:18px;
+font-weight:800;
+word-break:break-word
+}
+
+.email{
+font-size:13px;
+color:#777;
+margin-top:5px;
+word-break:break-word
+}
+
+.admin-badge{
+font-size:11px;
+font-weight:bold;
+border:1px solid #111;
+border-radius:20px;
+padding:5px 8px;
+white-space:nowrap
+}
+
+.status-badge{
+display:inline-block;
+font-size:11px;
+font-weight:bold;
+border-radius:20px;
+padding:5px 9px;
+margin-top:8px
+}
+
+.status-active{
+background:#f1f1f1;
+color:#111
+}
+
+.status-blocked{
+background:#111;
+color:#fff
+}
+
+.info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:18px
+}
+
+.info-box{
+background:#f7f7f7;
+border-radius:12px;
+padding:12px
+}
+
+.info-label{
+font-size:11px;
+color:#777;
+margin-bottom:5px
+}
+
+.info-value{
+font-size:15px;
+font-weight:bold;
+word-break:break-word
+}
+
+.details{
+display:block;
+width:100%;
+border:0;
+border-radius:11px;
+padding:13px;
+margin-top:15px;
+background:#111;
+color:#fff;
+font-weight:bold;
+cursor:pointer
+}
+
+.status-button{
+display:block;
+width:100%;
+border:1px solid #ddd;
+border-radius:11px;
+padding:13px;
+margin-top:10px;
+background:#fff;
+color:#111;
+font-weight:bold;
+cursor:pointer
+}
+
+.status-button.block{
+background:#fff;
+color:#111
+}
+
+.status-button.unblock{
+background:#111;
+color:#fff;
+border-color:#111
+}
+
+button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#777;
+line-height:1.5
+}
+
+.error{
+padding:15px;
+background:#f3f3f3;
+border-radius:12px;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+.loading{
+text-align:center;
+padding:40px 20px;
+color:#777
+}
+
+/* MODAL */
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+z-index:1000;
+padding:20px;
+overflow-y:auto
+}
+
+.modal-box{
+background:#fff;
+max-width:480px;
+margin:30px auto;
+border-radius:20px;
+padding:20px
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:20px
+}
+
+.modal-title{
+font-size:22px;
+font-weight:800
+}
+
+.close{
+border:1px solid #ddd;
+background:#fff;
+border-radius:10px;
+padding:8px 12px;
+font-weight:bold;
+cursor:pointer
+}
+
+.detail-row{
+padding:13px 0;
+border-bottom:1px solid #eee
+}
+
+.detail-label{
+font-size:12px;
+color:#777;
+margin-bottom:5px
+}
+
+.detail-value{
+font-size:15px;
+font-weight:bold;
+word-break:break-word
+}
+
+.section-title{
+font-size:17px;
+font-weight:800;
+margin-top:22px;
+margin-bottom:12px
+}
+
+.transaction{
+border:1px solid #eee;
+border-radius:12px;
+padding:13px;
+margin-bottom:10px
+}
+
+.transaction-top{
+display:flex;
+justify-content:space-between;
+gap:10px
+}
+
+.transaction-type{
+font-size:13px;
+font-weight:bold
+}
+
+.transaction-amount{
+font-weight:800
+}
+
+.transaction-description{
+font-size:12px;
+color:#777;
+margin-top:5px;
+line-height:1.4
+}
+
+.transaction-date{
+font-size:11px;
+color:#999;
+margin-top:8px
+}
+
+.positive{
+color:#111
+}
+
+.negative{
+color:#777
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="dashboard.html">
+Back
+</a>
+
+</header>
+
+
+<h1>
+User Management
+</h1>
+
+<p class="subtitle">
+View and manage EarningHub users.
+</p>
+
+
+<input
+id="search"
+class="search"
+type="search"
+placeholder="Search username or email...">
+
+
+<div
+id="count"
+class="count">
+Loading users...
+</div>
+
+
+<div id="users">
+
+<div class="loading">
+Loading users...
+</div>
+
+</div>
+
+</div>
+
+
+<!-- USER DETAILS MODAL -->
+
+<div
+id="modal"
+class="modal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<div
+id="modalTitle"
+class="modal-title">
+User Details
+</div>
+
+<button
+class="close"
+onclick="closeModal()">
+Close
+</button>
+
+</div>
+
+
+<div id="details">
+
+<div class="loading">
+Loading...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+let allUsers = [];
+
+
+/* =========================
+ESCAPE HTML
+========================= */
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+FORMAT DATE
+========================= */
+
+function formatDate(value){
+
+if(!value){
+
+return "—";
+
+}
+
+const date =
+new Date(value);
+
+return date.toLocaleDateString(
+"en-GB",
+{
+day:"2-digit",
+month:"short",
+year:"numeric",
+timeZone:"Asia/Colombo"
+}
+);
+
+}
+
+
+/* =========================
+FORMAT MONEY
+========================= */
+
+function formatMoney(value){
+
+const amount =
+Number(value || 0);
+
+return "$" +
+amount.toFixed(2);
+
+}
+
+
+/* =========================
+CHECK ADMIN
+========================= */
+
+async function checkAdmin(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showError(
+sessionError.message
+);
+
+return false;
+
+}
+
+
+if(!sessionData.session){
+
+showError(
+"Please login first."
+);
+
+return false;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+const {
+data:profile,
+error
+} =
+await client
+.from("profiles")
+.select("is_admin")
+.eq("id",userId)
+.maybeSingle();
+
+
+if(error){
+
+showError(
+error.message
+);
+
+return false;
+
+}
+
+
+if(!profile || profile.is_admin !== true){
+
+showError(
+"Access denied. Admin access is required."
+);
+
+return false;
+
+}
+
+
+return true;
+
+}
+
+
+/* =========================
+ERROR
+========================= */
+
+function showError(text){
+
+document.getElementById(
+"count"
+).textContent="";
+
+document.getElementById(
+"users"
+).innerHTML=`
+
+<div class="error">
+
+<b>Access / Database error</b>
+
+<br><br>
+
+${escapeHTML(text)}
+
+</div>
+
+`;
+
+}
+
+
+/* =========================
+LOAD USERS
+========================= */
+
+async function loadUsers(){
+
+const isAdmin =
+await checkAdmin();
+
+if(!isAdmin){
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"admin_get_users"
+);
+
+
+if(error){
+
+showError(
+error.message
+);
+
+return;
+
+}
+
+
+allUsers =
+data || [];
+
+
+renderUsers(
+allUsers
+);
+
+}
+
+
+/* =========================
+RENDER USERS
+========================= */
+
+function renderUsers(users){
+
+const box =
+document.getElementById(
+"users"
+);
+
+const count =
+document.getElementById(
+"count"
+);
+
+
+count.textContent =
+users.length +
+(users.length === 1
+? " user"
+: " users");
+
+
+if(!users.length){
+
+box.innerHTML=`
+
+<div class="empty">
+
+No users found.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML =
+users.map(
+user => {
+
+const status =
+user.status === "blocked"
+?
+"blocked"
+:
+"active";
+
+
+const statusText =
+status === "blocked"
+?
+"🔴 Blocked"
+:
+"🟢 Active";
+
+
+const isCurrentAdmin =
+user.is_admin;
+
+
+return `
+
+<div
+class="card"
+id="user-${escapeHTML(user.id)}">
+
+<div class="user-top">
+
+<div>
+
+<div class="username">
+
+${escapeHTML(
+user.username ||
+"Unnamed User"
+)}
+
+</div>
+
+<div class="email">
+
+${escapeHTML(
+user.email ||
+"No email"
+)}
+
+</div>
+
+<div
+class="status-badge
+${status === "blocked"
+? "status-blocked"
+: "status-active"}">
+
+${statusText}
+
+</div>
+
+</div>
+
+
+${
+user.is_admin
+?
+`<div class="admin-badge">
+ADMIN
+</div>`
+:
+""
+}
+
+</div>
+
+
+<div class="info">
+
+<div class="info-box">
+
+<div class="info-label">
+Wallet Balance
+</div>
+
+<div class="info-value">
+
+${formatMoney(
+user.wallet_balance
+)}
+
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<div class="info-label">
+Joined
+</div>
+
+<div class="info-value">
+
+${formatDate(
+user.created_at
+)}
+
+</div>
+
+</div>
+
+</div>
+
+
+<button
+class="details"
+onclick="openUserDetails(
+'${escapeHTML(user.id)}'
+)">
+
+👤 View Details
+
+</button>
+
+
+${
+isCurrentAdmin
+?
+""
+:
+`
+
+<button
+class="status-button
+${status === "blocked"
+? "unblock"
+: "block"}"
+onclick="changeUserStatus(
+'${escapeHTML(user.id)}',
+'${status === "blocked"
+? "active"
+: "blocked"}'
+)">
+
+${
+status === "blocked"
+?
+"✅ Unblock User"
+:
+"🚫 Block User"
+}
+
+</button>
+
+`
+}
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+/* =========================
+SEARCH
+========================= */
+
+document.getElementById(
+"search"
+).addEventListener(
+"input",
+function(){
+
+const query =
+this.value
+.trim()
+.toLowerCase();
+
+
+if(!query){
+
+renderUsers(
+allUsers
+);
+
+return;
+
+}
+
+
+const filtered =
+allUsers.filter(
+user => {
+
+const username =
+String(
+user.username || ""
+)
+.toLowerCase();
+
+const email =
+String(
+user.email || ""
+)
+.toLowerCase();
+
+
+return (
+username.includes(query) ||
+email.includes(query)
+);
+
+});
+
+
+renderUsers(
+filtered
+);
+
+}
+);
+
+
+/* =========================
+CHANGE USER STATUS
+========================= */
+
+async function changeUserStatus(
+userId,
+newStatus
+){
+
+const user =
+allUsers.find(
+item =>
+item.id === userId
+);
+
+
+if(!user){
+
+return;
+
+}
+
+
+const username =
+user.username ||
+user.email ||
+"this user";
+
+
+const actionText =
+newStatus === "blocked"
+?
+"block"
+:
+"unblock";
+
+
+const confirmed =
+confirm(
+`Are you sure you want to ${actionText} ${username}?`
+);
+
+
+if(!confirmed){
+
+return;
+
+}
+
+
+const card =
+document.getElementById(
+"user-" + userId
+);
+
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll(
+"button"
+);
+
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"admin_set_user_status",
+{
+p_user_id:userId,
+p_status:newStatus
+}
+);
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Status update failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+if(!data || data.success !== true){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+data?.message ||
+"Unable to update user status."
+);
+
+return;
+
+}
+
+
+/*
+Update local user data.
+*/
+
+user.status =
+newStatus;
+
+
+/*
+Refresh the current list.
+
+This also keeps search results
+working correctly.
+*/
+
+const searchValue =
+document.getElementById(
+"search"
+).value
+.trim()
+.toLowerCase();
+
+
+if(!searchValue){
+
+renderUsers(
+allUsers
+);
+
+}else{
+
+const filtered =
+allUsers.filter(
+item => {
+
+const username =
+String(
+item.username || ""
+)
+.toLowerCase();
+
+const email =
+String(
+item.email || ""
+)
+.toLowerCase();
+
+
+return (
+username.includes(searchValue) ||
+email.includes(searchValue)
+);
+
+});
+
+
+renderUsers(
+filtered
+);
+
+}
+
+
+alert(
+data.message ||
+"User status updated successfully."
+);
+
+}
+
+
+/* =========================
+OPEN DETAILS
+========================= */
+
+async function openUserDetails(
+userId
+){
+
+const modal =
+document.getElementById(
+"modal"
+);
+
+const details =
+document.getElementById(
+"details"
+);
+
+
+modal.style.display="block";
+
+document.body.style.overflow="hidden";
+
+
+details.innerHTML=`
+
+<div class="loading">
+Loading user details...
+</div>
+
+`;
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"admin_get_user_details",
+{
+p_user_id:userId
+}
+);
+
+
+if(error){
+
+details.innerHTML=`
+
+<div class="error">
+
+${escapeHTML(
+error.message
+)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(!data){
+
+details.innerHTML=`
+
+<div class="empty">
+
+User not found.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+renderUserDetails(
+data
+);
+
+}
+
+
+/* =========================
+RENDER DETAILS
+========================= */
+
+function renderUserDetails(
+user
+){
+
+const details =
+document.getElementById(
+"details"
+);
+
+
+let transactions =
+Array.isArray(
+user.transactions
+)
+?
+user.transactions
+:
+[];
+
+
+let transactionsHTML =
+"";
+
+
+if(transactions.length === 0){
+
+transactionsHTML=`
+
+<div class="empty"
+style="padding:30px 10px">
+
+No transactions yet.
+
+</div>
+
+`;
+
+}else{
+
+transactionsHTML =
+transactions
+.slice(0,20)
+.map(
+transaction => {
+
+const amount =
+Number(
+transaction.amount || 0
+);
+
+
+const isNegative =
+String(
+transaction.type || ""
+)
+.toLowerCase()
+.includes(
+"withdraw"
+);
+
+
+return `
+
+<div class="transaction">
+
+<div class="transaction-top">
+
+<div class="transaction-type">
+
+${escapeHTML(
+transaction.type ||
+"Transaction"
+)}
+
+</div>
+
+<div
+class="transaction-amount
+${isNegative
+? "negative"
+: "positive"}">
+
+${isNegative
+? "-"
+: "+"}
+
+$${Math.abs(
+amount
+).toFixed(2)}
+
+</div>
+
+</div>
+
+
+<div class="transaction-description">
+
+${escapeHTML(
+transaction.description ||
+""
+)}
+
+</div>
+
+
+<div class="transaction-date">
+
+${formatDate(
+transaction.created_at
+)}
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+const status =
+user.status === "blocked"
+?
+"🔴 Blocked"
+:
+"🟢 Active";
+
+
+details.innerHTML=`
+
+<div class="detail-row">
+
+<div class="detail-label">
+Username
+</div>
+
+<div class="detail-value">
+
+${escapeHTML(
+user.username ||
+"Unnamed User"
+)}
+
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+Email
+</div>
+
+<div class="detail-value">
+
+${escapeHTML(
+user.email ||
+"No email"
+)}
+
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+Joined Date
+</div>
+
+<div class="detail-value">
+
+${formatDate(
+user.created_at
+)}
+
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+Wallet Balance
+</div>
+
+<div class="detail-value">
+
+${formatMoney(
+user.wallet_balance
+)}
+
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+Account Role
+</div>
+
+<div class="detail-value">
+
+${
+user.is_admin
+?
+"Administrator"
+:
+"User"
+}
+
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+Account Status
+</div>
+
+<div class="detail-value">
+
+${status}
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+
+Recent Transactions
+
+</div>
+
+${transactionsHTML}
+
+`;
+
+}
+
+
+/* =========================
+CLOSE MODAL
+========================= */
+
+function closeModal(){
+
+document.getElementById(
+"modal"
+).style.display="none";
+
+document.body.style.overflow="";
+
+}
+
+
+/* =========================
+CLOSE ON BACKGROUND
+========================= */
+
+document.getElementById(
+"modal"
+).addEventListener(
+"click",
+function(event){
+
+if(event.target === this){
+
+closeModal();
+
+}
+
+}
+);
+
+
+/* =========================
+START
+========================= */
+
+loadUsers();
+
+</script>
+
+</body>
+
+</html>
