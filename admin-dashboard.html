@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Admin Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#f7f7f7;
+color:#111
+}
+
+.app{
+max-width:600px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 22px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:29px;
+margin-bottom:7px
+}
+
+.subtitle{
+font-size:14px;
+color:#777;
+line-height:1.5;
+margin-bottom:20px
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message{
+display:none;
+padding:14px;
+border-radius:12px;
+background:#eee;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px
+}
+
+.updated{
+font-size:12px;
+color:#777
+}
+
+.refresh{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:9px 12px;
+font-weight:bold;
+cursor:pointer
+}
+
+.refresh:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+
+/* =========================
+   STAT GRID
+========================= */
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-bottom:20px
+}
+
+.stat-card{
+background:#fff;
+border:1px solid #ddd;
+border-radius:16px;
+padding:16px
+}
+
+.stat-icon{
+font-size:23px;
+margin-bottom:10px
+}
+
+.stat-label{
+font-size:12px;
+color:#777;
+margin-bottom:6px
+}
+
+.stat-value{
+font-size:25px;
+font-weight:800
+}
+
+
+/* =========================
+   BALANCE CARD
+========================= */
+
+.balance-card{
+background:#111;
+color:#fff;
+border-radius:18px;
+padding:20px;
+margin-bottom:20px
+}
+
+.balance-label{
+font-size:13px;
+opacity:.7;
+margin-bottom:8px
+}
+
+.balance-value{
+font-size:32px;
+font-weight:800
+}
+
+.balance-text{
+font-size:12px;
+opacity:.7;
+margin-top:6px
+}
+
+
+/* =========================
+   SECTION
+========================= */
+
+.section{
+margin-top:22px;
+margin-bottom:10px;
+font-size:18px;
+font-weight:bold
+}
+
+
+/* =========================
+   ADMIN LINKS
+========================= */
+
+.admin-tools{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.admin-tool{
+display:block;
+background:#fff;
+border:1px solid #ddd;
+border-radius:14px;
+padding:15px;
+text-decoration:none;
+color:#111
+}
+
+.admin-tool-icon{
+font-size:23px;
+margin-bottom:8px
+}
+
+.admin-tool-title{
+font-size:14px;
+font-weight:bold;
+margin-bottom:4px
+}
+
+.admin-tool-text{
+font-size:11px;
+color:#777;
+line-height:1.4
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+text-align:center;
+padding:45px 20px;
+color:#777;
+font-size:13px
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:420px){
+
+.app{
+padding:16px
+}
+
+.stats{
+grid-template-columns:1fr 1fr
+}
+
+.admin-tools{
+grid-template-columns:1fr
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<header>
+
+<div class="logo">
+EarningHub Admin
+</div>
+
+<a
+class="back"
+href="admin.html">
+
+Back
+
+</a>
+
+</header>
+
+
+<h1>
+Admin Dashboard
+</h1>
+
+<p class="subtitle">
+Overview of EarningHub users, campaigns, tasks, withdrawals and payments.
+</p>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<div class="topbar">
+
+<div
+id="updated"
+class="updated">
+
+Loading statistics...
+
+</div>
+
+<button
+id="refreshButton"
+class="refresh"
+type="button">
+
+Refresh
+
+</button>
+
+</div>
+
+
+<div
+id="loading"
+class="loading">
+
+Loading dashboard...
+
+</div>
+
+
+<div
+id="dashboard"
+style="display:none">
+
+
+<!-- =========================
+     USERS
+========================= -->
+
+<div class="section">
+Users
+</div>
+
+<div class="stats">
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+👥
+</div>
+
+<div class="stat-label">
+Total Users
+</div>
+
+<div
+id="totalUsers"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🟢
+</div>
+
+<div class="stat-label">
+Active Users
+</div>
+
+<div
+id="activeUsers"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🚫
+</div>
+
+<div class="stat-label">
+Blocked Users
+</div>
+
+<div
+id="blockedUsers"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     CAMPAIGNS
+========================= -->
+
+<div class="section">
+Campaigns
+</div>
+
+<div class="stats">
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🎯
+</div>
+
+<div class="stat-label">
+Total Campaigns
+</div>
+
+<div
+id="totalCampaigns"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+⏳
+</div>
+
+<div class="stat-label">
+Pending Campaigns
+</div>
+
+<div
+id="pendingCampaigns"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     TASKS
+========================= -->
+
+<div class="section">
+Tasks
+</div>
+
+<div class="stats">
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+📋
+</div>
+
+<div class="stat-label">
+Total Tasks
+</div>
+
+<div
+id="totalTasks"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+📝
+</div>
+
+<div class="stat-label">
+Pending Submissions
+</div>
+
+<div
+id="pendingSubmissions"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     MONEY
+========================= -->
+
+<div class="section">
+Money & Requests
+</div>
+
+
+<div class="balance-card">
+
+<div class="balance-label">
+Total User Wallet Balance
+</div>
+
+<div
+id="totalWalletBalance"
+class="balance-value">
+
+$0.00
+
+</div>
+
+<div class="balance-text">
+Combined balance across all user wallets.
+</div>
+
+</div>
+
+
+<div class="stats">
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+💸
+</div>
+
+<div class="stat-label">
+Pending Withdrawals
+</div>
+
+<div
+id="pendingWithdrawals"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+💳
+</div>
+
+<div class="stat-label">
+Pending Payments
+</div>
+
+<div
+id="pendingPayments"
+class="stat-value">
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     ADMIN TOOLS
+========================= -->
+
+<div class="section">
+Admin Tools
+</div>
+
+
+<div class="admin-tools">
+
+
+<a
+class="admin-tool"
+href="admin-users.html">
+
+<div class="admin-tool-icon">
+👥
+</div>
+
+<div class="admin-tool-title">
+User Management
+</div>
+
+<div class="admin-tool-text">
+Manage users, balances and account status.
+</div>
+
+</a>
+
+
+<a
+class="admin-tool"
+href="admin-campaigns.html">
+
+<div class="admin-tool-icon">
+🎯
+</div>
+
+<div class="admin-tool-title">
+Campaign Management
+</div>
+
+<div class="admin-tool-text">
+View, search, pause and activate campaigns.
+</div>
+
+</a>
+
+
+<a
+class="admin-tool"
+href="admin-review.html">
+
+<div class="admin-tool-icon">
+📋
+</div>
+
+<div class="admin-tool-title">
+Task Review
+</div>
+
+<div class="admin-tool-text">
+Review submitted task proofs and rewards.
+</div>
+
+</a>
+
+
+<a
+class="admin-tool"
+href="admin-withdrawals.html">
+
+<div class="admin-tool-icon">
+💸
+</div>
+
+<div class="admin-tool-title">
+Withdrawal Management
+</div>
+
+<div class="admin-tool-text">
+Review and manage withdrawal requests.
+</div>
+
+</a>
+
+
+<a
+class="admin-tool"
+href="admin.html">
+
+<div class="admin-tool-icon">
+💳
+</div>
+
+<div class="admin-tool-title">
+Payment Review
+</div>
+
+<div class="admin-tool-text">
+Review campaign payments and receipts.
+</div>
+
+</a>
+
+
+<a
+class="admin-tool"
+href="admin-notifications.html">
+
+<div class="admin-tool-icon">
+🔔
+</div>
+
+<div class="admin-tool-title">
+Notifications
+</div>
+
+<div class="admin-tool-text">
+Send announcements and notifications to users.
+</div>
+
+</a>
+
+
+<a
+class="admin-tool"
+href="admin-daily-quiz.html">
+
+<div class="admin-tool-icon">
+📝
+</div>
+
+<div class="admin-tool-title">
+Daily Quiz
+</div>
+
+<div class="admin-tool-text">
+Manage daily quiz questions and rewards.
+</div>
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+text;
+
+box.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+"";
+
+box.style.display =
+"none";
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
+
+async function checkAdmin(){
+
+const {
+data,
+error
+} =
+await supabaseClient.auth.getSession();
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+if(!data.session){
+
+window.location.href =
+"login.html";
+
+return false;
+
+}
+
+
+/*
+The dashboard statistics RPC
+performs the real admin authorization
+using profiles.is_admin.
+*/
+
+return true;
+
+}
+
+
+/* =========================
+   LOAD STATISTICS
+========================= */
+
+async function loadDashboard(){
+
+hideMessage();
+
+
+const loading =
+document.getElementById(
+"loading"
+);
+
+const dashboard =
+document.getElementById(
+"dashboard"
+);
+
+const refresh =
+document.getElementById(
+"refreshButton"
+);
+
+
+loading.style.display =
+"block";
+
+dashboard.style.display =
+"none";
+
+refresh.disabled =
+true;
+
+
+try{
+
+const allowed =
+await checkAdmin();
+
+if(!allowed){
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await supabaseClient.rpc(
+"admin_get_dashboard_stats"
+);
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+if(!data){
+
+throw new Error(
+"No dashboard data returned."
+);
+
+}
+
+
+/* =========================
+   USERS
+========================= */
+
+document.getElementById(
+"totalUsers"
+).textContent =
+formatNumber(
+data.total_users
+);
+
+
+document.getElementById(
+"activeUsers"
+).textContent =
+formatNumber(
+data.active_users
+);
+
+
+document.getElementById(
+"blockedUsers"
+).textContent =
+formatNumber(
+data.blocked_users
+);
+
+
+/* =========================
+   CAMPAIGNS
+========================= */
+
+document.getElementById(
+"totalCampaigns"
+).textContent =
+formatNumber(
+data.total_campaigns
+);
+
+
+document.getElementById(
+"pendingCampaigns"
+).textContent =
+formatNumber(
+data.pending_campaigns
+);
+
+
+/* =========================
+   TASKS
+========================= */
+
+document.getElementById(
+"totalTasks"
+).textContent =
+formatNumber(
+data.total_tasks
+);
+
+
+document.getElementById(
+"pendingSubmissions"
+).textContent =
+formatNumber(
+data.pending_submissions
+);
+
+
+/* =========================
+   MONEY
+========================= */
+
+const walletBalance =
+Number(
+data.total_wallet_balance || 0
+);
+
+
+document.getElementById(
+"totalWalletBalance"
+).textContent =
+"$" +
+walletBalance.toFixed(2);
+
+
+/* =========================
+   REQUESTS
+========================= */
+
+document.getElementById(
+"pendingWithdrawals"
+).textContent =
+formatNumber(
+data.pending_withdrawals
+);
+
+
+document.getElementById(
+"pendingPayments"
+).textContent =
+formatNumber(
+data.pending_payments
+);
+
+
+/* =========================
+   UPDATED
+========================= */
+
+document.getElementById(
+"updated"
+).textContent =
+"Updated: " +
+new Date().toLocaleTimeString();
+
+
+loading.style.display =
+"none";
+
+dashboard.style.display =
+"block";
+
+
+}catch(error){
+
+console.error(
+"DASHBOARD ERROR:",
+error
+);
+
+
+loading.style.display =
+"none";
+
+
+showMessage(
+"Unable to load dashboard: " +
+error.message
+);
+
+
+}finally{
+
+refresh.disabled =
+false;
+
+}
+
+}
+
+
+/* =========================
+   NUMBER FORMAT
+========================= */
+
+function formatNumber(
+value
+){
+
+return Number(
+value || 0
+).toLocaleString();
+
+}
+
+
+/* =========================
+   REFRESH
+========================= */
+
+document
+.getElementById(
+"refreshButton"
+)
+.addEventListener(
+"click",
+loadDashboard
+);
+
+
+/* =========================
+   START
+========================= */
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>
