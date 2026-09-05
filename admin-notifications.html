@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Notifications</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#f7f7f7;
+color:#111
+}
+
+.app{
+max-width:600px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 22px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:29px;
+margin-bottom:7px
+}
+
+.subtitle{
+font-size:14px;
+color:#777;
+line-height:1.5;
+margin-bottom:20px
+}
+
+.card{
+background:#fff;
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:15px
+}
+
+.card-title{
+font-size:18px;
+font-weight:bold;
+margin-bottom:15px
+}
+
+label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:7px
+}
+
+input,
+textarea,
+select{
+
+width:100%;
+border:1px solid #ccc;
+border-radius:11px;
+padding:13px;
+font-size:14px;
+background:#fff;
+color:#111;
+outline:none;
+margin-bottom:14px
+}
+
+textarea{
+min-height:120px;
+resize:vertical;
+line-height:1.5
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+border-color:#111
+}
+
+.send{
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:14px;
+border-radius:11px;
+font-weight:bold;
+font-size:14px;
+cursor:pointer
+}
+
+.send:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.message{
+display:none;
+padding:14px;
+border-radius:12px;
+background:#eee;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+.user-search{
+display:none
+}
+
+.user-results{
+display:none;
+max-height:220px;
+overflow:auto;
+border:1px solid #ddd;
+border-radius:11px;
+margin-top:-7px;
+margin-bottom:14px
+}
+
+.user-item{
+padding:12px;
+border-bottom:1px solid #eee;
+cursor:pointer
+}
+
+.user-item:last-child{
+border-bottom:0
+}
+
+.user-item:active{
+background:#eee
+}
+
+.user-name{
+font-weight:bold;
+font-size:14px
+}
+
+.user-status{
+font-size:11px;
+color:#777;
+margin-top:3px
+}
+
+.selected-user{
+display:none;
+padding:12px;
+background:#f1f1f1;
+border-radius:11px;
+margin-bottom:14px;
+font-size:13px
+}
+
+.selected-user strong{
+display:block;
+margin-bottom:3px
+}
+
+.clear-user{
+float:right;
+border:0;
+background:transparent;
+font-weight:bold;
+cursor:pointer
+}
+
+.history-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px
+}
+
+.refresh{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:8px 11px;
+font-weight:bold;
+cursor:pointer
+}
+
+.history-item{
+border-top:1px solid #eee;
+padding:15px 0
+}
+
+.history-item:first-child{
+border-top:0;
+padding-top:0
+}
+
+.history-title{
+font-size:15px;
+font-weight:bold;
+margin-bottom:5px
+}
+
+.history-message{
+font-size:13px;
+line-height:1.5;
+color:#555;
+margin-bottom:7px
+}
+
+.history-meta{
+font-size:11px;
+color:#888;
+line-height:1.5
+}
+
+.delete{
+margin-top:10px;
+border:1px solid #111;
+background:#fff;
+border-radius:9px;
+padding:8px 11px;
+font-weight:bold;
+cursor:pointer
+}
+
+.empty{
+text-align:center;
+padding:35px 15px;
+color:#777;
+font-size:13px
+}
+
+.loading{
+text-align:center;
+padding:30px;
+color:#777;
+font-size:13px
+}
+
+@media(max-width:420px){
+
+.app{
+padding:16px
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub Admin
+</div>
+
+<a
+class="back"
+href="admin.html">
+Back
+</a>
+
+</header>
+
+
+<h1>
+Notifications
+</h1>
+
+<p class="subtitle">
+Send notifications and announcements to EarningHub users.
+</p>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<!-- =========================
+     SEND NOTIFICATION
+========================= -->
+
+<div class="card">
+
+<div class="card-title">
+Send Notification
+</div>
+
+
+<label for="recipientType">
+Send To
+</label>
+
+<select id="recipientType">
+
+<option value="all">
+All Active Users
+</option>
+
+<option value="specific">
+Specific User
+</option>
+
+</select>
+
+
+<!-- USER SEARCH -->
+
+<div
+id="userSearchBox"
+class="user-search">
+
+<label for="userSearch">
+Search User
+</label>
+
+<input
+id="userSearch"
+type="text"
+placeholder="Enter username...">
+
+<div
+id="userResults"
+class="user-results">
+</div>
+
+<div
+id="selectedUser"
+class="selected-user">
+
+<button
+id="clearUser"
+class="clear-user"
+type="button">
+×
+</button>
+
+<strong id="selectedUsername">
+</strong>
+
+<span>
+Selected user
+</span>
+
+</div>
+
+</div>
+
+
+<label for="notificationType">
+Notification Type
+</label>
+
+<select id="notificationType">
+
+<option value="announcement">
+Announcement
+</option>
+
+<option value="system">
+System
+</option>
+
+<option value="info">
+Information
+</option>
+
+<option value="warning">
+Warning
+</option>
+
+</select>
+
+
+<label for="title">
+Title
+</label>
+
+<input
+id="title"
+type="text"
+placeholder="Notification title">
+
+
+<label for="notificationMessage">
+Message
+</label>
+
+<textarea
+id="notificationMessage"
+placeholder="Write your notification message...">
+</textarea>
+
+
+<label for="link">
+Link (Optional)
+</label>
+
+<input
+id="link"
+type="text"
+placeholder="https://example.com/page">
+
+
+<button
+id="sendButton"
+class="send"
+type="button">
+
+Send Notification
+
+</button>
+
+</div>
+
+
+<!-- =========================
+     HISTORY
+========================= -->
+
+<div class="card">
+
+<div class="history-header">
+
+<div class="card-title">
+Notification History
+</div>
+
+<button
+id="refreshButton"
+class="refresh"
+type="button">
+Refresh
+</button>
+
+</div>
+
+
+<div
+id="history">
+
+<div class="loading">
+Loading notifications...
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+let selectedUserId =
+null;
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text){
+
+const box =
+document.getElementById("message");
+
+box.textContent =
+text;
+
+box.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const box =
+document.getElementById("message");
+
+box.textContent =
+"";
+
+box.style.display =
+"none";
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
+
+async function checkAdmin(){
+
+const {
+data,
+error
+} =
+await supabaseClient.auth.getSession();
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+if(!data.session){
+
+window.location.href =
+"login.html";
+
+return false;
+
+}
+
+
+/*
+Backend RPC functions perform
+the actual admin authorization.
+*/
+
+return true;
+
+}
+
+
+/* =========================
+   RECIPIENT TYPE
+========================= */
+
+document
+.getElementById("recipientType")
+.addEventListener(
+"change",
+function(){
+
+const searchBox =
+document.getElementById(
+"userSearchBox"
+);
+
+if(this.value === "specific"){
+
+searchBox.style.display =
+"block";
+
+}else{
+
+searchBox.style.display =
+"none";
+
+clearSelectedUser();
+
+}
+
+});
+
+
+/* =========================
+   SEARCH USERS
+========================= */
+
+let searchTimer =
+null;
+
+
+document
+.getElementById("userSearch")
+.addEventListener(
+"input",
+function(){
+
+clearTimeout(
+searchTimer
+);
+
+const value =
+this.value.trim();
+
+
+if(value.length < 1){
+
+document.getElementById(
+"userResults"
+).style.display =
+"none";
+
+return;
+
+}
+
+
+searchTimer =
+setTimeout(
+function(){
+
+searchUsers(value);
+
+},
+300
+);
+
+});
+
+
+async function searchUsers(
+search
+){
+
+const results =
+document.getElementById(
+"userResults"
+);
+
+results.style.display =
+"block";
+
+results.innerHTML =
+`
+<div class="loading">
+Searching...
+</div>
+`;
+
+
+try{
+
+const {
+data,
+error
+} =
+await supabaseClient.rpc(
+"admin_search_users",
+{
+p_search:search
+}
+);
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+const users =
+Array.isArray(data)
+?
+data
+:
+[];
+
+
+if(users.length === 0){
+
+results.innerHTML =
+`
+<div class="empty">
+No users found.
+</div>
+`;
+
+return;
+
+}
+
+
+results.innerHTML =
+"";
+
+
+users.forEach(
+user => {
+
+const item =
+document.createElement(
+"div"
+);
+
+item.className =
+"user-item";
+
+item.innerHTML = `
+
+<div class="user-name">
+${escapeHtml(
+user.username || "Unknown User"
+)}
+</div>
+
+<div class="user-status">
+Status:
+${escapeHtml(
+user.status || "active"
+)}
+</div>
+
+`;
+
+item.addEventListener(
+"click",
+function(){
+
+selectUser(
+user.id,
+user.username
+);
+
+});
+
+
+results.appendChild(
+item
+);
+
+});
+
+
+}catch(error){
+
+results.innerHTML =
+`
+<div class="empty">
+Unable to search users.
+</div>
+`;
+
+console.error(
+"USER SEARCH ERROR:",
+error
+);
+
+}
+
+}
+
+
+/* =========================
+   SELECT USER
+========================= */
+
+function selectUser(
+userId,
+username
+){
+
+selectedUserId =
+userId;
+
+
+document.getElementById(
+"selectedUsername"
+).textContent =
+"@" +
+(username || "Unknown");
+
+
+document.getElementById(
+"selectedUser"
+).style.display =
+"block";
+
+
+document.getElementById(
+"userResults"
+).style.display =
+"none";
+
+
+document.getElementById(
+"userSearch"
+).value =
+"";
+
+}
+
+
+/* =========================
+   CLEAR USER
+========================= */
+
+function clearSelectedUser(){
+
+selectedUserId =
+null;
+
+
+document.getElementById(
+"selectedUsername"
+).textContent =
+"";
+
+
+document.getElementById(
+"selectedUser"
+).style.display =
+"none";
+
+
+document.getElementById(
+"userResults"
+).style.display =
+"none";
+
+
+document.getElementById(
+"userSearch"
+).value =
+"";
+
+}
+
+
+document
+.getElementById("clearUser")
+.addEventListener(
+"click",
+clearSelectedUser
+);
+
+
+/* =========================
+   SEND NOTIFICATION
+========================= */
+
+document
+.getElementById("sendButton")
+.addEventListener(
+"click",
+sendNotification
+);
+
+
+async function sendNotification(){
+
+hideMessage();
+
+
+const recipientType =
+document.getElementById(
+"recipientType"
+).value;
+
+
+const type =
+document.getElementById(
+"notificationType"
+).value;
+
+
+const title =
+document.getElementById(
+"title"
+).value.trim();
+
+
+const message =
+document.getElementById(
+"notificationMessage"
+).value.trim();
+
+
+const link =
+document.getElementById(
+"link"
+).value.trim();
+
+
+if(!title){
+
+showMessage(
+"Please enter a notification title."
+);
+
+return;
+
+}
+
+
+if(!message){
+
+showMessage(
+"Please enter a notification message."
+);
+
+return;
+
+}
+
+
+if(
+recipientType === "specific"
+&&
+!selectedUserId
+){
+
+showMessage(
+"Please select a user."
+);
+
+return;
+
+}
+
+
+const button =
+document.getElementById(
+"sendButton"
+);
+
+button.disabled =
+true;
+
+button.textContent =
+"Sending...";
+
+
+try{
+
+let result;
+
+
+if(
+recipientType === "specific"
+){
+
+result =
+await supabaseClient.rpc(
+"admin_send_notification",
+{
+p_user_id:selectedUserId,
+p_type:type,
+p_title:title,
+p_message:message,
+p_link:link || null
+}
+);
+
+}else{
+
+result =
+await supabaseClient.rpc(
+"admin_send_notification_all",
+{
+p_type:type,
+p_title:title,
+p_message:message,
+p_link:link || null
+}
+);
+
+}
+
+
+if(result.error){
+
+throw new Error(
+result.error.message
+);
+
+}
+
+
+if(!result.data){
+
+throw new Error(
+"No result returned."
+);
+
+}
+
+
+if(
+recipientType === "specific"
+){
+
+showMessage(
+"Notification sent successfully."
+);
+
+}else{
+
+const count =
+result.data.sent_count ??
+0;
+
+showMessage(
+"Notification sent successfully to " +
+count +
+" active users."
+);
+
+}
+
+
+/*
+Clear form after successful send.
+*/
+
+document.getElementById(
+"title"
+).value =
+"";
+
+document.getElementById(
+"notificationMessage"
+).value =
+"";
+
+document.getElementById(
+"link"
+).value =
+"";
+
+
+clearSelectedUser();
+
+
+if(
+recipientType === "specific"
+){
+
+document.getElementById(
+"recipientType"
+).value =
+"all";
+
+document.getElementById(
+"userSearchBox"
+).style.display =
+"none";
+
+}
+
+
+await loadHistory();
+
+
+}catch(error){
+
+console.error(
+"SEND NOTIFICATION ERROR:",
+error
+);
+
+showMessage(
+"Unable to send notification: " +
+error.message
+);
+
+}finally{
+
+button.disabled =
+false;
+
+button.textContent =
+"Send Notification";
+
+}
+
+}
+
+
+/* =========================
+   LOAD HISTORY
+========================= */
+
+async function loadHistory(){
+
+const history =
+document.getElementById(
+"history"
+);
+
+history.innerHTML =
+`
+<div class="loading">
+Loading notifications...
+</div>
+`;
+
+
+try{
+
+const allowed =
+await checkAdmin();
+
+if(!allowed){
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await supabaseClient.rpc(
+"admin_get_notifications"
+);
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+const notifications =
+Array.isArray(data)
+?
+data
+:
+[];
+
+
+if(notifications.length === 0){
+
+history.innerHTML =
+`
+<div class="empty">
+No notifications found.
+</div>
+`;
+
+return;
+
+}
+
+
+history.innerHTML =
+"";
+
+
+notifications.forEach(
+notification => {
+
+const item =
+document.createElement(
+"div"
+);
+
+item.className =
+"history-item";
+
+
+const date =
+notification.created_at
+?
+new Date(
+notification.created_at
+).toLocaleString()
+:
+"-";
+
+
+item.innerHTML = `
+
+<div class="history-title">
+${escapeHtml(
+notification.title
+)}
+</div>
+
+<div class="history-message">
+${escapeHtml(
+notification.message
+)}
+</div>
+
+<div class="history-meta">
+To:
+@${escapeHtml(
+notification.username || "Unknown"
+)}
+<br>
+Type:
+${escapeHtml(
+notification.type || "system"
+)}
+<br>
+Created:
+${escapeHtml(date)}
+<br>
+Status:
+${notification.is_read
+?
+"Read"
+:
+"Unread"
+}
+</div>
+
+<button
+class="delete"
+type="button">
+Delete
+</button>
+
+`;
+
+
+item
+.querySelector(".delete")
+.addEventListener(
+"click",
+function(){
+
+deleteNotification(
+notification.id
+);
+
+});
+
+
+history.appendChild(
+item
+);
+
+});
+
+
+}catch(error){
+
+console.error(
+"HISTORY ERROR:",
+error
+);
+
+history.innerHTML =
+`
+<div class="empty">
+Unable to load notification history.
+</div>
+`;
+
+}
+
+}
+
+
+/* =========================
+   DELETE
+========================= */
+
+async function deleteNotification(
+notificationId
+){
+
+const confirmed =
+confirm(
+"Delete this notification?"
+);
+
+
+if(!confirmed){
+
+return;
+
+}
+
+
+try{
+
+const {
+data,
+error
+} =
+await supabaseClient.rpc(
+"admin_delete_notification",
+{
+p_notification_id:
+notificationId
+}
+);
+
+
+if(error){
+
+throw new Error(
+error.message
+);
+
+}
+
+
+if(!data){
+
+throw new Error(
+"Delete failed."
+);
+
+}
+
+
+showMessage(
+"Notification deleted successfully."
+);
+
+
+await loadHistory();
+
+
+}catch(error){
+
+console.error(
+"DELETE NOTIFICATION ERROR:",
+error
+);
+
+showMessage(
+"Unable to delete notification: " +
+error.message
+);
+
+}
+
+}
+
+
+/* =========================
+   REFRESH
+========================= */
+
+document
+.getElementById("refreshButton")
+.addEventListener(
+"click",
+loadHistory
+);
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(
+value
+){
+
+return String(
+value ?? ""
+)
+.replace(
+/&/g,
+"&amp;"
+)
+.replace(
+/</g,
+"&lt;"
+)
+.replace(
+/>/g,
+"&gt;"
+)
+.replace(
+/"/g,
+"&quot;"
+)
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadHistory();
+
+</script>
+
+</body>
+</html>
