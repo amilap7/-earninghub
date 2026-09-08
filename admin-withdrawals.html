@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Withdrawal Review</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:28px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:22px
+}
+
+.card{
+border:1px solid #ddd;
+border-radius:18px;
+padding:18px;
+margin-bottom:16px
+}
+
+.status{
+font-size:12px;
+color:#777;
+margin-bottom:10px
+}
+
+.amount{
+font-size:25px;
+font-weight:800;
+margin-top:8px
+}
+
+.info{
+margin-top:15px;
+font-size:13px;
+line-height:1.6
+}
+
+.info strong{
+display:block;
+margin-bottom:3px
+}
+
+.details{
+background:#f5f5f5;
+border-radius:10px;
+padding:12px;
+margin-top:5px;
+word-break:break-word
+}
+
+.detail-row{
+margin-bottom:7px
+}
+
+.detail-row:last-child{
+margin-bottom:0
+}
+
+.detail-label{
+font-weight:bold;
+display:block;
+margin-bottom:2px
+}
+
+.buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:18px
+}
+
+button{
+border:0;
+border-radius:11px;
+padding:13px;
+font-weight:bold;
+cursor:pointer
+}
+
+.approve{
+background:#111;
+color:#fff
+}
+
+.reject{
+background:#eee;
+color:#111
+}
+
+button:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#777;
+line-height:1.5
+}
+
+.error{
+padding:15px;
+background:#f3f3f3;
+border-radius:12px;
+font-size:13px;
+line-height:1.5
+}
+
+.message{
+display:none;
+margin-bottom:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="./dashboard.html">
+Back
+</a>
+
+</header>
+
+<h1>
+Withdrawal Review
+</h1>
+
+<p class="subtitle">
+Review pending withdrawal requests.
+</p>
+
+<div
+id="message"
+class="message">
+</div>
+
+<div id="withdrawals">
+
+<div class="empty">
+Loading withdrawal requests...
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+================================================
+ESCAPE HTML
+================================================
+*/
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/*
+================================================
+FORMAT ACCOUNT DETAILS
+================================================
+*/
+
+function formatAccountDetails(
+method,
+accountDetails
+){
+
+if(!accountDetails){
+
+return "No account details provided.";
+
+}
+
+
+let details;
+
+try{
+
+details =
+JSON.parse(
+accountDetails
+);
+
+}catch(error){
+
+return escapeHTML(
+accountDetails
+);
+
+}
+
+
+if(
+!details ||
+typeof details !== "object"
+){
+
+return escapeHTML(
+accountDetails
+);
+
+}
+
+
+let html = "";
+
+
+/*
+Bank Transfer
+*/
+
+if(method === "Bank Transfer"){
+
+html += `
+
+<div class="detail-row">
+
+<span class="detail-label">
+Bank Name
+</span>
+
+${escapeHTML(
+details.bank_name
+)}
+
+</div>
+
+<div class="detail-row">
+
+<span class="detail-label">
+Account Number
+</span>
+
+${escapeHTML(
+details.account_number
+)}
+
+</div>
+
+<div class="detail-row">
+
+<span class="detail-label">
+Branch
+</span>
+
+${escapeHTML(
+details.branch
+)}
+
+</div>
+
+<div class="detail-row">
+
+<span class="detail-label">
+Account Name
+</span>
+
+${escapeHTML(
+details.account_name
+)}
+
+</div>
+
+`;
+
+return html;
+
+}
+
+
+/*
+PayPal
+*/
+
+if(method === "PayPal"){
+
+return `
+
+<div class="detail-row">
+
+<span class="detail-label">
+PayPal Email
+</span>
+
+${escapeHTML(
+details.paypal_email
+)}
+
+</div>
+
+`;
+
+}
+
+
+/*
+Payoneer
+*/
+
+if(method === "Payoneer"){
+
+return `
+
+<div class="detail-row">
+
+<span class="detail-label">
+Payoneer Email
+</span>
+
+${escapeHTML(
+details.payoneer_email
+)}
+
+</div>
+
+`;
+
+}
+
+
+/*
+Wise
+*/
+
+if(method === "Wise"){
+
+return `
+
+<div class="detail-row">
+
+<span class="detail-label">
+Wise Email
+</span>
+
+${escapeHTML(
+details.wise_email
+)}
+
+</div>
+
+`;
+
+}
+
+
+/*
+Skrill
+*/
+
+if(method === "Skrill"){
+
+return `
+
+<div class="detail-row">
+
+<span class="detail-label">
+Skrill Email
+</span>
+
+${escapeHTML(
+details.skrill_email
+)}
+
+</div>
+
+`;
+
+}
+
+
+/*
+Crypto
+*/
+
+if(method === "Crypto"){
+
+return `
+
+<div class="detail-row">
+
+<span class="detail-label">
+Network
+</span>
+
+${escapeHTML(
+details.network
+)}
+
+</div>
+
+<div class="detail-row">
+
+<span class="detail-label">
+Wallet Address
+</span>
+
+${escapeHTML(
+details.wallet_address
+)}
+
+</div>
+
+`;
+
+}
+
+
+/*
+Fallback for unknown method
+*/
+
+return escapeHTML(
+accountDetails
+);
+
+}
+
+
+/*
+================================================
+ERROR MESSAGE
+================================================
+*/
+
+function showError(text){
+
+const message =
+document.getElementById("message");
+
+message.textContent =
+text;
+
+message.style.display =
+"block";
+
+}
+
+
+/*
+================================================
+CHECK ADMIN
+================================================
+*/
+
+async function checkAdmin(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showError(
+sessionError.message
+);
+
+return false;
+
+}
+
+
+if(!sessionData.session){
+
+showError(
+"Please login first."
+);
+
+return false;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+const {
+data:profile,
+error
+} =
+await client
+.from("profiles")
+.select("is_admin")
+.eq(
+"id",
+userId
+)
+.maybeSingle();
+
+
+if(error){
+
+showError(
+error.message
+);
+
+return false;
+
+}
+
+
+if(
+!profile ||
+profile.is_admin !== true
+){
+
+showError(
+"Access denied. Admin access is required."
+);
+
+return false;
+
+}
+
+
+return true;
+
+}
+
+
+/*
+================================================
+LOAD WITHDRAWALS
+================================================
+*/
+
+async function loadWithdrawals(){
+
+const isAdmin =
+await checkAdmin();
+
+if(!isAdmin){
+
+document.getElementById(
+"withdrawals"
+).innerHTML="";
+
+return;
+
+}
+
+
+const box =
+document.getElementById(
+"withdrawals"
+);
+
+
+/*
+Get withdrawals with username + email
+*/
+
+const {
+data,
+error
+} =
+await client.rpc(
+"admin_get_withdrawals"
+);
+
+
+if(error){
+
+box.innerHTML=`
+
+<div class="error">
+
+<b>Database error</b>
+
+<br><br>
+
+${escapeHTML(
+error.message
+)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+const pendingWithdrawals =
+(data || []).filter(
+withdrawal =>
+withdrawal.status === "pending"
+);
+
+
+if(
+pendingWithdrawals.length === 0
+){
+
+box.innerHTML=`
+
+<div class="empty">
+
+No pending withdrawal requests.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML =
+pendingWithdrawals.map(
+withdrawal => {
+
+const username =
+withdrawal.username ||
+"Unknown";
+
+const email =
+withdrawal.email ||
+"Not available";
+
+
+const accountDetails =
+formatAccountDetails(
+withdrawal.method,
+withdrawal.account_details
+);
+
+
+return `
+
+<div
+class="card"
+id="withdrawal-${escapeHTML(
+withdrawal.id
+)}">
+
+<div class="status">
+
+Status: Pending
+
+</div>
+
+<strong>
+Withdrawal amount
+</strong>
+
+<div class="amount">
+
+$${Number(
+withdrawal.amount || 0
+).toFixed(2)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Payment method
+</strong>
+
+${escapeHTML(
+withdrawal.method
+)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Account details
+</strong>
+
+<div class="details">
+
+${accountDetails}
+
+</div>
+
+</div>
+
+<div class="info">
+
+<strong>
+Username
+</strong>
+
+${escapeHTML(
+username
+)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Email
+</strong>
+
+${escapeHTML(
+email
+)}
+
+</div>
+
+<div class="info">
+
+<strong>
+User ID
+</strong>
+
+${escapeHTML(
+withdrawal.user_id
+)}
+
+</div>
+
+<div class="info">
+
+<strong>
+Requested
+</strong>
+
+${escapeHTML(
+new Date(
+withdrawal.created_at
+).toLocaleString()
+)}
+
+</div>
+
+<div class="buttons">
+
+<button
+class="approve"
+onclick="approveWithdrawal(
+'${escapeHTML(
+withdrawal.id
+)}'
+)">
+
+Approve
+
+</button>
+
+<button
+class="reject"
+onclick="rejectWithdrawal(
+'${escapeHTML(
+withdrawal.id
+)}'
+)">
+
+Reject
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+/*
+================================================
+CREATE WITHDRAWAL NOTIFICATION
+================================================
+*/
+
+async function createWithdrawalNotification(
+userId,
+amount,
+approved
+){
+
+const amountText =
+Number(
+amount || 0
+).toFixed(2);
+
+let title;
+let message;
+
+if(approved){
+
+title =
+"Withdrawal Approved";
+
+message =
+`Your $${amountText} withdrawal has been approved successfully. Check your bank account`;
+
+}else{
+
+title =
+"Withdrawal Rejected";
+
+message =
+`Your $${amountText} withdrawal request has been rejected.`;
+
+}
+
+
+const {
+error
+} =
+await client.rpc(
+"admin_create_notification",
+{
+p_user_id:
+userId,
+
+p_type:
+"withdrawal",
+
+p_title:
+title,
+
+p_message:
+message,
+
+p_link:
+"withdraw.html"
+}
+);
+
+
+if(error){
+
+console.log(
+"Withdrawal notification error:",
+error.message
+);
+
+return false;
+
+}
+
+
+return true;
+
+}
+
+
+/*
+================================================
+APPROVE WITHDRAWAL
+================================================
+*/
+
+async function approveWithdrawal(
+withdrawalId
+){
+
+const confirmed =
+confirm(
+"Approve this withdrawal request?"
+);
+
+if(!confirmed){
+
+return;
+
+}
+
+
+const card =
+document.getElementById(
+"withdrawal-" +
+withdrawalId
+);
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll(
+"button"
+);
+
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+/*
+Get withdrawal details
+before approving.
+*/
+
+const {
+data:withdrawal,
+error:withdrawalError
+} =
+await client
+.from("withdrawals")
+.select(
+"id,user_id,amount"
+)
+.eq(
+"id",
+withdrawalId
+)
+.maybeSingle();
+
+
+if(withdrawalError){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Unable to get withdrawal details: " +
+withdrawalError.message
+);
+
+return;
+
+}
+
+
+if(!withdrawal){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Withdrawal request not found."
+);
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await client.rpc(
+"approve_withdrawal",
+{
+withdrawal_id:
+withdrawalId
+}
+);
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Approve failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+if(
+data === true ||
+data === null
+){
+
+/*
+Create notification
+with the actual withdrawal amount.
+*/
+
+await createWithdrawalNotification(
+withdrawal.user_id,
+withdrawal.amount,
+true
+);
+
+card.remove();
+
+checkEmpty();
+
+alert(
+"Withdrawal approved successfully. Wallet balance updated."
+);
+
+return;
+
+}
+
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Unable to approve withdrawal."
+);
+
+}
+
+
+/*
+================================================
+REJECT WITHDRAWAL
+================================================
+*/
+
+async function rejectWithdrawal(
+withdrawalId
+){
+
+const confirmed =
+confirm(
+"Reject this withdrawal request?"
+);
+
+if(!confirmed){
+
+return;
+
+}
+
+
+const card =
+document.getElementById(
+"withdrawal-" +
+withdrawalId
+);
+
+if(!card){
+
+return;
+
+}
+
+
+const buttons =
+card.querySelectorAll(
+"button"
+);
+
+
+buttons.forEach(
+button =>
+button.disabled=true
+);
+
+
+/*
+Get withdrawal details
+before rejecting.
+*/
+
+const {
+data:withdrawal,
+error:withdrawalError
+} =
+await client
+.from("withdrawals")
+.select(
+"id,user_id,amount"
+)
+.eq(
+"id",
+withdrawalId
+)
+.maybeSingle();
+
+
+if(withdrawalError){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Unable to get withdrawal details: " +
+withdrawalError.message
+);
+
+return;
+
+}
+
+
+if(!withdrawal){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Withdrawal request not found."
+);
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await client
+.from("withdrawals")
+.update({
+status:"rejected"
+})
+.eq(
+"id",
+withdrawalId
+)
+.eq(
+"status",
+"pending"
+)
+.select("id");
+
+
+if(error){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"Reject failed: " +
+error.message
+);
+
+return;
+
+}
+
+
+if(
+!data ||
+data.length === 0
+){
+
+buttons.forEach(
+button =>
+button.disabled=false
+);
+
+alert(
+"This withdrawal is no longer pending."
+);
+
+return;
+
+}
+
+
+/*
+Create notification
+with the actual withdrawal amount.
+*/
+
+await createWithdrawalNotification(
+withdrawal.user_id,
+withdrawal.amount,
+false
+);
+
+card.remove();
+
+checkEmpty();
+
+alert(
+"Withdrawal rejected."
+);
+
+}
+
+
+/*
+================================================
+CHECK EMPTY
+================================================
+*/
+
+function checkEmpty(){
+
+if(
+document.querySelectorAll(
+"#withdrawals .card"
+).length === 0
+){
+
+document.getElementById(
+"withdrawals"
+).innerHTML=`
+
+<div class="empty">
+
+No pending withdrawal requests.
+
+</div>
+
+`;
+
+}
+
+}
+
+
+/*
+================================================
+START
+================================================
+*/
+
+loadWithdrawals();
+
+</script>
+
+</body>
+</html>
