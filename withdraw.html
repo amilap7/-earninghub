@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Withdraw</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+body{
+background:#fff;
+color:#111
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px
+}
+
+.logo{
+font-size:24px;
+font-weight:800
+}
+
+.back{
+border:1px solid #111;
+background:#fff;
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:#111
+}
+
+h1{
+font-size:30px;
+margin-bottom:8px
+}
+
+.subtitle{
+color:#777;
+font-size:14px;
+margin-bottom:22px
+}
+
+.balance{
+background:#111;
+color:#fff;
+border-radius:20px;
+padding:22px;
+margin-bottom:15px
+}
+
+.balance small{
+color:#ccc
+}
+
+.balance strong{
+display:block;
+font-size:34px;
+margin-top:7px
+}
+
+.minimum{
+border:1px solid #ddd;
+border-radius:14px;
+padding:15px;
+margin-bottom:22px;
+font-size:13px;
+line-height:1.5
+}
+
+.minimum strong{
+font-size:15px
+}
+
+.section-title{
+font-size:19px;
+font-weight:bold;
+margin-bottom:12px
+}
+
+/* Payment methods */
+
+#methods{
+display:flex;
+flex-direction:column
+}
+
+.method{
+width:100%;
+border:1px solid #ddd;
+border-radius:16px;
+padding:17px;
+background:#fff;
+text-align:left;
+margin-bottom:12px;
+cursor:pointer;
+font-size:15px;
+position:relative;
+order:2
+}
+
+.method-name{
+font-weight:bold;
+font-size:16px
+}
+
+.method-description{
+font-size:12px;
+color:#777;
+margin-top:5px;
+line-height:1.4
+}
+
+.method.disabled{
+opacity:.45;
+cursor:not-allowed;
+order:3
+}
+
+.method.available{
+border-color:#111;
+order:1
+}
+
+/* Payment method logos */
+
+.method-logo{
+width:46px;
+height:46px;
+object-fit:contain;
+display:block;
+margin-bottom:12px;
+border-radius:10px
+}
+
+.badge{
+position:absolute;
+right:15px;
+top:16px;
+font-size:11px;
+font-weight:bold;
+padding:5px 8px;
+border-radius:7px;
+background:#eee
+}
+
+.available .badge{
+background:#111;
+color:#fff
+}
+
+.message{
+display:none;
+margin-bottom:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5
+}
+
+/* Withdrawal form */
+
+.withdraw-form{
+display:none;
+border:1px solid #ddd;
+border-radius:16px;
+padding:18px;
+margin-top:20px;
+margin-bottom:20px
+}
+
+.withdraw-form h2{
+font-size:19px;
+margin-bottom:8px
+}
+
+.selected-method{
+font-size:13px;
+color:#777;
+margin-bottom:16px
+}
+
+.field{
+margin-top:15px
+}
+
+.field label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:7px
+}
+
+.field input,
+.field textarea{
+width:100%;
+padding:13px;
+border:1px solid #bbb;
+border-radius:11px;
+background:#fff;
+color:#111;
+font-size:14px;
+outline:none
+}
+
+.field textarea{
+min-height:100px;
+resize:vertical
+}
+
+.submit{
+display:block;
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:15px;
+border-radius:11px;
+font-weight:bold;
+margin-top:18px;
+cursor:pointer;
+font-size:15px
+}
+
+.submit:disabled{
+opacity:.5;
+cursor:not-allowed
+}
+
+.cancel{
+display:block;
+width:100%;
+border:1px solid #111;
+background:#fff;
+color:#111;
+padding:13px;
+border-radius:11px;
+font-weight:bold;
+margin-top:10px;
+cursor:pointer;
+font-size:14px
+}
+
+/* Advertisement */
+
+.advertisement{
+margin-top:25px;
+border:1px solid #ddd;
+border-radius:16px;
+padding:15px;
+background:#fff
+}
+
+.advertisement-title{
+font-size:16px;
+font-weight:bold;
+margin-bottom:12px
+}
+
+.advertisement-content{
+width:100%;
+min-height:90px;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+border-radius:10px
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a
+class="back"
+href="wallet.html">
+Back
+</a>
+
+</header>
+
+<h1>
+Withdraw
+</h1>
+
+<p class="subtitle">
+Choose your preferred withdrawal method.
+</p>
+
+<div
+id="message"
+class="message">
+</div>
+
+<div class="balance">
+
+<small>
+Available balance
+</small>
+
+<strong id="balance">
+$0.00
+</strong>
+
+</div>
+
+<div class="minimum">
+
+<strong>
+Minimum payout depends on the payment method.
+</strong>
+
+<br>
+
+Bank Transfer $10 · PayPal $20 · Payoneer $50 · Wise $100 · Skrill $50 · Crypto $500
+
+</div>
+
+<div class="section-title">
+Payment Methods
+</div>
+
+<div id="methods">
+
+<button
+class="method disabled"
+disabled
+data-method="Payoneer"
+data-logo="https://cdn.simpleicons.org/payoneer">
+
+<img
+class="method-logo"
+src="https://cdn.simpleicons.org/payoneer"
+alt="Payoneer">
+
+<span class="method-name">
+Payoneer
+</span>
+
+<span class="badge">
+Locked
+</span>
+
+<div class="method-description">
+International payment and withdrawal service.
+Minimum payout: $50.00
+</div>
+
+</button>
+
+
+<button
+class="method disabled"
+disabled
+data-method="PayPal"
+data-logo="https://cdn.simpleicons.org/paypal">
+
+<img
+class="method-logo"
+src="https://cdn.simpleicons.org/paypal"
+alt="PayPal">
+
+<span class="method-name">
+PayPal
+</span>
+
+<span class="badge">
+Locked
+</span>
+
+<div class="method-description">
+Online payment and international withdrawal service.
+Minimum payout: $20.00
+</div>
+
+</button>
+
+
+<button
+class="method disabled"
+disabled
+data-method="Bank Transfer">
+
+<div
+class="method-logo"
+style="display:flex;align-items:center;justify-content:center;border:1px solid #ddd;font-size:11px;font-weight:bold">
+BANK
+</div>
+
+<span class="method-name">
+Bank Transfer
+</span>
+
+<span class="badge">
+Locked
+</span>
+
+<div class="method-description">
+Withdraw directly to an eligible bank account.
+Minimum payout: $10.00
+</div>
+
+</button>
+
+
+<button
+class="method disabled"
+disabled
+data-method="Wise">
+
+<img
+class="method-logo"
+src="https://cdn.simpleicons.org/wise"
+alt="Wise">
+
+<span class="method-name">
+Wise
+</span>
+
+<span class="badge">
+Locked
+</span>
+
+<div class="method-description">
+International money transfer and receiving option.
+Minimum payout: $100.00
+</div>
+
+</button>
+
+
+<button
+class="method disabled"
+disabled
+data-method="Skrill">
+
+<img
+class="method-logo"
+src="https://cdn.simpleicons.org/skrill"
+alt="Skrill">
+
+<span class="method-name">
+Skrill
+</span>
+
+<span class="badge">
+Locked
+</span>
+
+<div class="method-description">
+Digital wallet withdrawal option.
+Minimum payout: $50.00
+</div>
+
+</button>
+
+
+<button
+class="method disabled"
+disabled
+data-method="Crypto">
+
+<div
+class="method-logo"
+style="display:flex;align-items:center;justify-content:center;border:1px solid #ddd;font-size:11px;font-weight:bold">
+CRYPTO
+</div>
+
+<span class="method-name">
+Crypto
+</span>
+
+<span class="badge">
+Locked
+</span>
+
+<div class="method-description">
+Supported cryptocurrency withdrawal option.
+Minimum payout: $500.00
+</div>
+
+</button>
+
+</div>
+
+
+<div
+id="withdrawForm"
+class="withdraw-form">
+
+<h2>
+Withdrawal Request
+</h2>
+
+<div class="selected-method">
+
+Selected method:
+<strong id="selectedMethod">
+</strong>
+
+</div>
+
+<form id="withdrawalForm">
+
+<div class="field">
+
+<label>
+Withdrawal Amount
+</label>
+
+<input
+id="amount"
+type="number"
+min="10"
+step="0.01"
+placeholder="Enter amount"
+required>
+
+</div>
+
+
+<div
+id="paymentFields">
+</div>
+
+
+<button
+type="submit"
+class="submit"
+id="submitButton">
+
+Submit Withdrawal
+
+</button>
+
+
+<button
+type="button"
+class="cancel"
+id="cancelButton">
+
+Cancel
+
+</button>
+
+</form>
+
+</div>
+
+
+<!-- Advertisement -->
+
+<div class="advertisement">
+
+<div class="advertisement-title">
+Advertisement
+</div>
+
+<div class="advertisement-content">
+
+<script>(function(s){s.dataset.zone='11751042',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/*
+Payment method minimum payout rules
+*/
+
+const PAYMENT_MINIMUMS = {
+
+"Bank Transfer": 10,
+
+"PayPal": 20,
+
+"Payoneer": 50,
+
+"Wise": 100,
+
+"Skrill": 50,
+
+"Crypto": 500
+
+};
+
+
+let currentBalance =
+0;
+
+let selectedMethod =
+"";
+
+
+function showMessage(text){
+
+const message =
+document.getElementById("message");
+
+message.textContent =
+text;
+
+message.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const message =
+document.getElementById("message");
+
+message.textContent =
+"";
+
+message.style.display =
+"none";
+
+}
+
+
+/*
+Create payment fields according to selected method.
+*/
+
+function createPaymentFields(method){
+
+const container =
+document.getElementById(
+"paymentFields"
+);
+
+
+if(method === "Bank Transfer"){
+
+container.innerHTML = `
+
+<div class="field">
+
+<label>
+Bank Name
+</label>
+
+<input
+id="bankName"
+type="text"
+placeholder="Enter bank name"
+required>
+
+</div>
+
+<div class="field">
+
+<label>
+Account Number
+</label>
+
+<input
+id="accountNumber"
+type="text"
+placeholder="Enter account number"
+required>
+
+</div>
+
+<div class="field">
+
+<label>
+Branch
+</label>
+
+<input
+id="branch"
+type="text"
+placeholder="Enter branch"
+required>
+
+</div>
+
+<div class="field">
+
+<label>
+Account Name
+</label>
+
+<input
+id="accountName"
+type="text"
+placeholder="Enter account name"
+required>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(method === "PayPal"){
+
+container.innerHTML = `
+
+<div class="field">
+
+<label>
+PayPal Email
+</label>
+
+<input
+id="paypalEmail"
+type="email"
+placeholder="Enter PayPal email"
+required>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(method === "Payoneer"){
+
+container.innerHTML = `
+
+<div class="field">
+
+<label>
+Payoneer Email
+</label>
+
+<input
+id="payoneerEmail"
+type="email"
+placeholder="Enter Payoneer email"
+required>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(method === "Wise"){
+
+container.innerHTML = `
+
+<div class="field">
+
+<label>
+Wise Email
+</label>
+
+<input
+id="wiseEmail"
+type="email"
+placeholder="Enter Wise email"
+required>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(method === "Skrill"){
+
+container.innerHTML = `
+
+<div class="field">
+
+<label>
+Skrill Email
+</label>
+
+<input
+id="skrillEmail"
+type="email"
+placeholder="Enter Skrill email"
+required>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+if(method === "Crypto"){
+
+container.innerHTML = `
+
+<div class="field">
+
+<label>
+Network
+</label>
+
+<input
+id="cryptoNetwork"
+type="text"
+placeholder="Example: USDT TRC20"
+required>
+
+</div>
+
+<div class="field">
+
+<label>
+Wallet Address
+</label>
+
+<textarea
+id="walletAddress"
+placeholder="Enter cryptocurrency wallet address"
+required></textarea>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+}
+
+
+/*
+Collect payment details and save them
+as text in the existing account_details column.
+*/
+
+function collectPaymentDetails(){
+
+let details = {};
+
+
+if(selectedMethod === "Bank Transfer"){
+
+details = {
+
+bank_name:
+document.getElementById("bankName").value.trim(),
+
+account_number:
+document.getElementById("accountNumber").value.trim(),
+
+branch:
+document.getElementById("branch").value.trim(),
+
+account_name:
+document.getElementById("accountName").value.trim()
+
+};
+
+}
+
+
+if(selectedMethod === "PayPal"){
+
+details = {
+
+paypal_email:
+document.getElementById("paypalEmail").value.trim()
+
+};
+
+}
+
+
+if(selectedMethod === "Payoneer"){
+
+details = {
+
+payoneer_email:
+document.getElementById("payoneerEmail").value.trim()
+
+};
+
+}
+
+
+if(selectedMethod === "Wise"){
+
+details = {
+
+wise_email:
+document.getElementById("wiseEmail").value.trim()
+
+};
+
+}
+
+
+if(selectedMethod === "Skrill"){
+
+details = {
+
+skrill_email:
+document.getElementById("skrillEmail").value.trim()
+
+};
+
+}
+
+
+if(selectedMethod === "Crypto"){
+
+details = {
+
+network:
+document.getElementById("cryptoNetwork").value.trim(),
+
+wallet_address:
+document.getElementById("walletAddress").value.trim()
+
+};
+
+}
+
+
+for(
+const key in details
+){
+
+if(!details[key]){
+
+return null;
+
+}
+
+}
+
+
+return JSON.stringify(details);
+
+}
+
+
+async function loadWallet(){
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showMessage(
+"Session error: " +
+sessionError.message
+);
+
+return;
+
+}
+
+
+if(!sessionData.session){
+
+showMessage(
+"Please login first."
+);
+
+return;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+const {
+data,
+error
+} =
+await client
+.from("wallets")
+.select(
+"user_id,balance"
+)
+.eq(
+"user_id",
+userId
+)
+.maybeSingle();
+
+
+if(error){
+
+showMessage(
+"Unable to load wallet: " +
+error.message
+);
+
+return;
+
+}
+
+
+const balance =
+Number(
+data?.balance || 0
+);
+
+currentBalance =
+balance;
+
+
+document.getElementById(
+"balance"
+).textContent =
+"$" +
+balance.toFixed(2);
+
+
+updateMethods(
+balance
+);
+
+}
+
+
+function updateMethods(balance){
+
+const methodsContainer =
+document.getElementById("methods");
+
+const methods =
+Array.from(
+methodsContainer.querySelectorAll(".method")
+);
+
+
+/*
+Available methods first.
+Locked methods stay below.
+*/
+
+methods.sort(
+function(a,b){
+
+const aName =
+a.dataset.method;
+
+const bName =
+b.dataset.method;
+
+const aAvailable =
+balance >= PAYMENT_MINIMUMS[aName];
+
+const bAvailable =
+balance >= PAYMENT_MINIMUMS[bName];
+
+if(aAvailable && !bAvailable){
+return -1;
+}
+
+if(!aAvailable && bAvailable){
+return 1;
+}
+
+return 0;
+
+});
+
+
+methods.forEach(
+function(method){
+
+methodsContainer.appendChild(
+method
+);
+
+const methodName =
+method.dataset.method;
+
+const minimum =
+PAYMENT_MINIMUMS[
+methodName
+];
+
+const badge =
+method.querySelector(
+".badge"
+);
+
+
+if(balance >= minimum){
+
+method.disabled =
+false;
+
+method.classList.remove(
+"disabled"
+);
+
+method.classList.add(
+"available"
+);
+
+badge.textContent =
+"Available";
+
+
+method.onclick =
+function(){
+
+selectMethod(
+methodName
+);
+
+};
+
+}else{
+
+method.disabled =
+true;
+
+method.classList.add(
+"disabled"
+);
+
+method.classList.remove(
+"available"
+);
+
+badge.textContent =
+"Locked";
+
+method.onclick =
+null;
+
+}
+
+});
+
+}
+
+
+function selectMethod(method){
+
+selectedMethod =
+method;
+
+hideMessage();
+
+document.getElementById(
+"selectedMethod"
+).textContent =
+method;
+
+document.getElementById(
+"withdrawForm"
+).style.display =
+"block";
+
+const minimum =
+PAYMENT_MINIMUMS[
+method
+];
+
+
+const amountInput =
+document.getElementById(
+"amount"
+);
+
+
+amountInput.value =
+"";
+
+amountInput.min =
+minimum;
+
+amountInput.placeholder =
+"Minimum $" +
+minimum.toFixed(2);
+
+
+createPaymentFields(
+method
+);
+
+
+window.scrollTo({
+top:
+document.getElementById(
+"withdrawForm"
+).offsetTop - 10,
+behavior:
+"smooth"
+});
+
+}
+
+
+document
+.getElementById(
+"cancelButton"
+)
+.addEventListener(
+"click",
+function(){
+
+document.getElementById(
+"withdrawForm"
+).style.display =
+"none";
+
+document.getElementById(
+"paymentFields"
+).innerHTML =
+"";
+
+selectedMethod =
+"";
+
+hideMessage();
+
+});
+
+
+document
+.getElementById(
+"withdrawalForm"
+)
+.addEventListener(
+"submit",
+submitWithdrawal
+);
+
+
+async function submitWithdrawal(event){
+
+event.preventDefault();
+
+hideMessage();
+
+
+const submitButton =
+document.getElementById(
+"submitButton"
+);
+
+
+const amount =
+Number(
+document.getElementById(
+"amount"
+).value
+);
+
+
+if(!selectedMethod){
+
+showMessage(
+"Please select a payment method."
+);
+
+return;
+
+}
+
+
+const minimum =
+PAYMENT_MINIMUMS[
+selectedMethod
+];
+
+
+if(!Number.isFinite(amount)){
+
+showMessage(
+"Please enter a valid withdrawal amount."
+);
+
+return;
+
+}
+
+
+if(amount < minimum){
+
+showMessage(
+"Minimum payout for " +
+selectedMethod +
+" is $" +
+minimum.toFixed(2) +
+"."
+);
+
+return;
+
+}
+
+
+if(amount > currentBalance){
+
+showMessage(
+"Withdrawal amount cannot be greater than your available balance."
+);
+
+return;
+
+}
+
+
+/*
+Collect method-specific payment details.
+*/
+
+const accountDetails =
+collectPaymentDetails();
+
+
+if(!accountDetails){
+
+showMessage(
+"Please enter all required payment details."
+);
+
+return;
+
+}
+
+
+submitButton.disabled =
+true;
+
+submitButton.textContent =
+"Submitting...";
+
+
+const {
+data:sessionData,
+error:sessionError
+} =
+await client.auth.getSession();
+
+
+if(sessionError){
+
+showMessage(
+"Session error: " +
+sessionError.message
+);
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+return;
+
+}
+
+
+if(!sessionData.session){
+
+showMessage(
+"Please login first."
+);
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+return;
+
+}
+
+
+const userId =
+sessionData.session.user.id;
+
+
+/*
+Check the latest wallet balance
+before creating the request.
+*/
+
+const {
+data:wallet,
+error:walletError
+} =
+await client
+.from("wallets")
+.select(
+"user_id,balance"
+)
+.eq(
+"user_id",
+userId
+)
+.maybeSingle();
+
+
+if(walletError){
+
+showMessage(
+"Unable to check wallet: " +
+walletError.message
+);
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+return;
+
+}
+
+
+const latestBalance =
+Number(
+wallet?.balance || 0
+);
+
+
+currentBalance =
+latestBalance;
+
+
+document.getElementById(
+"balance"
+).textContent =
+"$" +
+latestBalance.toFixed(2);
+
+
+if(latestBalance < minimum){
+
+showMessage(
+"You need at least $" +
+minimum.toFixed(2) +
+" to use " +
+selectedMethod +
+"."
+);
+
+updateMethods(
+latestBalance
+);
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+return;
+
+}
+
+
+if(amount > latestBalance){
+
+showMessage(
+"Withdrawal amount cannot be greater than your available balance."
+);
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+return;
+
+}
+
+
+/*
+Create withdrawal request.
+*/
+
+const {
+error:insertError
+} =
+await client
+.from("withdrawals")
+.insert({
+
+user_id:
+userId,
+
+amount:
+amount,
+
+method:
+selectedMethod,
+
+account_details:
+accountDetails,
+
+status:
+"pending"
+
+});
+
+
+if(insertError){
+
+showMessage(
+"Withdrawal request failed: " +
+insertError.message
+);
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+return;
+
+}
+
+
+showMessage(
+"Withdrawal request submitted successfully. Your request is pending review."
+);
+
+
+document.getElementById(
+"withdrawalForm"
+).reset();
+
+
+document.getElementById(
+"paymentFields"
+).innerHTML =
+"";
+
+
+document.getElementById(
+"withdrawForm"
+).style.display =
+"none";
+
+selectedMethod =
+"";
+
+
+submitButton.disabled =
+false;
+
+submitButton.textContent =
+"Submit Withdrawal";
+
+}
+
+
+loadWallet();
+
+</script>
+
+</body>
+</html>
