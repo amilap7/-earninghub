@@ -1,0 +1,3924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Earn by Completing Tasks</title>
+
+<meta name="description" content="EarningHub is a creator campaign and task marketplace where users can complete eligible tasks and earn rewards.">
+
+<meta name="robots" content="index, follow">
+
+<link rel="canonical" href="https://earninghub.pages.dev/">
+
+<!-- Open Graph / Social Sharing -->
+<meta property="og:title" content="EarningHub - Earn by Completing Tasks">
+<meta property="og:description" content="Complete legitimate campaigns, discover content, and earn rewards through EarningHub.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://earninghub.pages.dev/">
+<meta property="og:site_name" content="EarningHub">
+
+<!-- Google Search Console verification -->
+<meta name="google-site-verification" content="5SxKy_cAcGvh-AmRUeNQ8jDgS4CjTvrUWwL07N-___g">
+
+<!-- Monetag website verification -->
+<meta name="monetag" content="abbae48d7b31cbfae2887bd2a05df5f2">
+
+<!-- EarningHub structured data -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "name":"EarningHub",
+  "url":"https://earninghub.pages.dev/",
+  "description":"EarningHub is a creator campaign and task marketplace where users can complete eligible tasks and earn rewards."
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+background:#fff;
+color:#111;
+overflow-x:hidden;
+}
+
+button,
+input,
+textarea{
+font-family:inherit;
+}
+
+button{
+cursor:pointer;
+}
+
+a{
+text-decoration:none;
+color:inherit;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app{
+width:100%;
+min-height:100vh;
+background:#fff;
+}
+
+
+/* =========================================================
+   ENTRY PAGE
+========================================================= */
+
+#entryPage{
+display:block;
+width:100%;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.landing-header{
+width:100%;
+background:#fff;
+border-bottom:1px solid #f1f1f1;
+position:relative;
+z-index:100;
+}
+
+.header-inner{
+width:100%;
+max-width:1180px;
+height:112px;
+margin:auto;
+padding:0 35px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.brand-logo{
+display:flex;
+align-items:center;
+gap:13px;
+cursor:pointer;
+}
+
+.logo-image{
+width:105px;
+height:78px;
+object-fit:contain;
+display:block;
+transform:translateY(3px);
+}
+
+.brand-name{
+font-family:Georgia,"Times New Roman",serif;
+font-size:54px;
+line-height:1;
+font-weight:900;
+letter-spacing:-2px;
+white-space:nowrap;
+color:#080808;
+}
+
+.brand-name .gold{
+color:#f2b800;
+}
+
+
+/* =========================================================
+   HAMBURGER
+========================================================= */
+
+.menu-button{
+width:58px;
+height:58px;
+border:0;
+background:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+gap:7px;
+border-radius:12px;
+}
+
+.menu-line{
+width:39px;
+height:4px;
+background:#111;
+border-radius:5px;
+}
+
+.menu-button:hover{
+background:#fafafa;
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.mobile-menu{
+display:none;
+position:absolute;
+right:35px;
+top:92px;
+width:230px;
+background:#fff;
+border:1px solid #e7e7e7;
+border-radius:16px;
+padding:8px;
+box-shadow:0 18px 45px rgba(0,0,0,.14);
+}
+
+.mobile-menu.show{
+display:block;
+}
+
+.mobile-menu button{
+width:100%;
+border:0;
+background:#fff;
+padding:14px 15px;
+border-radius:11px;
+text-align:left;
+font-size:15px;
+font-weight:700;
+color:#111;
+}
+
+.mobile-menu button:hover{
+background:#f6f6f6;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero-section{
+width:100%;
+max-width:1180px;
+margin:auto;
+padding:42px 35px 38px;
+display:grid;
+grid-template-columns:1fr 1.05fr;
+gap:30px;
+align-items:center;
+}
+
+.hero-copy{
+padding-top:5px;
+}
+
+.hero-pill{
+display:inline-flex;
+align-items:center;
+gap:13px;
+background:#eeeeee;
+color:#303030;
+border-radius:40px;
+padding:13px 24px;
+font-size:17px;
+font-weight:500;
+margin-bottom:27px;
+}
+
+.pill-shield{
+width:27px;
+height:27px;
+border-radius:7px;
+background:#111;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:17px;
+font-weight:900;
+}
+
+
+/* =========================================================
+   HERO HEADING
+========================================================= */
+
+.entry-hero h1{
+font-size:59px;
+line-height:1.08;
+letter-spacing:-2.8px;
+font-weight:900;
+color:#090909;
+margin-bottom:24px;
+}
+
+.entry-hero h1 span{
+display:block;
+}
+
+.entry-hero h1 .gold-text{
+font-family:Georgia,"Times New Roman",serif;
+color:#f2b500;
+font-weight:900;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.entry-hero p{
+max-width:520px;
+font-size:20px;
+line-height:1.58;
+color:#666;
+margin-bottom:28px;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.entry-buttons{
+display:flex;
+flex-direction:column;
+gap:14px;
+width:100%;
+max-width:500px;
+}
+
+.entry-button{
+width:100%;
+height:72px;
+border-radius:38px;
+font-size:20px;
+font-weight:800;
+transition:.2s ease;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:15px;
+}
+
+.entry-button.primary{
+background:#f2b500;
+color:#111;
+border:3px solid #f2b500;
+box-shadow:0 8px 20px rgba(242,181,0,.18);
+}
+
+.entry-button.primary:hover{
+background:#e7aa00;
+border-color:#e7aa00;
+transform:translateY(-2px);
+}
+
+.entry-button.secondary{
+background:#fff;
+color:#111;
+border:3px solid #111;
+}
+
+.entry-button.secondary:hover{
+background:#f7f7f7;
+transform:translateY(-2px);
+}
+
+.button-icon{
+font-size:27px;
+line-height:1;
+}
+
+.button-arrow{
+font-size:28px;
+margin-left:5px;
+}
+
+
+/* =========================================================
+   HERO VISUAL
+========================================================= */
+
+.hero-visual{
+position:relative;
+min-height:510px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.illustration{
+position:relative;
+width:530px;
+height:500px;
+}
+
+
+/* soft background circles */
+
+.illustration:before{
+content:"";
+position:absolute;
+width:430px;
+height:430px;
+border-radius:50%;
+background:#f4f4f4;
+right:22px;
+top:40px;
+}
+
+.illustration:after{
+content:"";
+position:absolute;
+width:300px;
+height:300px;
+border-radius:50%;
+background:#fafafa;
+right:-10px;
+bottom:15px;
+}
+
+
+/* =========================================================
+   PERSON
+========================================================= */
+
+.person{
+position:absolute;
+z-index:8;
+width:330px;
+height:400px;
+right:65px;
+bottom:0;
+}
+
+.person-hair{
+position:absolute;
+width:100px;
+height:76px;
+background:#2b211e;
+border-radius:55% 55% 38% 45%;
+top:43px;
+left:112px;
+transform:rotate(-7deg);
+z-index:4;
+}
+
+.person-hair:after{
+content:"";
+position:absolute;
+width:42px;
+height:42px;
+background:#2b211e;
+border-radius:50%;
+right:-12px;
+top:7px;
+}
+
+.person-face{
+position:absolute;
+width:88px;
+height:105px;
+background:#d9986d;
+border-radius:46% 46% 44% 44%;
+top:72px;
+left:118px;
+z-index:3;
+}
+
+.person-ear{
+position:absolute;
+width:19px;
+height:31px;
+background:#d9986d;
+border-radius:50%;
+top:105px;
+left:105px;
+z-index:2;
+}
+
+.person-ear.right{
+left:197px;
+}
+
+.eye{
+position:absolute;
+width:7px;
+height:8px;
+background:#111;
+border-radius:50%;
+top:113px;
+left:141px;
+z-index:6;
+}
+
+.eye.right{
+left:179px;
+}
+
+.nose{
+position:absolute;
+width:9px;
+height:16px;
+border-right:2px solid #8d5a3e;
+border-bottom:2px solid #8d5a3e;
+transform:rotate(22deg);
+top:124px;
+left:159px;
+z-index:6;
+}
+
+.smile{
+position:absolute;
+width:22px;
+height:10px;
+border-bottom:3px solid #7c4333;
+border-radius:0 0 20px 20px;
+top:148px;
+left:151px;
+z-index:6;
+}
+
+.hoodie{
+position:absolute;
+width:190px;
+height:205px;
+background:#f2b500;
+border-radius:70px 70px 35px 35px;
+top:153px;
+left:72px;
+z-index:2;
+}
+
+.hoodie-pocket{
+position:absolute;
+width:85px;
+height:55px;
+border:4px solid #d39b00;
+border-top:0;
+border-radius:0 0 40px 40px;
+bottom:32px;
+left:53px;
+}
+
+.hoodie-string{
+position:absolute;
+width:4px;
+height:52px;
+background:#fff;
+top:35px;
+left:76px;
+}
+
+.hoodie-string.right{
+left:111px;
+}
+
+.black-pants{
+position:absolute;
+width:190px;
+height:155px;
+background:#111;
+border-radius:50px 70px 40px 45px;
+bottom:23px;
+left:91px;
+z-index:1;
+transform:rotate(5deg);
+}
+
+.leg{
+position:absolute;
+width:145px;
+height:65px;
+background:#111;
+border-radius:50px;
+right:18px;
+bottom:14px;
+transform:rotate(8deg);
+z-index:2;
+}
+
+.shoe{
+position:absolute;
+width:105px;
+height:48px;
+background:#fff;
+border-radius:50px 35px 28px 22px;
+right:0;
+bottom:0;
+z-index:5;
+transform:rotate(5deg);
+box-shadow:0 5px 10px rgba(0,0,0,.12);
+}
+
+.shoe:before{
+content:"";
+position:absolute;
+width:78px;
+height:4px;
+background:#d9d9d9;
+left:14px;
+top:25px;
+border-radius:5px;
+}
+
+
+/* =========================================================
+   PHONE
+========================================================= */
+
+.phone{
+position:absolute;
+z-index:12;
+width:59px;
+height:108px;
+background:#151515;
+border-radius:12px;
+left:145px;
+top:190px;
+transform:rotate(12deg);
+box-shadow:0 9px 15px rgba(0,0,0,.18);
+}
+
+.phone-screen{
+position:absolute;
+left:5px;
+right:5px;
+top:6px;
+bottom:6px;
+border-radius:8px;
+background:#fff;
+}
+
+.phone-screen:before{
+content:"";
+position:absolute;
+width:25px;
+height:5px;
+border-radius:10px;
+background:#ddd;
+top:12px;
+left:12px;
+}
+
+.phone-screen:after{
+content:"$";
+position:absolute;
+width:27px;
+height:27px;
+border-radius:50%;
+background:#f2b500;
+color:#fff;
+font-weight:900;
+display:flex;
+align-items:center;
+justify-content:center;
+left:11px;
+top:38px;
+}
+
+
+/* =========================================================
+   LAPTOP
+========================================================= */
+
+.laptop{
+position:absolute;
+z-index:9;
+width:230px;
+height:145px;
+right:25px;
+bottom:75px;
+background:#cfcfcf;
+border-radius:13px 13px 5px 5px;
+transform:rotate(-4deg);
+box-shadow:0 12px 22px rgba(0,0,0,.13);
+}
+
+.laptop-screen{
+position:absolute;
+left:10px;
+right:10px;
+top:9px;
+bottom:10px;
+border-radius:7px;
+background:#eeeeee;
+}
+
+.laptop-logo{
+position:absolute;
+width:26px;
+height:26px;
+border-radius:50%;
+background:#ddd;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+}
+
+.laptop-base{
+position:absolute;
+width:265px;
+height:13px;
+background:#bdbdbd;
+left:-17px;
+bottom:-11px;
+border-radius:0 0 15px 15px;
+}
+
+
+/* =========================================================
+   PLANT
+========================================================= */
+
+.plant{
+position:absolute;
+z-index:7;
+left:28px;
+bottom:50px;
+width:105px;
+height:190px;
+}
+
+.plant-pot{
+position:absolute;
+width:68px;
+height:78px;
+background:#eeeeee;
+bottom:0;
+left:17px;
+border-radius:8px 8px 25px 25px;
+box-shadow:0 7px 15px rgba(0,0,0,.08);
+}
+
+.plant-stem{
+position:absolute;
+width:7px;
+height:105px;
+background:#4b8749;
+bottom:61px;
+left:51px;
+border-radius:10px;
+}
+
+.leaf{
+position:absolute;
+width:52px;
+height:24px;
+background:#4c954d;
+border-radius:100% 0 100% 0;
+bottom:105px;
+left:5px;
+transform:rotate(-42deg);
+}
+
+.leaf.two{
+left:42px;
+bottom:125px;
+transform:rotate(28deg);
+}
+
+.leaf.three{
+left:50px;
+bottom:93px;
+transform:rotate(60deg);
+}
+
+
+/* =========================================================
+   COINS
+========================================================= */
+
+.coin{
+position:absolute;
+z-index:20;
+width:43px;
+height:43px;
+border-radius:50%;
+background:#f2b500;
+border:4px solid #d69d00;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-size:20px;
+font-weight:900;
+box-shadow:0 8px 16px rgba(210,157,0,.22);
+}
+
+.coin.one{
+left:74px;
+top:175px;
+}
+
+.coin.two{
+right:24px;
+top:94px;
+width:36px;
+height:36px;
+font-size:17px;
+}
+
+.coin.three{
+right:88px;
+bottom:74px;
+width:37px;
+height:37px;
+font-size:17px;
+}
+
+.coin.four{
+left:145px;
+bottom:20px;
+width:36px;
+height:36px;
+font-size:17px;
+}
+
+
+/* =========================================================
+   GIFT
+========================================================= */
+
+.gift{
+position:absolute;
+z-index:20;
+width:90px;
+height:75px;
+background:#161616;
+right:155px;
+bottom:18px;
+border-radius:6px;
+box-shadow:0 10px 20px rgba(0,0,0,.18);
+}
+
+.gift-top{
+position:absolute;
+width:100px;
+height:17px;
+background:#222;
+left:-5px;
+top:-10px;
+border-radius:6px;
+}
+
+.gift-ribbon-v{
+position:absolute;
+width:12px;
+height:100%;
+background:#f2b500;
+left:39px;
+}
+
+.gift-ribbon-h{
+position:absolute;
+width:100%;
+height:10px;
+background:#f2b500;
+top:30px;
+}
+
+
+/* =========================================================
+   FLOATING CARDS
+========================================================= */
+
+.float-card{
+position:absolute;
+z-index:30;
+background:#fff;
+border-radius:12px;
+padding:14px 17px;
+min-width:185px;
+box-shadow:0 10px 25px rgba(0,0,0,.13);
+border:1px solid #ededed;
+font-size:14px;
+font-weight:700;
+color:#222;
+}
+
+.float-card strong{
+display:block;
+font-size:15px;
+margin-bottom:4px;
+}
+
+.float-card span{
+font-weight:900;
+font-size:15px;
+}
+
+.float-card.task{
+right:115px;
+top:42px;
+}
+
+.float-card.campaign{
+right:45px;
+top:130px;
+}
+
+.float-card.video{
+right:10px;
+top:220px;
+}
+
+.card-icon{
+display:inline-flex;
+width:28px;
+height:28px;
+background:#111;
+color:#fff;
+border-radius:7px;
+align-items:center;
+justify-content:center;
+margin-right:7px;
+}
+
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.features-section{
+width:100%;
+max-width:1180px;
+margin:auto;
+padding:0 35px 48px;
+}
+
+.entry-features{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+}
+
+.feature{
+background:#fff;
+border:1px solid #eeeeee;
+border-radius:22px;
+padding:27px 40px;
+min-height:275px;
+box-shadow:0 8px 25px rgba(0,0,0,.055);
+}
+
+.feature-icon{
+width:88px;
+height:88px;
+border-radius:50%;
+background:#eeeeee;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:42px;
+margin-bottom:18px;
+}
+
+.feature-title{
+font-size:25px;
+font-weight:900;
+margin-bottom:13px;
+}
+
+.feature-text{
+font-size:18px;
+line-height:1.48;
+color:#6b6b6b;
+max-width:245px;
+}
+
+
+/* =========================================================
+   WHY SECTION
+========================================================= */
+
+.why-section{
+width:100%;
+background:#fff;
+}
+
+.why-inner{
+width:100%;
+max-width:1180px;
+margin:auto;
+padding:5px 35px 45px;
+}
+
+.why-heading{
+font-family:Georgia,"Times New Roman",serif;
+font-size:52px;
+line-height:1.1;
+font-weight:900;
+margin-bottom:27px;
+letter-spacing:-2px;
+}
+
+.why-heading .gold{
+color:#f2b500;
+}
+
+.why-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:55px;
+}
+
+.why-item{
+padding:0 5px;
+}
+
+.why-icon{
+width:72px;
+height:72px;
+border-radius:50%;
+background:#eeeeee;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+margin-bottom:13px;
+}
+
+.why-item h3{
+font-size:21px;
+font-weight:900;
+margin-bottom:7px;
+}
+
+.why-item p{
+font-size:17px;
+line-height:1.4;
+color:#666;
+max-width:240px;
+}
+
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.cta-section{
+width:100%;
+max-width:1180px;
+margin:auto;
+padding:0 35px 35px;
+}
+
+.cta-box{
+width:100%;
+min-height:110px;
+border-radius:23px;
+background:#171a1b;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:25px;
+padding:22px 28px;
+}
+
+.cta-left{
+display:flex;
+align-items:center;
+gap:25px;
+}
+
+.rocket{
+font-size:55px;
+}
+
+.cta-content h2{
+font-size:23px;
+margin-bottom:6px;
+}
+
+.cta-content p{
+font-size:15px;
+line-height:1.4;
+color:#ddd;
+max-width:470px;
+}
+
+.cta-button{
+border:0;
+background:#fff;
+color:#111;
+border-radius:35px;
+padding:17px 29px;
+font-size:16px;
+font-weight:900;
+white-space:nowrap;
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.cta-button:hover{
+background:#f2b500;
+}
+
+
+/* =========================================================
+   ADVERTISEMENT
+========================================================= */
+
+.ad{
+width:calc(100% - 70px);
+max-width:1180px;
+margin:0 auto 35px;
+border:1px dashed #d7d7d7;
+border-radius:15px;
+padding:20px;
+text-align:center;
+font-size:13px;
+color:#888;
+min-height:70px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.ad-label{
+font-size:11px;
+color:#aaa;
+}
+
+
+/* =========================================================
+   COMMENTS
+========================================================= */
+
+.comments-section{
+width:100%;
+max-width:950px;
+margin:0 auto;
+padding:15px 35px 65px;
+}
+
+.comments-box{
+background:#fff;
+border:1px solid #ececec;
+border-radius:22px;
+padding:28px;
+box-shadow:0 10px 30px rgba(0,0,0,.045);
+}
+
+.comments-heading{
+display:flex;
+align-items:center;
+gap:12px;
+margin-bottom:8px;
+}
+
+.comments-heading-icon{
+width:45px;
+height:45px;
+border-radius:50%;
+background:#eeeeee;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+}
+
+.comments-heading h2{
+font-size:26px;
+}
+
+.comments-subtitle{
+font-size:14px;
+color:#777;
+margin-bottom:22px;
+}
+
+.comment-login-note{
+display:none;
+background:#f5f5f5;
+border-radius:13px;
+padding:14px;
+font-size:13px;
+color:#666;
+margin-bottom:18px;
+}
+
+.comment-form{
+display:none;
+margin-bottom:25px;
+}
+
+.comment-input{
+width:100%;
+min-height:110px;
+resize:vertical;
+padding:15px;
+border:1px solid #dcdcdc;
+border-radius:13px;
+outline:none;
+font-size:14px;
+line-height:1.5;
+}
+
+.comment-input:focus{
+border-color:#aaa;
+}
+
+.comment-actions{
+display:flex;
+justify-content:flex-end;
+margin-top:10px;
+}
+
+.comment-post-button{
+border:0;
+background:#f2b500;
+color:#111;
+padding:13px 21px;
+border-radius:25px;
+font-weight:900;
+font-size:13px;
+}
+
+.comment-post-button:disabled{
+opacity:.5;
+}
+
+.comments-list{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.comment-empty{
+text-align:center;
+padding:25px 10px;
+font-size:13px;
+color:#999;
+border:1px dashed #ddd;
+border-radius:13px;
+}
+
+.comment-item{
+border:1px solid #eeeeee;
+border-radius:15px;
+padding:15px;
+background:#fff;
+}
+
+.comment-top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+margin-bottom:8px;
+}
+
+.comment-user{
+font-size:13px;
+font-weight:900;
+}
+
+.comment-date{
+font-size:10px;
+color:#999;
+}
+
+.comment-text{
+font-size:13px;
+line-height:1.6;
+color:#555;
+white-space:pre-wrap;
+word-break:break-word;
+}
+
+.comment-message{
+display:none;
+margin-top:12px;
+padding:11px 13px;
+border-radius:11px;
+background:#f5f5f5;
+font-size:12px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.landing-footer{
+border-top:1px solid #eee;
+background:#fff;
+}
+
+.footer-inner{
+max-width:1180px;
+margin:auto;
+padding:25px 35px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+}
+
+.footer-brand{
+font-family:Georgia,"Times New Roman",serif;
+font-size:20px;
+font-weight:900;
+}
+
+.footer-text{
+font-size:11px;
+color:#999;
+}
+
+
+/* =========================================================
+   AUTH PAGE
+========================================================= */
+
+#authPage{
+display:none;
+width:100%;
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:24px 20px;
+}
+
+.back-button{
+border:0;
+background:none;
+padding:0;
+font-size:14px;
+font-weight:bold;
+margin-bottom:25px;
+color:#111;
+}
+
+.hero h1{
+font-size:34px;
+line-height:1.1;
+margin-bottom:12px;
+}
+
+.hero p{
+color:#777;
+font-size:14px;
+line-height:1.5;
+margin-bottom:28px;
+}
+
+.tabs{
+display:grid;
+grid-template-columns:1fr 1fr;
+border:1px solid #ddd;
+border-radius:12px;
+padding:4px;
+margin-bottom:20px;
+}
+
+.tab{
+border:0;
+background:#fff;
+padding:12px;
+border-radius:9px;
+font-weight:bold;
+}
+
+.tab.active{
+background:#111;
+color:#fff;
+}
+
+.form{
+display:none;
+}
+
+.form.active{
+display:block;
+}
+
+.group{
+margin-bottom:15px;
+}
+
+label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:7px;
+}
+
+input{
+width:100%;
+padding:14px;
+border:1px solid #ccc;
+border-radius:12px;
+outline:none;
+background:#fff;
+color:#111;
+}
+
+.button{
+width:100%;
+border:0;
+background:#111;
+color:#fff;
+padding:15px;
+border-radius:12px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.button:disabled{
+opacity:.5;
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:12px;
+background:#f3f3f3;
+font-size:13px;
+line-height:1.5;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media(max-width:900px){
+
+.header-inner{
+height:90px;
+padding:0 25px;
+}
+
+.logo-image{
+width:85px;
+height:67px;
+}
+
+.brand-name{
+font-size:42px;
+}
+
+.hero-section{
+grid-template-columns:1fr;
+padding:35px 25px 30px;
+}
+
+.hero-copy{
+text-align:center;
+}
+
+.hero-pill{
+font-size:15px;
+}
+
+.entry-hero p{
+margin-left:auto;
+margin-right:auto;
+}
+
+.entry-buttons{
+margin-left:auto;
+margin-right:auto;
+}
+
+.hero-visual{
+min-height:500px;
+}
+
+.entry-features{
+grid-template-columns:1fr;
+}
+
+.feature{
+min-height:auto;
+}
+
+.why-grid{
+grid-template-columns:1fr;
+gap:28px;
+}
+
+.why-item{
+display:flex;
+align-items:flex-start;
+gap:18px;
+}
+
+.why-item p{
+max-width:none;
+}
+
+.cta-box{
+flex-direction:column;
+align-items:stretch;
+}
+
+.cta-left{
+align-items:flex-start;
+}
+
+.cta-button{
+justify-content:center;
+width:100%;
+}
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+.header-inner{
+height:76px;
+padding:0 16px;
+}
+
+.brand-logo{
+gap:7px;
+}
+
+.logo-image{
+width:62px;
+height:55px;
+}
+
+.brand-name{
+font-size:30px;
+letter-spacing:-1.2px;
+}
+
+.menu-button{
+width:48px;
+height:48px;
+}
+
+.menu-line{
+width:32px;
+height:3px;
+}
+
+.mobile-menu{
+right:15px;
+top:70px;
+width:210px;
+}
+
+.hero-section{
+padding:28px 16px 30px;
+gap:20px;
+}
+
+.hero-pill{
+font-size:11px;
+padding:10px 13px;
+gap:8px;
+margin-bottom:18px;
+}
+
+.pill-shield{
+width:22px;
+height:22px;
+font-size:13px;
+}
+
+.entry-hero h1{
+font-size:39px;
+line-height:1.06;
+letter-spacing:-1.7px;
+margin-bottom:17px;
+}
+
+.entry-hero p{
+font-size:15px;
+line-height:1.55;
+margin-bottom:22px;
+}
+
+.entry-buttons{
+max-width:100%;
+gap:11px;
+}
+
+.entry-button{
+height:58px;
+font-size:16px;
+border-radius:30px;
+}
+
+.button-icon{
+font-size:22px;
+}
+
+.button-arrow{
+font-size:23px;
+}
+
+.hero-visual{
+min-height:390px;
+overflow:hidden;
+}
+
+.illustration{
+width:390px;
+height:370px;
+transform:scale(.82);
+transform-origin:center center;
+}
+
+.features-section{
+padding:0 16px 35px;
+}
+
+.entry-features{
+gap:13px;
+}
+
+.feature{
+padding:22px;
+border-radius:19px;
+min-height:190px;
+}
+
+.feature-icon{
+width:65px;
+height:65px;
+font-size:31px;
+}
+
+.feature-title{
+font-size:20px;
+}
+
+.feature-text{
+font-size:14px;
+}
+
+.why-inner{
+padding:5px 16px 35px;
+}
+
+.why-heading{
+font-size:38px;
+letter-spacing:-1.3px;
+margin-bottom:20px;
+}
+
+.why-grid{
+gap:22px;
+}
+
+.why-item{
+gap:14px;
+}
+
+.why-icon{
+width:58px;
+height:58px;
+font-size:27px;
+flex:none;
+}
+
+.why-item h3{
+font-size:17px;
+}
+
+.why-item p{
+font-size:14px;
+}
+
+.cta-section{
+padding:0 16px 25px;
+}
+
+.cta-box{
+padding:21px 18px;
+border-radius:19px;
+gap:15px;
+}
+
+.cta-left{
+gap:14px;
+}
+
+.rocket{
+font-size:40px;
+}
+
+.cta-content h2{
+font-size:19px;
+}
+
+.cta-content p{
+font-size:12px;
+}
+
+.cta-button{
+font-size:14px;
+padding:14px 20px;
+}
+
+.ad{
+width:calc(100% - 32px);
+margin-left:16px;
+margin-right:16px;
+}
+
+.comments-section{
+padding:10px 16px 45px;
+}
+
+.comments-box{
+padding:20px 16px;
+border-radius:18px;
+}
+
+.comments-heading h2{
+font-size:22px;
+}
+
+.comment-actions{
+justify-content:stretch;
+}
+
+.comment-post-button{
+width:100%;
+}
+
+.comment-top{
+align-items:flex-start;
+flex-direction:column;
+gap:4px;
+}
+
+.footer-inner{
+padding:20px 16px;
+flex-direction:column;
+text-align:center;
+}
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media(max-width:360px){
+
+.brand-name{
+font-size:27px;
+}
+
+.logo-image{
+width:56px;
+}
+
+.entry-hero h1{
+font-size:34px;
+}
+
+.hero-visual{
+min-height:350px;
+}
+
+.illustration{
+transform:scale(.72);
+}
+
+}
+
+
+/* =========================================================
+   DESKTOP HERO HEIGHT
+========================================================= */
+
+@media(min-width:901px){
+
+.hero-section{
+min-height:620px;
+}
+
+}
+
+
+/* =========================================================
+   HIDE OLD TRUST STRIP
+   Reference image does not contain this strip.
+========================================================= */
+
+.trust-strip{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+
+<!-- =====================================================
+     ENTRY PAGE
+===================================================== -->
+
+<div id="entryPage">
+
+
+<!-- HEADER -->
+
+<header class="landing-header">
+
+<div class="header-inner">
+
+<div
+class="brand-logo"
+onclick="window.scrollTo({top:0,behavior:'smooth'})">
+
+<img
+src="logo.PNG"
+class="logo-image"
+alt="EarningHub Logo">
+
+<div class="brand-name">
+Earning<span class="gold">Hub</span>
+</div>
+
+</div>
+
+
+<button
+class="menu-button"
+type="button"
+onclick="toggleLandingMenu()"
+aria-label="Open menu">
+
+<span class="menu-line"></span>
+<span class="menu-line"></span>
+<span class="menu-line"></span>
+
+</button>
+
+
+<div
+class="mobile-menu"
+id="landingMenu">
+
+<button
+type="button"
+onclick="openLogin();closeLandingMenu()">
+Login
+</button>
+
+<button
+type="button"
+onclick="openSignup();closeLandingMenu()">
+Create Free Account
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero-section">
+
+
+<div class="hero-copy">
+
+<div class="hero-pill">
+
+<div class="pill-shield">
+✓
+</div>
+
+Thousands of opportunities • Updated daily
+
+</div>
+
+
+<div class="entry-hero">
+
+<h1>
+
+<span>Earn Online.</span>
+
+<span>Complete Tasks.</span>
+
+<span class="gold-text">
+Grow Your Income.
+</span>
+
+</h1>
+
+
+<p>
+Discover simple online earning opportunities,
+complete tasks, and build your rewards with EarningHub.
+</p>
+
+
+<div class="entry-buttons">
+
+
+<button
+class="entry-button primary"
+type="button"
+onclick="openSignup()">
+
+<span class="button-icon">●</span>
+
+Create Free Account
+
+<span class="button-arrow">→</span>
+
+</button>
+
+
+<button
+class="entry-button secondary"
+type="button"
+onclick="openLogin()">
+
+<span class="button-icon">↪</span>
+
+Login
+
+<span class="button-arrow">→</span>
+
+</button>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     HERO ILLUSTRATION
+===================================================== -->
+
+<div class="hero-visual">
+
+<div class="illustration">
+
+
+<!-- FLOATING CARDS -->
+
+<div class="float-card task">
+
+<strong>
+<span class="card-icon">✓</span>
+Complete Task
+</strong>
+
+<span>+ $0.10</span>
+
+</div>
+
+
+<div class="float-card campaign">
+
+<strong>
+<span class="card-icon">▣</span>
+Join Campaign
+</strong>
+
+<span>+ $0.25</span>
+
+</div>
+
+
+<div class="float-card video">
+
+<strong>
+<span class="card-icon">▶</span>
+Watch Video
+</strong>
+
+<span>+ $0.05</span>
+
+</div>
+
+
+<!-- COINS -->
+
+<div class="coin one">
+$
+</div>
+
+<div class="coin two">
+$
+</div>
+
+<div class="coin three">
+$
+</div>
+
+<div class="coin four">
+$
+</div>
+
+
+<!-- PERSON -->
+
+<div class="person">
+
+<div class="person-hair"></div>
+
+<div class="person-face"></div>
+
+<div class="person-ear"></div>
+
+<div class="person-ear right"></div>
+
+<div class="eye"></div>
+
+<div class="eye right"></div>
+
+<div class="nose"></div>
+
+<div class="smile"></div>
+
+<div class="hoodie">
+
+<div class="hoodie-string"></div>
+
+<div class="hoodie-string right"></div>
+
+<div class="hoodie-pocket"></div>
+
+</div>
+
+<div class="black-pants"></div>
+
+<div class="leg"></div>
+
+<div class="shoe"></div>
+
+</div>
+
+
+<!-- PHONE -->
+
+<div class="phone">
+
+<div class="phone-screen"></div>
+
+</div>
+
+
+<!-- LAPTOP -->
+
+<div class="laptop">
+
+<div class="laptop-screen">
+
+<div class="laptop-logo"></div>
+
+</div>
+
+<div class="laptop-base"></div>
+
+</div>
+
+
+<!-- PLANT -->
+
+<div class="plant">
+
+<div class="leaf"></div>
+
+<div class="leaf two"></div>
+
+<div class="leaf three"></div>
+
+<div class="plant-stem"></div>
+
+<div class="plant-pot"></div>
+
+</div>
+
+
+<!-- GIFT -->
+
+<div class="gift">
+
+<div class="gift-top"></div>
+
+<div class="gift-ribbon-v"></div>
+
+<div class="gift-ribbon-h"></div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     FEATURES
+===================================================== -->
+
+<section class="features-section">
+
+<div class="entry-features">
+
+
+<div class="feature">
+
+<div class="feature-icon">
+🎁
+</div>
+
+<div class="feature-title">
+Earn Rewards
+</div>
+
+<div class="feature-text">
+Complete eligible tasks and earn real rewards.
+</div>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+✓
+</div>
+
+<div class="feature-title">
+Complete Tasks
+</div>
+
+<div class="feature-text">
+Discover simple tasks from trusted campaigns.
+</div>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+▣
+</div>
+
+<div class="feature-title">
+Withdraw Easily
+</div>
+
+<div class="feature-text">
+Get your earnings quickly and securely via multiple methods.
+</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     WHY EARNINGHUB
+===================================================== -->
+
+<section class="why-section">
+
+<div class="why-inner">
+
+
+<h2 class="why-heading">
+
+Why Earning<span class="gold">Hub</span>
+
+</h2>
+
+
+<div class="why-grid">
+
+
+<div class="why-item">
+
+<div class="why-icon">
+✓
+</div>
+
+<div>
+
+<h3>
+Trusted Platform
+</h3>
+
+<p>
+Safe, secure and reliable earning opportunities.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="why-item">
+
+<div class="why-icon">
+⚡
+</div>
+
+<div>
+
+<h3>
+Flexible Work
+</h3>
+
+<p>
+Work on your terms, anytime, anywhere.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="why-item">
+
+<div class="why-icon">
+👥
+</div>
+
+<div>
+
+<h3>
+Growing Community
+</h3>
+
+<p>
+Join thousands of active users and creators.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     CTA
+===================================================== -->
+
+<section class="cta-section">
+
+<div class="cta-box">
+
+
+<div class="cta-left">
+
+<div class="rocket">
+🚀
+</div>
+
+
+<div class="cta-content">
+
+<h2>
+Ready to start earning?
+</h2>
+
+<p>
+Join EarningHub today and turn your time into real rewards.
+</p>
+
+</div>
+
+</div>
+
+
+<button
+class="cta-button"
+type="button"
+onclick="openSignup()">
+
+Create Account
+
+<span>→</span>
+
+</button>
+
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     ADVERTISEMENT
+===================================================== -->
+
+<div
+class="ad"
+id="entryAdvertisement">
+
+<div class="ad-label">
+Advertisement
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     COMMENTS
+===================================================== -->
+
+<section class="comments-section">
+
+<div class="comments-box">
+
+
+<div class="comments-heading">
+
+<div class="comments-heading-icon">
+💬
+</div>
+
+<h2>
+Comments
+</h2>
+
+</div>
+
+
+<div class="comments-subtitle">
+Share your thoughts about EarningHub.
+</div>
+
+
+<div
+id="commentLoginNote"
+class="comment-login-note">
+
+Please login to your EarningHub account to post a comment.
+
+</div>
+
+
+<form
+id="commentForm"
+class="comment-form">
+
+
+<textarea
+id="commentInput"
+class="comment-input"
+placeholder="Write your comment..."
+maxlength="500"></textarea>
+
+
+<div class="comment-actions">
+
+<button
+id="commentPostButton"
+class="comment-post-button"
+type="submit">
+
+Post Comment
+
+</button>
+
+</div>
+
+
+<div
+id="commentMessage"
+class="comment-message">
+</div>
+
+</form>
+
+
+<div
+id="commentsList"
+class="comments-list">
+
+<div class="comment-empty">
+Loading comments...
+</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="landing-footer">
+
+<div class="footer-inner">
+
+<div class="footer-brand">
+EarningHub
+</div>
+
+<div class="footer-text">
+© 2026 EarningHub. All rights reserved.
+</div>
+
+</div>
+
+</footer>
+
+
+</div>
+
+
+<!-- =====================================================
+     AUTH PAGE
+===================================================== -->
+
+<div id="authPage">
+
+
+<button
+class="back-button"
+type="button"
+onclick="showEntryPage()">
+
+← Back
+
+</button>
+
+
+<div class="hero">
+
+<h1>
+Earn by completing tasks.
+</h1>
+
+<p>
+Complete legitimate campaigns, discover content,
+and earn rewards through EarningHub.
+</p>
+
+</div>
+
+
+<div class="tabs" id="authTabs">
+
+
+<button
+class="tab active"
+id="loginTab"
+type="button"
+onclick="showForm('login')">
+
+Login
+
+</button>
+
+
+<button
+class="tab"
+id="signupTab"
+type="button"
+onclick="showForm('signup')">
+
+Sign Up
+
+</button>
+
+
+</div>
+
+
+<!-- LOGIN -->
+
+<form
+id="loginForm"
+class="form active">
+
+
+<div class="group">
+
+<label>
+Email
+</label>
+
+<input
+id="loginEmail"
+type="email"
+placeholder="you@example.com"
+autocomplete="email"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Password
+</label>
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Your password"
+autocomplete="current-password"
+required>
+
+</div>
+
+
+<button
+class="button"
+id="loginButton"
+type="submit">
+
+Login
+
+</button>
+
+</form>
+
+
+<!-- SIGNUP -->
+
+<form
+id="signupForm"
+class="form">
+
+
+<div class="group">
+
+<label>
+Username
+</label>
+
+<input
+id="signupUsername"
+type="text"
+placeholder="Your username"
+autocomplete="username"
+maxlength="30"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Email
+</label>
+
+<input
+id="signupEmail"
+type="email"
+placeholder="you@example.com"
+autocomplete="email"
+required>
+
+</div>
+
+
+<div class="group">
+
+<label>
+Password
+</label>
+
+<input
+id="signupPassword"
+type="password"
+placeholder="At least 6 characters"
+autocomplete="new-password"
+minlength="6"
+required>
+
+</div>
+
+
+<button
+class="button"
+id="signupButton"
+type="submit">
+
+Create Account
+
+</button>
+
+</form>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<div
+class="ad"
+id="advertisement">
+
+<div class="ad-label">
+Advertisement
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ========================================================
+   SUPABASE
+======================================================== */
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* ========================================================
+   REFERRAL
+======================================================== */
+
+let referralCode = null;
+
+
+function getReferralCodeFromUrl(){
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const ref =
+params.get("ref");
+
+if(!ref){
+return null;
+}
+
+const cleanCode =
+ref.trim().toUpperCase();
+
+if(!cleanCode){
+return null;
+}
+
+if(!cleanCode.startsWith("EH")){
+return null;
+}
+
+return cleanCode;
+
+}
+
+
+function saveReferralCode(code){
+
+if(!code){
+return;
+}
+
+try{
+
+localStorage.setItem(
+"earninghub_referral_code",
+code
+);
+
+}catch(error){
+
+console.log(
+"Unable to save referral code."
+);
+
+}
+
+}
+
+
+function loadSavedReferralCode(){
+
+try{
+
+return localStorage.getItem(
+"earninghub_referral_code"
+);
+
+}catch(error){
+
+return null;
+
+}
+
+}
+
+
+function clearReferralCode(){
+
+try{
+
+localStorage.removeItem(
+"earninghub_referral_code"
+);
+
+}catch(error){}
+
+}
+
+
+function goToReferralPage(code){
+
+if(!code){
+return false;
+}
+
+window.location.href =
+"referral.html?ref=" +
+encodeURIComponent(code);
+
+return true;
+
+}
+
+
+function initializeReferral(){
+
+const urlCode =
+getReferralCodeFromUrl();
+
+if(urlCode){
+
+referralCode =
+urlCode;
+
+saveReferralCode(
+urlCode
+);
+
+showAuthPage();
+
+showForm("signup");
+
+return true;
+
+}
+
+const savedCode =
+loadSavedReferralCode();
+
+if(savedCode){
+
+referralCode =
+savedCode;
+
+}
+
+return false;
+
+}
+
+
+/* ========================================================
+   MENU
+======================================================== */
+
+function toggleLandingMenu(){
+
+const menu =
+document.getElementById(
+"landingMenu"
+);
+
+menu.classList.toggle("show");
+
+}
+
+
+function closeLandingMenu(){
+
+const menu =
+document.getElementById(
+"landingMenu"
+);
+
+menu.classList.remove("show");
+
+}
+
+
+document.addEventListener(
+"click",
+function(event){
+
+const menu =
+document.getElementById(
+"landingMenu"
+);
+
+const button =
+document.querySelector(
+".menu-button"
+);
+
+if(
+menu &&
+menu.classList.contains("show") &&
+!menu.contains(event.target) &&
+!button.contains(event.target)
+){
+
+closeLandingMenu();
+
+}
+
+});
+
+
+/* ========================================================
+   ENTRY / AUTH
+======================================================== */
+
+function showEntryPage(){
+
+document.getElementById(
+"entryPage"
+).style.display = "block";
+
+document.getElementById(
+"authPage"
+).style.display = "none";
+
+hideMessage();
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+function showAuthPage(){
+
+document.getElementById(
+"entryPage"
+).style.display = "none";
+
+document.getElementById(
+"authPage"
+).style.display = "block";
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+function openLogin(){
+
+closeLandingMenu();
+
+showAuthPage();
+
+showForm("login");
+
+}
+
+
+function openSignup(){
+
+closeLandingMenu();
+
+showAuthPage();
+
+showForm("signup");
+
+}
+
+
+/* ========================================================
+   MESSAGE
+======================================================== */
+
+function showMessage(text){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+text;
+
+box.style.display =
+"block";
+
+}
+
+
+function hideMessage(){
+
+const box =
+document.getElementById(
+"message"
+);
+
+box.textContent =
+"";
+
+box.style.display =
+"none";
+
+}
+
+
+/* ========================================================
+   FORM SWITCH
+======================================================== */
+
+function showForm(type){
+
+hideMessage();
+
+document
+.getElementById("loginTab")
+.classList.toggle(
+"active",
+type === "login"
+);
+
+document
+.getElementById("signupTab")
+.classList.toggle(
+"active",
+type === "signup"
+);
+
+document
+.getElementById("loginForm")
+.classList.toggle(
+"active",
+type === "login"
+);
+
+document
+.getElementById("signupForm")
+.classList.toggle(
+"active",
+type === "signup"
+);
+
+document
+.getElementById("authTabs")
+.style.display =
+"grid";
+
+}
+
+
+/* ========================================================
+   LOGIN
+======================================================== */
+
+document
+.getElementById("loginForm")
+.addEventListener(
+"submit",
+async function(event){
+
+event.preventDefault();
+
+const button =
+document.getElementById(
+"loginButton"
+);
+
+button.disabled = true;
+
+button.textContent =
+"Logging in...";
+
+const email =
+document
+.getElementById("loginEmail")
+.value
+.trim();
+
+const password =
+document
+.getElementById("loginPassword")
+.value;
+
+try{
+
+const {
+data,
+error
+} =
+await client.auth.signInWithPassword({
+
+email:email,
+
+password:password
+
+});
+
+
+if(error){
+
+showMessage(
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Login";
+
+return;
+
+}
+
+
+if(!data.session){
+
+showMessage(
+"Login completed, but no session was created. Please try again."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Login";
+
+return;
+
+}
+
+
+const user =
+data.user;
+
+
+const {
+data:profile
+} =
+await client
+.from("profiles")
+.select("id")
+.eq(
+"id",
+user.id
+)
+.maybeSingle();
+
+
+if(!profile){
+
+const {
+error:profileError
+} =
+await client
+.from("profiles")
+.insert({
+
+id:user.id,
+
+username:
+user.user_metadata?.username ||
+email.split("@")[0]
+
+});
+
+
+if(profileError){
+
+console.log(
+"Profile creation error:",
+profileError.message
+);
+
+}
+
+}
+
+
+const savedReferralCode =
+loadSavedReferralCode();
+
+
+if(savedReferralCode){
+
+goToReferralPage(
+savedReferralCode
+);
+
+return;
+
+}
+
+
+window.location.href =
+"dashboard.html";
+
+
+}catch(error){
+
+showMessage(
+"Login error: " +
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Login";
+
+}
+
+});
+
+
+/* ========================================================
+   SIGN UP
+======================================================== */
+
+document
+.getElementById("signupForm")
+.addEventListener(
+"submit",
+async function(event){
+
+event.preventDefault();
+
+const button =
+document.getElementById(
+"signupButton"
+);
+
+button.disabled = true;
+
+button.textContent =
+"Creating account...";
+
+const username =
+document
+.getElementById("signupUsername")
+.value
+.trim();
+
+const email =
+document
+.getElementById("signupEmail")
+.value
+.trim();
+
+const password =
+document
+.getElementById("signupPassword")
+.value;
+
+
+if(!username){
+
+showMessage(
+"Please enter a username."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+if(!email){
+
+showMessage(
+"Please enter your email."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+if(password.length < 6){
+
+showMessage(
+"Password must be at least 6 characters."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+const signupReferralCode =
+getReferralCodeFromUrl() ||
+loadSavedReferralCode();
+
+
+if(signupReferralCode){
+
+referralCode =
+signupReferralCode;
+
+saveReferralCode(
+signupReferralCode
+);
+
+}
+
+
+try{
+
+const {
+data,
+error
+} =
+await client.auth.signUp({
+
+email:email,
+
+password:password,
+
+options:{
+
+data:{
+
+username:username
+
+},
+
+emailRedirectTo:
+window.location.origin +
+"/index.html"
+
+}
+
+});
+
+
+if(error){
+
+showMessage(
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+if(!data.session){
+
+showMessage(
+"Account created. Please check your email and confirm your email address to complete registration."
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+return;
+
+}
+
+
+const user =
+data.user;
+
+
+const {
+error:profileError
+} =
+await client
+.from("profiles")
+.upsert({
+
+id:user.id,
+
+username:username
+
+});
+
+
+if(profileError){
+
+console.log(
+"Profile creation error:",
+profileError.message
+);
+
+}
+
+
+const savedReferralCode =
+loadSavedReferralCode();
+
+
+if(savedReferralCode){
+
+goToReferralPage(
+savedReferralCode
+);
+
+return;
+
+}
+
+
+showMessage(
+"Account created successfully."
+);
+
+
+setTimeout(
+function(){
+
+window.location.href =
+"dashboard.html";
+
+},
+1000
+);
+
+
+}catch(error){
+
+showMessage(
+"Signup error: " +
+error.message
+);
+
+button.disabled = false;
+
+button.textContent =
+"Create Account";
+
+}
+
+});
+
+
+/* ========================================================
+   COMMENTS
+======================================================== */
+
+function escapeCommentHTML(text){
+
+const div =
+document.createElement("div");
+
+div.textContent =
+text;
+
+return div.innerHTML;
+
+}
+
+
+function formatCommentDate(dateString){
+
+const date =
+new Date(dateString);
+
+if(isNaN(date.getTime())){
+
+return "";
+
+}
+
+return date.toLocaleString(
+undefined,
+{
+year:"numeric",
+month:"short",
+day:"numeric",
+hour:"numeric",
+minute:"2-digit"
+}
+);
+
+}
+
+
+async function loadComments(){
+
+const list =
+document.getElementById(
+"commentsList"
+);
+
+list.innerHTML =
+'<div class="comment-empty">Loading comments...</div>';
+
+
+const {
+data,
+error
+} =
+await client
+.from("comments")
+.select(
+"id,user_id,username,comment,created_at"
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+console.log(
+"Comments loading error:",
+error.message
+);
+
+list.innerHTML =
+'<div class="comment-empty">Unable to load comments right now.</div>';
+
+return;
+
+}
+
+
+if(!data || data.length === 0){
+
+list.innerHTML =
+'<div class="comment-empty">No comments yet. Be the first to comment!</div>';
+
+return;
+
+}
+
+
+list.innerHTML = "";
+
+
+data.forEach(
+function(item){
+
+const commentItem =
+document.createElement("div");
+
+commentItem.className =
+"comment-item";
+
+
+const safeUsername =
+escapeCommentHTML(
+item.username ||
+"EarningHub User"
+);
+
+
+const safeComment =
+escapeCommentHTML(
+item.comment ||
+""
+);
+
+
+const dateText =
+formatCommentDate(
+item.created_at
+);
+
+
+commentItem.innerHTML =
+
+'<div class="comment-top">' +
+
+'<div class="comment-user">' +
+safeUsername +
+'</div>' +
+
+'<div class="comment-date">' +
+dateText +
+'</div>' +
+
+'</div>' +
+
+'<div class="comment-text">' +
+safeComment +
+'</div>';
+
+
+list.appendChild(
+commentItem
+);
+
+});
+
+}
+
+
+async function updateCommentState(){
+
+const {
+data
+} =
+await client.auth.getSession();
+
+
+const form =
+document.getElementById(
+"commentForm"
+);
+
+const note =
+document.getElementById(
+"commentLoginNote"
+);
+
+
+if(data.session){
+
+form.style.display =
+"block";
+
+note.style.display =
+"none";
+
+}else{
+
+form.style.display =
+"none";
+
+note.style.display =
+"block";
+
+}
+
+}
+
+
+function showCommentMessage(text){
+
+const box =
+document.getElementById(
+"commentMessage"
+);
+
+box.textContent =
+text;
+
+box.style.display =
+"block";
+
+}
+
+
+function hideCommentMessage(){
+
+const box =
+document.getElementById(
+"commentMessage"
+);
+
+box.textContent =
+"";
+
+box.style.display =
+"none";
+
+}
+
+
+/* ========================================================
+   POST COMMENT
+======================================================== */
+
+document
+.getElementById("commentForm")
+.addEventListener(
+"submit",
+async function(event){
+
+event.preventDefault();
+
+const input =
+document.getElementById(
+"commentInput"
+);
+
+const button =
+document.getElementById(
+"commentPostButton"
+);
+
+const comment =
+input.value.trim();
+
+hideCommentMessage();
+
+
+if(!comment){
+
+showCommentMessage(
+"Please write a comment."
+);
+
+return;
+
+}
+
+
+if(comment.length > 500){
+
+showCommentMessage(
+"Comment must be 500 characters or less."
+);
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+button.textContent =
+"Posting...";
+
+
+try{
+
+const {
+data:sessionData
+} =
+await client.auth.getSession();
+
+
+if(!sessionData.session){
+
+showCommentMessage(
+"Please login to post a comment."
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Post Comment";
+
+return;
+
+}
+
+
+const user =
+sessionData.session.user;
+
+
+let username =
+user.user_metadata?.username ||
+user.email?.split("@")[0] ||
+"EarningHub User";
+
+
+const {
+data:profile
+} =
+await client
+.from("profiles")
+.select("username")
+.eq(
+"id",
+user.id
+)
+.maybeSingle();
+
+
+if(profile?.username){
+
+username =
+profile.username;
+
+}
+
+
+const {
+error
+} =
+await client
+.from("comments")
+.insert({
+
+user_id:user.id,
+
+username:username,
+
+comment:comment
+
+});
+
+
+if(error){
+
+showCommentMessage(
+"Unable to post comment: " +
+error.message
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Post Comment";
+
+return;
+
+}
+
+
+input.value =
+"";
+
+showCommentMessage(
+"Comment posted successfully."
+);
+
+
+await loadComments();
+
+
+button.disabled =
+false;
+
+button.textContent =
+"Post Comment";
+
+
+setTimeout(
+function(){
+
+hideCommentMessage();
+
+},
+2500
+);
+
+
+}catch(error){
+
+showCommentMessage(
+"Comment error: " +
+error.message
+);
+
+button.disabled =
+false;
+
+button.textContent =
+"Post Comment";
+
+}
+
+});
+
+
+/* ========================================================
+   START COMMENTS
+======================================================== */
+
+async function initializeComments(){
+
+await updateCommentState();
+
+await loadComments();
+
+}
+
+
+client.auth.onAuthStateChange(
+function(){
+
+setTimeout(
+function(){
+
+updateCommentState();
+
+},
+100
+);
+
+});
+
+
+/* ========================================================
+   START APPLICATION
+======================================================== */
+
+(async function(){
+
+const referralFromUrl =
+initializeReferral();
+
+
+if(referralFromUrl){
+
+return;
+
+}
+
+
+initializeComments();
+
+
+const {
+data,
+error
+} =
+await client.auth.getSession();
+
+
+if(error){
+
+console.log(
+"Session check error:",
+error.message
+);
+
+return;
+
+}
+
+
+if(data.session){
+
+const savedReferralCode =
+loadSavedReferralCode();
+
+
+if(savedReferralCode){
+
+goToReferralPage(
+savedReferralCode
+);
+
+return;
+
+}
+
+
+window.location.href =
+"dashboard.html";
+
+}
+
+})();
+
+</script>
+
+</body>
+</html>
