@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Wallet</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+:root{
+--bg:#0b141a;
+--panel:#111b21;
+--card:#202c33;
+--gold:#FFD54F;
+--gold-dark:#E5AC00;
+--text:#e9edef;
+--muted:#aebac1;
+--border:#35434b;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+min-height:100vh;
+}
+
+.app{
+max-width:480px;
+min-height:100vh;
+margin:auto;
+padding:20px;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px;
+}
+
+.logo{
+font-size:24px;
+font-weight:800;
+color:var(--gold);
+}
+
+.back{
+border:1px solid var(--border);
+background:var(--card);
+border-radius:10px;
+padding:10px 14px;
+font-weight:bold;
+text-decoration:none;
+color:var(--gold);
+}
+
+h1{
+font-size:30px;
+margin-bottom:8px;
+}
+
+.subtitle{
+color:var(--muted);
+font-size:14px;
+margin-bottom:22px;
+line-height:1.5;
+}
+
+.balance{
+background:linear-gradient(135deg,#202c33,#111b21);
+color:var(--text);
+border:1px solid var(--gold-dark);
+border-radius:20px;
+padding:24px;
+margin-bottom:18px;
+box-shadow:0 8px 25px rgba(0,0,0,.25);
+}
+
+.balance small{
+color:#ffe9a6;
+font-size:12px;
+font-weight:bold;
+letter-spacing:.5px;
+}
+
+.balance h2{
+font-size:32px;
+margin-top:12px;
+overflow-wrap:anywhere;
+}
+
+.balance .usd{
+display:block;
+margin-top:12px;
+color:#ffe9a6;
+font-size:14px;
+line-height:1.5;
+}
+
+.card{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:18px;
+padding:18px;
+margin-bottom:15px;
+}
+
+.card h3{
+font-size:17px;
+margin-bottom:10px;
+color:var(--gold);
+}
+
+.card p{
+font-size:13px;
+color:var(--muted);
+line-height:1.7;
+}
+
+.withdraw{
+display:block;
+width:100%;
+text-align:center;
+background:var(--gold);
+color:#171717;
+padding:15px;
+border-radius:11px;
+text-decoration:none;
+font-weight:bold;
+margin-top:16px;
+transition:.2s;
+}
+
+.withdraw:active{
+transform:scale(.98);
+background:var(--gold-dark);
+}
+
+.back:active{
+opacity:.8;
+}
+
+.message{
+display:none;
+padding:14px;
+background:var(--card);
+border:1px solid var(--border);
+color:var(--text);
+border-radius:12px;
+font-size:13px;
+line-height:1.6;
+margin-bottom:15px;
+overflow-wrap:anywhere;
+}
+
+.note{
+margin-top:12px;
+font-size:12px;
+color:var(--muted);
+line-height:1.6;
+}
+
+.gold-line{
+height:3px;
+width:55px;
+background:var(--gold);
+border-radius:10px;
+margin:12px 0 20px;
+}
+
+@media(max-width:360px){
+.app{
+padding:15px;
+}
+
+.balance h2{
+font-size:27px;
+}
+
+.logo{
+font-size:21px;
+}
+
+h1{
+font-size:27px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+EarningHub
+</div>
+
+<a class="back" href="dashboard.html">
+← Back
+</a>
+
+</header>
+
+<h1>My Wallet 👛</h1>
+
+<div class="gold-line"></div>
+
+<p class="subtitle">
+Your EarningHub rewards and token balance.
+</p>
+
+<div id="message" class="message"></div>
+
+<div class="balance">
+
+<small>AVAILABLE BALANCE</small>
+
+<h2 id="balance">Loading...</h2>
+
+<span class="usd">
+Dollar Value:
+<strong id="usdValue">$0.00</strong>
+</span>
+
+</div>
+
+<div class="card">
+
+<h3>🪙 Token Conversion</h3>
+
+<p>
+10,000 Tokens = $0.10<br>
+50,000 Tokens = $0.50<br>
+100,000 Tokens = $1.00<br>
+500,000 Tokens = $5.00<br>
+1,000,000 Tokens = $10.00
+</p>
+
+<p class="note">
+Conversion rate: 100,000 Tokens = $1.00.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>💸 Withdraw Your Earnings</h3>
+
+<p>
+Withdrawals are planned through FaucetPay. Use the button below to open the withdrawal page.
+</p>
+
+<a class="withdraw" href="withdraw.html">
+Withdraw with FaucetPay →
+</a>
+
+</div>
+
+</div>
+
+<script>
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+function showMessage(text){
+
+const message =
+document.getElementById("message");
+
+message.textContent = text;
+message.style.display = "block";
+
+}
+
+async function loadWallet(){
+
+const {
+data:sessionData,
+error:sessionError
+} = await client.auth.getSession();
+
+if(sessionError){
+
+showMessage(
+"Session error: " + sessionError.message
+);
+
+document.getElementById("balance").textContent =
+"Unavailable";
+
+return;
+
+}
+
+if(!sessionData.session){
+
+showMessage("Please login first.");
+
+document.getElementById("balance").textContent =
+"$0.00";
+
+document.getElementById("usdValue").textContent =
+"$0.00";
+
+return;
+
+}
+
+const userId =
+sessionData.session.user.id;
+
+const {
+data,
+error
+} = await client
+.from("wallets")
+.select("user_id,balance")
+.eq("user_id",userId)
+.maybeSingle();
+
+if(error){
+
+showMessage(
+"Unable to load wallet: " + error.message
+);
+
+document.getElementById("balance").textContent =
+"Unavailable";
+
+return;
+
+}
+
+if(!data){
+
+document.getElementById("balance").textContent =
+"$0.00";
+
+document.getElementById("usdValue").textContent =
+"$0.00";
+
+return;
+
+}
+
+/*
+IMPORTANT:
+The current wallets.balance field is treated as a
+dollar balance until the database token migration
+has been completed and verified.
+
+This prevents existing user balances from being
+incorrectly displayed as token amounts.
+*/
+
+const existingDollarBalance =
+Number(data.balance || 0);
+
+document.getElementById("balance").textContent =
+"$" + existingDollarBalance.toFixed(2);
+
+document.getElementById("usdValue").textContent =
+"$" + existingDollarBalance.toFixed(2);
+
+}
+
+loadWallet();
+</script>
+
+</body>
+</html>
