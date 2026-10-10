@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Withdraw</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+    --bg:#0b1220;
+    --card:#111c30;
+    --card2:#16243b;
+    --gold:#ffd54f;
+    --gold-dark:#e5ac00;
+    --text:#f5f7fb;
+    --muted:#9ca9bd;
+    --border:#283750;
+    --green:#46d7a0;
+    --red:#ff7777;
+}
+
+body{
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(39,76,132,.25),
+            transparent 35%
+        ),
+        var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button,
+a{
+    -webkit-tap-highlight-color:transparent;
+}
+
+.app{
+    max-width:480px;
+    min-height:100vh;
+    margin:auto;
+    padding:20px 18px 115px;
+}
+
+/* HEADER */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0 27px;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:900;
+    letter-spacing:-.7px;
+}
+
+.logo span{
+    color:var(--gold);
+}
+
+.back{
+    border:1px solid var(--border);
+    background:var(--card);
+    border-radius:12px;
+    padding:10px 14px;
+    font-weight:bold;
+    text-decoration:none;
+    color:var(--text);
+    font-size:13px;
+}
+
+/* HEADING */
+
+.heading-row{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-bottom:10px;
+}
+
+.heading-icon{
+    width:52px;
+    height:52px;
+    border-radius:17px;
+    background:rgba(255,213,79,.12);
+    border:1px solid rgba(255,213,79,.25);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    flex-shrink:0;
+}
+
+h1{
+    font-size:29px;
+    letter-spacing:-.7px;
+}
+
+.subtitle{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.6;
+    margin-bottom:22px;
+}
+
+/* MESSAGE */
+
+.message{
+    display:none;
+    margin-bottom:16px;
+    padding:14px;
+    border-radius:13px;
+    background:var(--card2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-size:13px;
+    line-height:1.6;
+    overflow-wrap:anywhere;
+}
+
+.message.success{
+    border-color:rgba(70,215,160,.4);
+    color:var(--green);
+}
+
+.message.error{
+    border-color:rgba(255,119,119,.4);
+    color:var(--red);
+}
+
+/* BALANCE CARD */
+
+.balance-card{
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,213,79,.35);
+    border-radius:23px;
+    padding:23px 21px;
+    margin-bottom:16px;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(255,213,79,.14),
+            transparent 43%
+        ),
+        linear-gradient(
+            145deg,
+            #172640,
+            #101a2d
+        );
+}
+
+.balance-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.balance-label{
+    color:#b9c5d8;
+    font-size:13px;
+}
+
+.wallet-icon{
+    width:39px;
+    height:39px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:13px;
+    background:rgba(255,213,79,.13);
+    font-size:20px;
+}
+
+.token-balance{
+    font-size:clamp(27px,7vw,35px);
+    font-weight:900;
+    color:var(--gold);
+    margin-top:14px;
+    overflow-wrap:anywhere;
+    letter-spacing:-.8px;
+}
+
+.token-word{
+    font-size:14px;
+    font-weight:700;
+}
+
+.balance-divider{
+    height:1px;
+    background:rgba(255,255,255,.09);
+    margin:18px 0 14px;
+}
+
+.usd-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.usd-label{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.usd-value{
+    font-size:20px;
+    font-weight:800;
+    color:#fff;
+}
+
+.balance-note{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:10px;
+    line-height:1.5;
+}
+
+/* MINIMUM */
+
+.minimum-card{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:15px;
+    border-radius:16px;
+    border:1px solid rgba(255,213,79,.22);
+    background:rgba(255,213,79,.055);
+    margin-bottom:25px;
+}
+
+.minimum-icon{
+    width:37px;
+    height:37px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    border-radius:12px;
+    background:rgba(255,213,79,.13);
+    font-size:18px;
+}
+
+.minimum-title{
+    font-size:13px;
+    font-weight:800;
+    color:var(--gold);
+    margin-bottom:5px;
+}
+
+.minimum-description{
+    font-size:12px;
+    line-height:1.6;
+    color:#bdc8d9;
+}
+
+.minimum-description strong{
+    color:#fff;
+}
+
+/* SECTION */
+
+.section-title{
+    font-size:19px;
+    font-weight:800;
+    margin-bottom:13px;
+}
+
+.section-subtitle{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+    margin-top:-6px;
+    margin-bottom:16px;
+}
+
+/* FAUCETPAY METHOD */
+
+.method{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:17px;
+    border:1px solid rgba(255,213,79,.35);
+    border-radius:18px;
+    background:
+        linear-gradient(
+            130deg,
+            rgba(255,213,79,.09),
+            rgba(22,36,59,.75)
+        );
+    color:var(--text);
+    text-align:left;
+    margin-bottom:20px;
+}
+
+.method-logo{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    background:#fff;
+    border-radius:14px;
+    padding:7px;
+    flex-shrink:0;
+}
+
+.method-info{
+    flex:1;
+    min-width:0;
+}
+
+.method-name{
+    font-size:16px;
+    font-weight:900;
+    margin-bottom:6px;
+}
+
+.method-description{
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.5;
+}
+
+.method-badge{
+    display:inline-block;
+    font-size:10px;
+    font-weight:800;
+    color:#111827;
+    background:var(--gold);
+    border-radius:7px;
+    padding:5px 8px;
+    margin-top:8px;
+}
+
+/* WITHDRAW FORM */
+
+.withdraw-form{
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:19px;
+    margin-top:5px;
+    margin-bottom:23px;
+    background:rgba(17,28,48,.9);
+}
+
+.form-heading{
+    font-size:19px;
+    font-weight:900;
+    margin-bottom:7px;
+}
+
+.form-description{
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.6;
+    margin-bottom:19px;
+}
+
+.field{
+    margin-top:17px;
+}
+
+.field label{
+    display:block;
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.field input{
+    display:block;
+    width:100%;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#0c1526;
+    color:#fff;
+    font-size:14px;
+    outline:none;
+    transition:border-color .2s;
+}
+
+.field input:focus{
+    border-color:var(--gold);
+}
+
+.field input::placeholder{
+    color:#697991;
+}
+
+.field-help{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+    margin-top:7px;
+}
+
+.amount-preview{
+    margin-top:12px;
+    padding:13px;
+    border:1px solid rgba(255,213,79,.2);
+    border-radius:12px;
+    background:rgba(255,213,79,.05);
+}
+
+.preview-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12px;
+    padding:4px 0;
+}
+
+.preview-label{
+    color:var(--muted);
+}
+
+.preview-value{
+    font-weight:800;
+    text-align:right;
+    overflow-wrap:anywhere;
+}
+
+.preview-value.gold{
+    color:var(--gold);
+}
+
+/* BUTTONS */
+
+.submit{
+    display:block;
+    width:100%;
+    border:0;
+    background:linear-gradient(
+        135deg,
+        #ffe680,
+        #ffd54f 55%,
+        #f2bd20
+    );
+    color:#101827;
+    padding:16px;
+    border-radius:13px;
+    font-weight:900;
+    margin-top:21px;
+    cursor:pointer;
+    font-size:14px;
+    box-shadow:0 5px 18px rgba(255,213,79,.12);
+}
+
+.submit:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+.security-note{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin-top:14px;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+}
+
+/* CONVERSION */
+
+.conversion-card{
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--card);
+    padding:17px;
+    margin-bottom:23px;
+}
+
+.conversion-title{
+    font-size:15px;
+    font-weight:900;
+    margin-bottom:13px;
+}
+
+.conversion-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 0;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    font-size:13px;
+}
+
+.conversion-row:last-child{
+    border-bottom:0;
+    padding-bottom:0;
+}
+
+.conversion-token{
+    font-weight:800;
+    color:#eaf0fa;
+}
+
+.conversion-usd{
+    font-weight:900;
+    color:var(--gold);
+}
+
+/* IMPORTANT NOTE */
+
+.notice{
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:15px;
+    background:rgba(22,36,59,.65);
+    margin-bottom:22px;
+}
+
+.notice-title{
+    font-size:13px;
+    font-weight:900;
+    margin-bottom:7px;
+}
+
+.notice p{
+    font-size:12px;
+    line-height:1.7;
+    color:var(--muted);
+}
+
+/* ADVERTISEMENT */
+
+.advertisement{
+    margin-top:25px;
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:15px;
+    background:var(--card);
+    overflow:hidden;
+}
+
+.advertisement-title{
+    font-size:14px;
+    font-weight:800;
+    margin-bottom:12px;
+    color:#dce4f0;
+}
+
+.advertisement-content{
+    width:100%;
+    min-height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border-radius:10px;
+}
+
+/* BOTTOM NAVIGATION */
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:480px;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    padding:10px 7px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(11,18,32,.97);
+    border-top:1px solid #26344b;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+}
+
+.nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    text-decoration:none;
+    color:#8e9bb0;
+    font-size:10px;
+    font-weight:700;
+    min-width:0;
+}
+
+.nav-icon{
+    font-size:20px;
+    line-height:1.2;
+}
+
+.nav-item.active{
+    color:var(--gold);
+}
+
+.nav-item.earn .nav-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:43px;
+    height:43px;
+    border-radius:50%;
+    background:linear-gradient(
+        135deg,
+        #ffe680,
+        #ffd54f,
+        #f0b900
+    );
+    color:#101827;
+    font-size:27px;
+    font-weight:900;
+    margin-top:-25px;
+    border:4px solid var(--bg);
+    box-shadow:0 0 0 1px rgba(255,213,79,.2);
+}
+
+.nav-item.earn{
+    color:#c6cfdd;
+}
+
+.nav-item.earn span:last-child{
+    margin-top:0;
+}
+
+@media(max-width:360px){
+    .app{
+        padding-left:14px;
+        padding-right:14px;
+    }
+
+    h1{
+        font-size:26px;
+    }
+
+    .token-balance{
+        font-size:27px;
+    }
+
+    .method{
+        padding:13px;
+        gap:11px;
+    }
+
+    .method-logo{
+        width:48px;
+        height:48px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <header>
+        <div class="logo">
+            earning<span>Hub</span>
+        </div>
+
+        <a class="back" href="wallet.html">
+            ← Wallet
+        </a>
+    </header>
+
+    <div class="heading-row">
+        <div class="heading-icon">💸</div>
+
+        <div>
+            <h1>Withdraw</h1>
+        </div>
+    </div>
+
+    <p class="subtitle">
+        Withdraw your earned tokens through FaucetPay.
+        Your withdrawal request will be reviewed.
+    </p>
+
+    <div id="message" class="message"></div>
+
+    <!-- BALANCE -->
+
+    <div class="balance-card">
+
+        <div class="balance-top">
+            <div class="balance-label">
+                Available Token Balance
+            </div>
+
+            <div class="wallet-icon">🪙</div>
+        </div>
+
+        <div class="token-balance">
+            <span id="balanceTokens">0</span>
+            <span class="token-word">Tokens</span>
+        </div>
+
+        <div class="balance-divider"></div>
+
+        <div class="usd-row">
+            <div class="usd-label">
+                Available USD Value
+            </div>
+
+            <div class="usd-value" id="balanceUSD">
+                $0.00
+            </div>
+        </div>
+
+        <div class="balance-note">
+            Your existing wallet balance is preserved.
+        </div>
+
+    </div>
+
+    <!-- MINIMUM WITHDRAWAL -->
+
+    <div class="minimum-card">
+
+        <div class="minimum-icon">🎯</div>
+
+        <div>
+            <div class="minimum-title">
+                Minimum Withdrawal: $0.10
+            </div>
+
+            <div class="minimum-description">
+                You need at least
+                <strong>10,000 Tokens</strong>
+                to submit a withdrawal request.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PAYMENT METHOD -->
+
+    <div class="section-title">
+        Payment Method
+    </div>
+
+    <p class="section-subtitle">
+        Currently, only FaucetPay withdrawals are supported.
+    </p>
+
+    <div class="method">
+
+        <img
+            class="method-logo"
+            src="https://cdn.simpleicons.org/faucetpay"
+            alt="FaucetPay"
+            onerror="this.style.display='none';document.getElementById('faucetPayFallback').style.display='flex';"
+        >
+
+        <div
+            id="faucetPayFallback"
+            style="display:none;width:55px;height:55px;align-items:center;justify-content:center;border-radius:14px;background:#ffd54f;color:#101827;font-weight:900;font-size:12px;flex-shrink:0;">
+            FP
+        </div>
+
+        <div class="method-info">
+
+            <div class="method-name">
+                FaucetPay
+            </div>
+
+            <div class="method-description">
+                Enter the email address associated with your FaucetPay account.
+            </div>
+
+            <span class="method-badge">
+                ✓ Selected
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- WITHDRAWAL FORM -->
+
+    <form id="withdrawalForm" class="withdraw-form">
+
+        <div class="form-heading">
+            Withdrawal Request
+        </div>
+
+        <p class="form-description">
+            Enter the number of tokens you want to withdraw and your FaucetPay email.
+        </p>
+
+        <div class="field">
+
+            <label for="amountTokens">
+                Withdrawal Amount (Tokens)
+            </label>
+
+            <input
+                id="amountTokens"
+                type="number"
+                min="10000"
+                step="1"
+                inputmode="numeric"
+                placeholder="Minimum 10000 Tokens"
+                required
+            >
+
+            <div class="field-help">
+                Minimum: 10,000 Tokens. Enter whole tokens only.
+            </div>
+
+        </div>
+
+        <div class="amount-preview">
+
+            <div class="preview-row">
+                <span class="preview-label">
+                    Withdrawal Tokens
+                </span>
+
+                <span class="preview-value gold" id="previewTokens">
+                    0 Tokens
+                </span>
+            </div>
+
+            <div class="preview-row">
+                <span class="preview-label">
+                    USD Equivalent
+                </span>
+
+                <span class="preview-value" id="previewUSD">
+                    $0.00
+                </span>
+            </div>
+
+        </div>
+
+        <div class="field">
+
+            <label for="faucetPayEmail">
+                FaucetPay Email Address
+            </label>
+
+            <input
+                id="faucetPayEmail"
+                type="email"
+                autocomplete="email"
+                placeholder="Enter your FaucetPay email"
+                required
+            >
+
+            <div class="field-help">
+                Make sure this email belongs to your correct FaucetPay account.
+            </div>
+
+        </div>
+
+        <button
+            type="submit"
+            class="submit"
+            id="submitButton"
+        >
+            Submit Withdrawal Request →
+        </button>
+
+        <div class="security-note">
+            <span>🔒</span>
+
+            <span>
+                Your request will be saved as pending for review.
+                Submitting a request does not automatically send funds through FaucetPay.
+            </span>
+        </div>
+
+    </form>
+
+    <!-- TOKEN CONVERSION -->
+
+    <div class="section-title">
+        Token Conversion
+    </div>
+
+    <div class="conversion-card">
+
+        <div class="conversion-title">
+            🪙 Tokens to USD
+        </div>
+
+        <div class="conversion-row">
+            <span class="conversion-token">10,000 Tokens</span>
+            <span class="conversion-usd">$0.10</span>
+        </div>
+
+        <div class="conversion-row">
+            <span class="conversion-token">100,000 Tokens</span>
+            <span class="conversion-usd">$1.00</span>
+        </div>
+
+        <div class="conversion-row">
+            <span class="conversion-token">500,000 Tokens</span>
+            <span class="conversion-usd">$5.00</span>
+        </div>
+
+        <div class="conversion-row">
+            <span class="conversion-token">1,000,000 Tokens</span>
+            <span class="conversion-usd">$10.00</span>
+        </div>
+
+    </div>
+
+    <!-- IMPORTANT NOTICE -->
+
+    <div class="notice">
+
+        <div class="notice-title">
+            ℹ️ Important Information
+        </div>
+
+        <p>
+            Withdrawal requests are submitted for review.
+            The request amount is stored in USD in your existing database.
+            Automatic FaucetPay payments require a separate secure payment integration.
+        </p>
+
+    </div>
+
+    <!-- ADVERTISEMENT -->
+
+    <div class="advertisement">
+
+        <div class="advertisement-title">
+            Advertisement
+        </div>
+
+        <div class="advertisement-content">
+
+            <script>
+            (function(s){
+                s.dataset.zone='11751042';
+                s.src='https://al5sm.com/tag.min.js';
+            })(
+                [document.documentElement,document.body]
+                .filter(Boolean)
+                .pop()
+                .appendChild(document.createElement('script'))
+            );
+            </script>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+
+<nav class="bottom-nav">
+
+    <a class="nav-item" href="dashboard.html">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+    </a>
+
+    <a class="nav-item" href="campaigns.html">
+        <span class="nav-icon">▣</span>
+        <span>Campaigns</span>
+    </a>
+
+    <a class="nav-item earn" href="earn.html">
+        <span class="nav-icon">+</span>
+        <span>Earn</span>
+    </a>
+
+    <a class="nav-item active" href="wallet.html">
+        <span class="nav-icon">◈</span>
+        <span>Wallet</span>
+    </a>
+
+    <a class="nav-item" href="account.html">
+        <span class="nav-icon">♙</span>
+        <span>Account</span>
+    </a>
+
+</nav>
+
+<script>
+"use strict";
+
+/*
+EarningHub withdrawal page.
+
+Existing database units:
+wallets.balance     = USD
+withdrawals.amount  = USD
+
+Conversion:
+100,000 Tokens = $1.00
+10,000 Tokens   = $0.10
+
+FaucetPay requests are saved as pending.
+This page does not make automatic FaucetPay payments.
+*/
+
+const SUPABASE_URL =
+    "https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const TOKENS_PER_USD = 100000;
+const MIN_WITHDRAW_TOKENS = 10000;
+const MIN_WITHDRAW_USD = 0.10;
+
+const client = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let currentBalanceUSD = 0;
+let currentBalanceTokens = 0;
+let isSubmitting = false;
+
+
+/* FORM ELEMENTS */
+
+const messageBox =
+    document.getElementById("message");
+
+const balanceTokensElement =
+    document.getElementById("balanceTokens");
+
+const balanceUSDElement =
+    document.getElementById("balanceUSD");
+
+const amountInput =
+    document.getElementById("amountTokens");
+
+const emailInput =
+    document.getElementById("faucetPayEmail");
+
+const previewTokens =
+    document.getElementById("previewTokens");
+
+const previewUSD =
+    document.getElementById("previewUSD");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+
+/* FORMATTERS */
+
+function formatTokens(value){
+
+    return Math.max(
+        0,
+        Math.floor(value)
+    ).toLocaleString("en-US");
+
+}
+
+function formatUSD(value){
+
+    return "$" + Number(
+        value || 0
+    ).toFixed(2);
+
+}
+
+function tokensToUSD(tokens){
+
+    return Math.round(
+        Number(tokens) / TOKENS_PER_USD * 100
+    ) / 100;
+
+}
+
+function usdToTokens(usd){
+
+    /*
+    Wallet balance is stored in USD.
+    Convert it for display without changing the database.
+    */
+
+    return Math.max(
+        0,
+        Math.round(Number(usd || 0) * TOKENS_PER_USD)
+    );
+
+}
+
+
+/* MESSAGES */
+
+function showMessage(text,type=""){
+
+    messageBox.textContent = text;
+
+    messageBox.className = "message";
+
+    if(type){
+        messageBox.classList.add(type);
+    }
+
+    messageBox.style.display = "block";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+function hideMessage(){
+
+    messageBox.textContent = "";
+
+    messageBox.className = "message";
+
+    messageBox.style.display = "none";
+
+}
+
+
+/* BALANCE DISPLAY */
+
+function updateBalanceDisplay(){
+
+    balanceTokensElement.textContent =
+        formatTokens(currentBalanceTokens);
+
+    balanceUSDElement.textContent =
+        formatUSD(currentBalanceUSD);
+
+}
+
+
+/* WITHDRAWAL AMOUNT PREVIEW */
+
+function updateAmountPreview(){
+
+    const rawValue = amountInput.value;
+
+    if(rawValue === ""){
+
+        previewTokens.textContent = "0 Tokens";
+        previewUSD.textContent = "$0.00";
+
+        return;
+
+    }
+
+    const tokens = Number(rawValue);
+
+    if(
+        !Number.isFinite(tokens) ||
+        tokens <= 0
+    ){
+
+        previewTokens.textContent = "0 Tokens";
+        previewUSD.textContent = "$0.00";
+
+        return;
+
+    }
+
+    previewTokens.textContent =
+        formatTokens(tokens) + " Tokens";
+
+    /*
+    Show the amount in USD rounded to cents.
+    The database stores this USD amount.
+    */
+
+    previewUSD.textContent =
+        formatUSD(tokensToUSD(tokens));
+
+}
+
+amountInput.addEventListener(
+    "input",
+    updateAmountPreview
+);
+
+
+/* LOAD AUTHENTICATED USER'S WALLET */
+
+async function loadWallet(){
+
+    hideMessage();
+
+    const {
+        data:sessionData,
+        error:sessionError
+    } = await client.auth.getSession();
+
+    if(sessionError){
+
+        showMessage(
+            "Unable to check your session. Please try again.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(!sessionData.session){
+
+        showMessage(
+            "Please log in to view your wallet and submit a withdrawal request.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    const userId =
+        sessionData.session.user.id;
+
+    const {
+        data,
+        error
+    } = await client
+        .from("wallets")
+        .select("user_id,balance")
+        .eq("user_id",userId)
+        .maybeSingle();
+
+    if(error){
+
+        console.error("Wallet load error:",error);
+
+        showMessage(
+            "Unable to load your wallet. Please refresh and try again.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    currentBalanceUSD = Math.max(
+        0,
+        Number(data?.balance || 0)
+    );
+
+    currentBalanceTokens =
+        usdToTokens(currentBalanceUSD);
+
+    updateBalanceDisplay();
+
+}
+
+
+/* SUBMIT WITHDRAWAL REQUEST */
+
+document
+    .getElementById("withdrawalForm")
+    .addEventListener(
+        "submit",
+        submitWithdrawal
+    );
+
+async function submitWithdrawal(event){
+
+    event.preventDefault();
+
+    if(isSubmitting){
+        return;
+    }
+
+    hideMessage();
+
+    const tokens = Number(
+        amountInput.value
+    );
+
+    const faucetPayEmail =
+        emailInput.value.trim();
+
+    /* CHECK TOKEN AMOUNT */
+
+    if(
+        !Number.isSafeInteger(tokens) ||
+        tokens <= 0
+    ){
+
+        showMessage(
+            "Please enter a valid whole number of tokens.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(tokens < MIN_WITHDRAW_TOKENS){
+
+        showMessage(
+            "Minimum withdrawal is 10,000 Tokens ($0.10).",
+            "error"
+        );
+
+        return;
+
+    }
+
+    /* CHECK EMAIL */
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if(!emailPattern.test(faucetPayEmail)){
+
+        showMessage(
+            "Please enter a valid FaucetPay email address.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    /* CONVERT TOKENS TO USD */
+
+    const amountUSD =
+        tokensToUSD(tokens);
+
+    if(
+        !Number.isFinite(amountUSD) ||
+        amountUSD < MIN_WITHDRAW_USD
+    ){
+
+        showMessage(
+            "Minimum withdrawal is $0.10 (10,000 Tokens).",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(tokens > currentBalanceTokens){
+
+        showMessage(
+            "You cannot withdraw more tokens than your available balance.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    /*
+    Prevent rounding from allowing an amount
+    greater than the available USD balance.
+    */
+
+    if(amountUSD > currentBalanceUSD + 0.0000001){
+
+        showMessage(
+            "Your available balance is insufficient for this withdrawal.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    isSubmitting = true;
+
+    submitButton.disabled = true;
+
+    submitButton.textContent = "Submitting...";
+
+    try{
+
+        /* CHECK LOGIN AGAIN */
+
+        const {
+            data:sessionData,
+            error:sessionError
+        } = await client.auth.getSession();
+
+        if(sessionError){
+
+            throw new Error(
+                "Unable to verify your login session."
+            );
+
+        }
+
+        if(!sessionData.session){
+
+            showMessage(
+                "Your session has expired. Please log in again.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const userId =
+            sessionData.session.user.id;
+
+        /*
+        Read the latest wallet balance.
+        */
+
+        const {
+            data:wallet,
+            error:walletError
+        } = await client
+            .from("wallets")
+            .select("user_id,balance")
+            .eq("user_id",userId)
+            .maybeSingle();
+
+        if(walletError){
+
+            throw new Error(
+                "Unable to verify your latest wallet balance."
+            );
+
+        }
+
+        const latestBalanceUSD = Math.max(
+            0,
+            Number(wallet?.balance || 0)
+        );
+
+        const latestBalanceTokens =
+            usdToTokens(latestBalanceUSD);
+
+        currentBalanceUSD =
+            latestBalanceUSD;
+
+        currentBalanceTokens =
+            latestBalanceTokens;
+
+        updateBalanceDisplay();
+
+        /* CHECK LATEST BALANCE */
+
+        if(tokens > latestBalanceTokens){
+
+            showMessage(
+                "Your balance has changed. Please check your available tokens and try again.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        if(amountUSD > latestBalanceUSD + 0.0000001){
+
+            showMessage(
+                "Your available USD balance is insufficient.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        /*
+        Save the request using the existing database schema.
+
+        amount         = USD
+        method         = FaucetPay
+        account_details = JSON string containing FaucetPay email
+        status         = pending
+        */
+
+        const accountDetails = JSON.stringify({
+            faucetpay_email:faucetPayEmail
+        });
+
+        const {
+            error:insertError
+        } = await client
+            .from("withdrawals")
+            .insert({
+
+                user_id:userId,
+
+                amount:amountUSD,
+
+                method:"FaucetPay",
+
+                account_details:accountDetails,
+
+                status:"pending"
+
+            });
+
+        if(insertError){
+
+            console.error(
+                "Withdrawal insert error:",
+                insertError
+            );
+
+            throw new Error(
+                "Your withdrawal request could not be saved. Please try again."
+            );
+
+        }
+
+        /*
+        This preserves the existing wallet balance.
+        It does not deduct funds or send a FaucetPay payment.
+        */
+
+        document
+            .getElementById("withdrawalForm")
+            .reset();
+
+        updateAmountPreview();
+
+        showMessage(
+            "Withdrawal request submitted successfully! " +
+            formatTokens(tokens) +
+            " Tokens (" +
+            formatUSD(amountUSD) +
+            ") has been requested through FaucetPay. " +
+            "Your request is pending review; payment is not automatic.",
+            "success"
+        );
+
+    }catch(error){
+
+        console.error(
+            "Withdrawal request error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Something went wrong. Please try again.",
+            "error"
+        );
+
+    }finally{
+
+        isSubmitting = false;
+
+        submitButton.disabled = false;
+
+        submitButton.textContent =
+            "Submit Withdrawal Request →";
+
+    }
+
+}
+
+
+/* INITIALIZE */
+
+loadWallet();
+
+</script>
+
+</body>
+</html>
