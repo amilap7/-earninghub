@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Watch Ads & Earn - EarningHub</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --bg:#071426;
+  --bg2:#0b1d35;
+  --card:#102541;
+  --card2:#142d4d;
+  --border:#244364;
+  --gold:#f5c45e;
+  --gold2:#ffdc8b;
+  --blue:#70b6ff;
+  --text:#f4f7fc;
+  --muted:#9eb1ca;
+  --green:#57dfaa;
+  --red:#ff8585;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:
+    radial-gradient(ellipse at top,#15345b 0%,transparent 48%),
+    linear-gradient(180deg,#08172b 0%,#061121 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+
+button,a{
+  -webkit-tap-highlight-color:transparent;
+}
+
+.container{
+  width:100%;
+  max-width:680px;
+  margin:0 auto;
+  padding:18px 17px 35px;
+}
+
+/* HEADER */
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:24px;
+}
+
+.back{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  color:var(--text);
+  background:#102541;
+  text-decoration:none;
+  font-size:26px;
+  flex-shrink:0;
+}
+
+.header-text{
+  flex:1;
+}
+
+.title{
+  font-size:21px;
+  font-weight:800;
+  letter-spacing:-.4px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+
+.header-icon{
+  width:44px;
+  height:44px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#f8d98c,#d99a30);
+  box-shadow:0 5px 20px rgba(245,196,94,.16);
+  font-size:22px;
+}
+
+/* HERO */
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:24px 21px;
+  border-radius:24px;
+  border:1px solid #34567a;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(112,182,255,.20),transparent 42%),
+    linear-gradient(135deg,#173657,#0e2340 65%,#102541);
+  margin-bottom:17px;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  width:145px;
+  height:145px;
+  border:1px solid rgba(245,196,94,.12);
+  border-radius:50%;
+  right:-48px;
+  bottom:-82px;
+  box-shadow:0 0 0 18px rgba(245,196,94,.025),
+             0 0 0 36px rgba(245,196,94,.02);
+  pointer-events:none;
+}
+
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid rgba(245,196,94,.32);
+  background:rgba(245,196,94,.09);
+  color:var(--gold2);
+  padding:7px 11px;
+  border-radius:30px;
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:15px;
+}
+
+.hero h2{
+  font-size:25px;
+  line-height:1.25;
+  letter-spacing:-.5px;
+  max-width:340px;
+}
+
+.hero h2 span{
+  color:var(--gold);
+}
+
+.hero p{
+  margin-top:10px;
+  font-size:13px;
+  line-height:1.7;
+  color:#b7c9df;
+  max-width:370px;
+}
+
+.hero-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:22px;
+}
+
+.hero-note{
+  color:#c3d3e8;
+  font-size:11px;
+  line-height:1.6;
+}
+
+.hero-note strong{
+  color:var(--gold2);
+}
+
+/* WALLET */
+
+.wallet{
+  position:relative;
+  overflow:hidden;
+  padding:20px;
+  border-radius:21px;
+  border:1px solid rgba(245,196,94,.34);
+  background:linear-gradient(135deg,#183658,#102641 70%,#162c47);
+  margin-bottom:15px;
+  box-shadow:0 10px 28px rgba(0,0,0,.12);
+}
+
+.wallet-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.wallet-label{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#c1d1e5;
+  font-size:13px;
+}
+
+.wallet-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  border-radius:13px;
+  background:rgba(245,196,94,.12);
+  font-size:20px;
+}
+
+.wallet-tag{
+  font-size:10px;
+  font-weight:700;
+  color:var(--green);
+  background:rgba(87,223,170,.09);
+  border:1px solid rgba(87,223,170,.2);
+  padding:6px 9px;
+  border-radius:20px;
+}
+
+.wallet-balance{
+  font-size:31px;
+  font-weight:800;
+  letter-spacing:-.7px;
+  margin-top:17px;
+  overflow-wrap:anywhere;
+}
+
+.wallet-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  border-top:1px solid rgba(255,255,255,.09);
+  margin-top:15px;
+  padding-top:13px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.wallet-footer strong{
+  color:var(--gold2);
+}
+
+/* PROGRESS */
+
+.ads-summary{
+  padding:20px;
+  background:linear-gradient(145deg,#102541,#0d1f37);
+  border:1px solid var(--border);
+  border-radius:21px;
+  margin-bottom:20px;
+}
+
+.summary-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.summary-label{
+  color:#c1d1e5;
+  font-size:13px;
+  font-weight:700;
+}
+
+.summary-date{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.progress-number{
+  display:flex;
+  align-items:baseline;
+  gap:5px;
+  margin-top:16px;
+}
+
+.progress-number strong{
+  font-size:32px;
+  letter-spacing:-1px;
+}
+
+.progress-number span{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.progress-track{
+  height:9px;
+  background:#071528;
+  border:1px solid #213b5a;
+  border-radius:20px;
+  margin-top:14px;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#d99a30,#ffdc8b);
+  border-radius:20px;
+  transition:width .35s ease;
+  box-shadow:0 0 12px rgba(245,196,94,.2);
+}
+
+.summary-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:13px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.reward-highlight{
+  color:var(--gold2);
+  font-weight:700;
+}
+
+/* SECTION TITLE */
+
+.section-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  margin:26px 2px 14px;
+}
+
+.section-heading h2{
+  font-size:18px;
+  letter-spacing:-.3px;
+}
+
+.section-heading p{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:5px;
+}
+
+.available-badge{
+  padding:6px 9px;
+  border-radius:9px;
+  background:rgba(112,182,255,.09);
+  border:1px solid rgba(112,182,255,.18);
+  color:var(--blue);
+  font-size:11px;
+  white-space:nowrap;
+}
+
+/* STATUS */
+
+.status{
+  display:none;
+  padding:13px 15px;
+  border-radius:13px;
+  margin-bottom:15px;
+  font-size:13px;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+
+.status.success{
+  display:block;
+  color:#9cf1cc;
+  background:rgba(36,155,109,.13);
+  border:1px solid rgba(87,223,170,.27);
+}
+
+.status.error{
+  display:block;
+  color:#ffb2b2;
+  background:rgba(190,55,55,.13);
+  border:1px solid rgba(255,133,133,.25);
+}
+
+.status.info{
+  display:block;
+  color:#b9d9ff;
+  background:rgba(65,133,210,.13);
+  border:1px solid rgba(112,182,255,.23);
+}
+
+/* AD LIST */
+
+.ads-list{
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+}
+
+.ad-card{
+  position:relative;
+  overflow:hidden;
+  padding:17px;
+  border-radius:19px;
+  border:1px solid #203c5d;
+  background:linear-gradient(135deg,#112744,#0d2039);
+  box-shadow:0 8px 20px rgba(0,0,0,.10);
+  transition:border-color .2s,transform .2s;
+}
+
+.ad-card:focus-within{
+  border-color:#456b94;
+}
+
+.ad-card-top{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.ad-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:49px;
+  height:49px;
+  flex-shrink:0;
+  border-radius:16px;
+  background:linear-gradient(145deg,#254a70,#183453);
+  border:1px solid #355779;
+  font-size:22px;
+}
+
+.ad-main{
+  flex:1;
+  min-width:0;
+}
+
+.ad-number{
+  font-size:15px;
+  font-weight:800;
+}
+
+.ad-description{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:5px;
+}
+
+.reward-badge{
+  flex-shrink:0;
+  border-radius:11px;
+  padding:8px 9px;
+  text-align:center;
+  background:rgba(245,196,94,.09);
+  border:1px solid rgba(245,196,94,.25);
+}
+
+.reward-badge strong{
+  display:block;
+  font-size:12px;
+  color:var(--gold2);
+}
+
+.reward-badge span{
+  display:block;
+  color:#c1b18d;
+  font-size:9px;
+  margin-top:3px;
+}
+
+.watch-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  border:1px solid #e8b74e;
+  border-radius:12px;
+  padding:14px;
+  margin-top:16px;
+  background:linear-gradient(135deg,#ffdc8b,#e8ad3c);
+  color:#172238;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 5px 16px rgba(245,196,94,.09);
+  transition:filter .2s,transform .2s;
+}
+
+.watch-btn:active:not(:disabled){
+  transform:scale(.99);
+}
+
+.watch-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+.btn-arrow{
+  font-size:17px;
+}
+
+/* EMPTY / LOGIN / LOADING */
+
+.empty,
+.login-box,
+.loading{
+  text-align:center;
+  padding:30px 19px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  background:linear-gradient(145deg,#112744,#0d2039);
+}
+
+.empty-icon{
+  font-size:38px;
+  margin-bottom:13px;
+}
+
+.empty-title{
+  font-size:19px;
+  font-weight:800;
+  margin-bottom:9px;
+}
+
+.empty-text{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
+
+.login-btn{
+  display:inline-block;
+  margin-top:17px;
+  padding:13px 24px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ffdc8b,#e8ad3c);
+  color:#172238;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:800;
+}
+
+.loading{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* FOOTNOTE */
+
+.footer-note{
+  margin-top:22px;
+  padding:15px;
+  border-radius:15px;
+  background:rgba(112,182,255,.045);
+  border:1px solid rgba(112,182,255,.12);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.8;
+  text-align:center;
+}
+
+.footer-note strong{
+  color:#c8d8ec;
+}
+
+/* SMALL SCREENS */
+
+@media(max-width:380px){
+  .container{
+    padding:15px 13px 28px;
+  }
+
+  .title{
+    font-size:18px;
+  }
+
+  .hero{
+    padding:21px 17px;
+  }
+
+  .hero h2{
+    font-size:23px;
+  }
+
+  .wallet-balance{
+    font-size:28px;
+  }
+
+  .ad-card{
+    padding:14px;
+  }
+
+  .ad-card-top{
+    gap:9px;
+  }
+
+  .ad-icon{
+    width:42px;
+    height:42px;
+    font-size:19px;
+  }
+
+  .reward-badge{
+    padding:7px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+
+  <div class="topbar">
+
+    <a href="dashboard.html" class="back" aria-label="Back to dashboard">‹</a>
+
+    <div class="header-text">
+      <div class="title">Watch Ads & Earn</div>
+      <div class="subtitle">Watch advertisements and earn rewards</div>
+    </div>
+
+    <div class="header-icon">▶</div>
+
+  </div>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-badge">
+      ✦ EARNINGHUB REWARDS
+    </div>
+
+    <h2>
+      Turn your time into <span>rewards.</span>
+    </h2>
+
+    <p>
+      Watch available advertisements and earn rewards.
+      Complete your daily ads to make the most of your day.
+    </p>
+
+    <div class="hero-bottom">
+
+      <div class="hero-note">
+        Daily limit: <strong>10 ads</strong><br>
+        One reward per ad each day
+      </div>
+
+      <div style="font-size:39px" aria-hidden="true">📺</div>
+
+    </div>
+
+  </section>
+
+  <!-- WALLET -->
+
+  <section class="wallet">
+
+    <div class="wallet-top">
+
+      <div class="wallet-label">
+        <div class="wallet-icon">💰</div>
+
+        <div>
+          <div>Wallet Balance</div>
+          <div style="font-size:10px;color:#8fa7c4;margin-top:4px">
+            Your current balance
+          </div>
+        </div>
+      </div>
+
+      <div class="wallet-tag">● LIVE BALANCE</div>
+
+    </div>
+
+    <div class="wallet-balance" id="walletBalance">$0.00</div>
+
+    <div class="wallet-footer">
+      <span>Ad rewards</span>
+      <strong>Credited to your wallet</strong>
+    </div>
+
+  </section>
+
+  <!-- DAILY PROGRESS -->
+
+  <section class="ads-summary">
+
+    <div class="summary-top">
+      <div class="summary-label">📊 Today's Progress</div>
+      <div class="summary-date" id="todayLabel">Daily rewards</div>
+    </div>
+
+    <div class="progress-number">
+      <strong id="completedCount">0</strong>
+      <span>/ 10 ads completed</span>
+    </div>
+
+    <div
+      class="progress-track"
+      role="progressbar"
+      aria-label="Today's ads completed"
+      aria-valuemin="0"
+      aria-valuemax="10"
+      aria-valuenow="0"
+      id="progressTrack">
+
+      <div class="progress-fill" id="progressFill"></div>
+
+    </div>
+
+    <div class="summary-bottom">
+      <span id="remainingText">10 ads remaining today</span>
+      <span class="reward-highlight">Reward: $0.02/ad</span>
+    </div>
+
+  </section>
+
+  <!-- STATUS -->
+
+  <div id="status" class="status" role="status" aria-live="polite"></div>
+
+  <!-- ADS -->
+
+  <div class="section-heading">
+    <div>
+      <h2>Available Ads</h2>
+      <p>Choose an ad to start earning</p>
+    </div>
+
+    <div class="available-badge" id="availableBadge">10 Available</div>
+  </div>
+
+  <div id="adsArea">
+    <div class="loading">
+      Loading your advertisements...
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <strong>Daily rewards</strong><br>
+    You can complete up to 10 ads per day.
+    Your reward is processed through your EarningHub account.
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const MAX_ADS = 10;
+const REWARD_POINTS = 2;
+const REWARD_AMOUNT = 0.02;
+
+
+/* =========================================================
+   AD LINKS — EXISTING LINKS PRESERVED
+========================================================= */
+
+const AD_LINKS = [
+  "https://omg10.com/4/11727627",
+  "https://omg10.com/4/10129779",
+  "https://omg10.com/4/10129777",
+  "https://omg10.com/4/10127654",
+  "https://omg10.com/4/10129784",
+  "https://omg10.com/4/11727639",
+  "https://omg10.com/4/11727642",
+  "https://omg10.com/4/11727645",
+  "https://omg10.com/4/10127655",
+  "https://omg10.com/4/10130120"
+];
+
+
+/* Existing backup links preserved.
+   They are not used to change the current ad sequence. */
+
+const BACKUP_LINKS = [
+  "https://omg10.com/4/11595365",
+  "https://omg10.com/4/11694885"
+];
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentUser = null;
+let completedAds = [];
+let processingAd = null;
+let lastKnownSriLankaDate = getSriLankaDate();
+
+
+/* =========================================================
+   SRI LANKA DATE
+========================================================= */
+
+function getSriLankaDate(){
+
+  const parts =
+    new Intl.DateTimeFormat("en-CA",{
+      timeZone:"Asia/Colombo",
+      year:"numeric",
+      month:"2-digit",
+      day:"2-digit"
+    }).formatToParts(new Date());
+
+  const year =
+    parts.find(p=>p.type==="year")?.value;
+
+  const month =
+    parts.find(p=>p.type==="month")?.value;
+
+  const day =
+    parts.find(p=>p.type==="day")?.value;
+
+  return `${year}-${month}-${day}`;
+}
+
+
+function updateTodayLabel(){
+
+  const label =
+    new Intl.DateTimeFormat("en-LK",{
+      timeZone:"Asia/Colombo",
+      day:"numeric",
+      month:"short",
+      year:"numeric"
+    }).format(new Date());
+
+  document.getElementById(
+    "todayLabel"
+  ).textContent = label;
+}
+
+
+/* =========================================================
+   STATUS MESSAGE
+========================================================= */
+
+function showStatus(message,type="info"){
+
+  const box =
+    document.getElementById("status");
+
+  box.textContent = message;
+  box.className = "status " + type;
+}
+
+
+/* =========================================================
+   LOAD USER
+========================================================= */
+
+async function loadUser(){
+
+  const {
+    data,
+    error
+  } = await client.auth.getUser();
+
+  if(error){
+
+    console.error("Authentication error:",error);
+    showLoginBox();
+    return false;
+  }
+
+  if(!data || !data.user){
+
+    showLoginBox();
+    return false;
+  }
+
+  currentUser = data.user;
+  return true;
+}
+
+
+/* =========================================================
+   LOGIN BOX
+========================================================= */
+
+function showLoginBox(){
+
+  document.getElementById("adsArea").innerHTML = `
+    <div class="login-box">
+
+      <div class="empty-icon">🔐</div>
+
+      <div class="empty-title">
+        Login Required
+      </div>
+
+      <div class="empty-text">
+        Please log in to watch advertisements
+        and earn rewards in your EarningHub account.
+      </div>
+
+      <a href="login.html" class="login-btn">
+        Login to Continue →
+      </a>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   LOAD WALLET
+========================================================= */
+
+async function loadWallet(){
+
+  if(!currentUser) return;
+
+  const {
+    data,
+    error
+  } = await client
+    .from("wallets")
+    .select("balance")
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  if(error){
+
+    console.error("Wallet error:",error);
+    return;
+  }
+
+  const balance =
+    Number(data?.balance || 0);
+
+  document.getElementById(
+    "walletBalance"
+  ).textContent =
+    "$" + balance.toFixed(2);
+}
+
+
+/* =========================================================
+   LOAD TODAY'S COMPLETED ADS
+========================================================= */
+
+async function loadCompletedAds(){
+
+  if(!currentUser) return;
+
+  const today = getSriLankaDate();
+
+  const {
+    data,
+    error
+  } = await client
+    .from("ad_watch_rewards")
+    .select("ad_number, watch_date")
+    .eq("user_id",currentUser.id)
+    .eq("watch_date",today)
+    .order("ad_number",{ascending:true});
+
+  if(error){
+
+    console.error("Completed ads error:",error);
+
+    showStatus(
+      "Could not load today's ads. Please refresh and try again.",
+      "error"
+    );
+
+    return;
+  }
+
+  completedAds =
+    (data || [])
+      .map(row=>Number(row.ad_number))
+      .filter(n=>n>=1 && n<=MAX_ADS);
+
+  completedAds = [...new Set(completedAds)];
+
+  updateUI();
+}
+
+
+/* =========================================================
+   UPDATE PROGRESS
+========================================================= */
+
+function updateProgress(){
+
+  const count = completedAds.length;
+  const remaining = Math.max(0,MAX_ADS-count);
+  const percent = Math.min(100,(count/MAX_ADS)*100);
+
+  document.getElementById(
+    "completedCount"
+  ).textContent = count;
+
+  document.getElementById(
+    "progressFill"
+  ).style.width = percent + "%";
+
+  document.getElementById(
+    "progressTrack"
+  ).setAttribute("aria-valuenow",String(count));
+
+  document.getElementById(
+    "remainingText"
+  ).textContent =
+    remaining === 0
+      ? "All daily ads completed!"
+      : remaining + " ads remaining today";
+
+  document.getElementById(
+    "availableBadge"
+  ).textContent =
+    remaining + " Available";
+}
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateUI(){
+
+  const area =
+    document.getElementById("adsArea");
+
+  updateProgress();
+
+  if(completedAds.length>=MAX_ADS){
+
+    area.innerHTML = `
+      <div class="empty">
+
+        <div class="empty-icon">🏆</div>
+
+        <div class="empty-title">
+          All Ads Completed!
+        </div>
+
+        <div class="empty-text">
+          Excellent work! You've completed all 10 ads for today.<br><br>
+          Come back tomorrow to access your next daily rewards.
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = '<div class="ads-list">';
+
+  for(let i=1;i<=MAX_ADS;i++){
+
+    if(completedAds.includes(i)) continue;
+
+    html += `
+      <article class="ad-card">
+
+        <div class="ad-card-top">
+
+          <div class="ad-icon" aria-hidden="true">▶</div>
+
+          <div class="ad-main">
+
+            <div class="ad-number">
+              Advertisement #${i}
+            </div>
+
+            <div class="ad-description">
+              Open the advertisement to continue
+            </div>
+
+          </div>
+
+          <div class="reward-badge">
+            <strong>+${
+              Math.round(REWARD_AMOUNT*100000).toLocaleString("en-US")
+            }</strong>
+            <span>TOKENS*</span>
+          </div>
+
+        </div>
+
+        <button
+          class="watch-btn"
+          id="watchBtn${i}"
+          onclick="watchAd(${i})">
+
+          <span>Watch Ad & Earn</span>
+          <span class="btn-arrow">→</span>
+
+        </button>
+
+      </article>
+    `;
+  }
+
+  html += '</div>';
+
+  area.innerHTML = html;
+}
+
+
+/* =========================================================
+   WATCH AD
+========================================================= */
+
+async function watchAd(adNumber){
+
+  if(!currentUser){
+
+    showLoginBox();
+    return;
+  }
+
+  if(processingAd!==null) return;
+
+  if(completedAds.includes(adNumber)){
+
+    showStatus(
+      "You have already completed this ad today.",
+      "error"
+    );
+
+    return;
+  }
+
+  if(adNumber<1 || adNumber>MAX_ADS){
+
+    showStatus(
+      "Invalid advertisement.",
+      "error"
+    );
+
+    return;
+  }
+
+  processingAd = adNumber;
+
+  const button =
+    document.getElementById("watchBtn"+adNumber);
+
+  if(button){
+
+    button.disabled = true;
+    button.textContent = "Opening Ad...";
+  }
+
+  const adUrl = AD_LINKS[adNumber-1];
+
+  /*
+    Open the existing ad link in a new tab.
+    If the browser blocks the popup, show an error instead
+    of navigating away from the reward page.
+  */
+
+  let adWindow = null;
+
+  try{
+
+    adWindow = window.open(adUrl,"_blank");
+
+  }catch(e){
+
+    console.error("Ad opening error:",e);
+  }
+
+  if(!adWindow){
+
+    processingAd = null;
+
+    if(button){
+
+      button.disabled = false;
+      button.innerHTML =
+        '<span>Watch Ad & Earn</span><span class="btn-arrow">→</span>';
+    }
+
+    showStatus(
+      "Your browser blocked the advertisement popup. Please allow pop-ups for this site and try again.",
+      "error"
+    );
+
+    return;
+  }
+
+  /*
+    Reward processing uses the existing secure RPC.
+    The reward is not changed on the client side.
+  */
+
+  try{
+
+    const {
+      data,
+      error
+    } = await client.rpc(
+      "watch_ad_and_earn",
+      {
+        p_ad_number:adNumber
+      }
+    );
+
+    if(error){
+
+      console.error("Reward RPC error:",error);
+
+      showStatus(
+        error.message || "Could not process the reward.",
+        "error"
+      );
+
+      await loadCompletedAds();
+
+      return;
+    }
+
+    console.log("Reward response:",data);
+
+    if(data && data.success===true){
+
+      if(!completedAds.includes(adNumber)){
+
+        completedAds.push(adNumber);
+      }
+
+      completedAds.sort((a,b)=>a-b);
+
+      updateUI();
+
+      await loadWallet();
+
+      const earnedTokens =
+        Math.round(REWARD_AMOUNT*100000);
+
+      showStatus(
+        "Congratulations! Ad #" +
+        adNumber +
+        " completed. Your reward has been processed: " +
+        earnedTokens.toLocaleString("en-US") +
+        " Tokens ($" +
+        REWARD_AMOUNT.toFixed(2) +
+        ").",
+        "success"
+      );
+
+    }else{
+
+      showStatus(
+        data?.message ||
+        "This advertisement could not be completed.",
+        "error"
+      );
+
+      await loadCompletedAds();
+    }
+
+  }catch(error){
+
+    console.error("Watch ad error:",error);
+
+    showStatus(
+      error.message || "Something went wrong.",
+      "error"
+    );
+
+  }finally{
+
+    processingAd = null;
+
+    /*
+      Re-render to restore any button left disabled
+      by a failed request, unless that ad was completed.
+    */
+
+    updateUI();
+  }
+}
+
+
+/* =========================================================
+   DAILY RESET CHECK
+========================================================= */
+
+function checkForNewDay(){
+
+  const currentDate = getSriLankaDate();
+
+  if(currentDate!==lastKnownSriLankaDate){
+
+    lastKnownSriLankaDate = currentDate;
+
+    completedAds = [];
+
+    updateTodayLabel();
+    updateUI();
+
+    loadCompletedAds();
+    loadWallet();
+
+    showStatus(
+      "A new day has started! Your daily ad list is refreshing.",
+      "success"
+    );
+  }
+}
+
+
+/* =========================================================
+   CHECK NEW DAY
+========================================================= */
+
+setInterval(checkForNewDay,30000);
+
+
+/* =========================================================
+   PAGE VISIBILITY CHECK
+========================================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  function(){
+
+    if(document.visibilityState==="visible"){
+
+      checkForNewDay();
+
+      if(currentUser){
+
+        loadCompletedAds();
+        loadWallet();
+      }
+    }
+  }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+async function initialize(){
+
+  updateTodayLabel();
+
+  const loggedIn = await loadUser();
+
+  if(!loggedIn) return;
+
+  await loadWallet();
+  await loadCompletedAds();
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+initialize();
+
+</script>
+
+</body>
+</html>
