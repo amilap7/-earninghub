@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#071426">
+
+<title>EarningHub Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+--bg:#071426;
+--bg2:#0a1930;
+--card:#10243d;
+--card2:#142b47;
+--gold:#f5c451;
+--gold-light:#ffe49a;
+--text:#f5f7fb;
+--muted:#91a3bb;
+--border:#243b57;
+--success:#38d996;
+--danger:#ff6b79;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+html{
+background:var(--bg);
+scroll-behavior:smooth;
+}
+
+body{
+background:
+radial-gradient(ellipse at 12% 0%,rgba(42,83,145,.28),transparent 42%),
+radial-gradient(ellipse at 100% 35%,rgba(21,52,91,.18),transparent 40%),
+linear-gradient(160deg,#08172d 0%,#0b1c35 48%,#071426 100%);
+background-attachment:fixed;
+color:var(--text);
+min-height:100vh;
+padding-bottom:calc(105px + env(safe-area-inset-bottom));
+}
+
+button,a{
+-webkit-tap-highlight-color:transparent;
+}
+
+button{
+color:inherit;
+}
+
+.app{
+max-width:1100px;
+min-height:100vh;
+margin:auto;
+padding:0 20px 25px;
+}
+
+/* HEADER */
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+min-height:86px;
+padding:12px 0;
+border-bottom:1px solid var(--border);
+background:rgba(7,20,38,.94);
+position:sticky;
+top:0;
+z-index:100;
+backdrop-filter:blur(15px);
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:10px;
+min-width:0;
+}
+
+.logo{
+width:82px;
+height:auto;
+object-fit:contain;
+}
+
+.header-actions{
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.header-button{
+width:39px;
+height:39px;
+flex-shrink:0;
+border:1px solid var(--border);
+background:linear-gradient(145deg,#122a47,#0d2037);
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+text-decoration:none;
+position:relative;
+}
+
+.header-button svg{
+width:21px;
+height:21px;
+stroke:var(--text);
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+
+.notification-dot{
+position:absolute;
+top:-5px;
+right:-5px;
+min-width:18px;
+height:18px;
+padding:0 4px;
+background:#f04d65;
+color:white;
+border-radius:20px;
+display:none;
+align-items:center;
+justify-content:center;
+font-size:10px;
+font-weight:bold;
+}
+
+.menu{
+display:none;
+position:absolute;
+right:0;
+top:74px;
+width:255px;
+max-height:75vh;
+overflow-y:auto;
+background:linear-gradient(160deg,#10243d,#09182b);
+border:1px solid #304965;
+border-radius:16px;
+padding:8px;
+box-shadow:0 16px 40px rgba(0,0,0,.48);
+z-index:999;
+}
+
+.menu.show{
+display:block;
+}
+
+.menu-user{
+padding:12px;
+border-bottom:1px solid var(--border);
+margin-bottom:5px;
+}
+
+.menu-user strong{
+display:block;
+color:var(--gold-light);
+font-size:14px;
+overflow-wrap:anywhere;
+}
+
+.menu-user small{
+display:block;
+color:var(--muted);
+font-size:11px;
+margin-top:4px;
+overflow-wrap:anywhere;
+}
+
+.menu a,
+.menu button{
+display:block;
+width:100%;
+border:0;
+background:transparent;
+color:var(--text);
+text-align:left;
+padding:12px;
+border-radius:9px;
+text-decoration:none;
+font-size:13px;
+cursor:pointer;
+}
+
+.menu a:active,
+.menu button:active{
+background:var(--card2);
+}
+
+.menu .menu-earn{
+background:linear-gradient(135deg,#f9d978,#e9b632);
+color:#172033;
+font-weight:bold;
+}
+
+.menu .menu-feature{
+margin-top:4px;
+border:1px solid rgba(245,196,81,.2);
+background:rgba(245,196,81,.05);
+}
+
+.logout-menu{
+color:#ff9ba6!important;
+border-top:1px solid var(--border)!important;
+margin-top:5px;
+}
+
+/* COMMON */
+
+.main-content{
+max-width:950px;
+margin:auto;
+}
+
+.section{
+margin-top:23px;
+}
+
+.section-heading{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-bottom:13px;
+}
+
+.section-heading h2{
+font-size:18px;
+color:var(--text);
+}
+
+.section-heading p{
+font-size:11px;
+color:var(--muted);
+margin-top:5px;
+line-height:1.5;
+}
+
+.muted{
+color:var(--muted);
+}
+
+.gold{
+color:var(--gold-light);
+}
+
+.small{
+font-size:12px;
+}
+
+.card{
+background:linear-gradient(145deg,rgba(17,39,65,.98),rgba(9,25,44,.98));
+border:1px solid var(--border);
+border-radius:19px;
+padding:18px;
+box-shadow:0 9px 25px rgba(0,0,0,.12);
+}
+
+.status-text{
+font-size:12px;
+color:var(--muted);
+line-height:1.6;
+overflow-wrap:anywhere;
+}
+
+/* PROFILE */
+
+.profile-card{
+display:flex;
+align-items:center;
+gap:14px;
+padding:19px;
+margin-top:20px;
+border:1px solid #304965;
+border-radius:20px;
+background:
+radial-gradient(circle at 100% 0,rgba(245,196,81,.08),transparent 40%),
+linear-gradient(135deg,#142d4b,#0b1b30);
+}
+
+.avatar-wrap{
+width:61px;
+height:61px;
+flex-shrink:0;
+border-radius:50%;
+padding:3px;
+border:2px solid var(--gold);
+background:#0a1930;
+}
+
+.avatar{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:50%;
+display:block;
+}
+
+.profile-info{
+flex:1;
+min-width:0;
+}
+
+.profile-info h1{
+font-size:19px;
+line-height:1.35;
+overflow-wrap:anywhere;
+}
+
+.profile-email{
+font-size:11px;
+color:var(--muted);
+margin-top:4px;
+overflow-wrap:anywhere;
+}
+
+.member-badge{
+display:inline-flex;
+align-items:center;
+gap:5px;
+margin-top:7px;
+padding:5px 9px;
+border-radius:30px;
+background:rgba(245,196,81,.12);
+border:1px solid rgba(245,196,81,.32);
+color:var(--gold-light);
+font-size:10px;
+font-weight:bold;
+}
+
+/* LEVEL */
+
+.level-card{
+background:
+radial-gradient(circle at 100% 0,rgba(245,196,81,.14),transparent 42%),
+linear-gradient(140deg,#142f4e,#0b1b30);
+border:1px solid #4a5060;
+border-radius:21px;
+padding:20px;
+}
+
+.level-top{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:10px;
+}
+
+.level-number{
+font-size:12px;
+letter-spacing:1px;
+color:var(--gold);
+font-weight:bold;
+}
+
+.level-title{
+font-size:23px;
+font-weight:800;
+margin-top:7px;
+color:var(--gold-light);
+}
+
+.level-icon{
+width:48px;
+height:48px;
+border-radius:15px;
+background:rgba(245,196,81,.12);
+border:1px solid rgba(245,196,81,.3);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+}
+
+.progress-info{
+display:flex;
+justify-content:space-between;
+gap:10px;
+font-size:12px;
+color:var(--muted);
+margin-top:20px;
+margin-bottom:9px;
+}
+
+.progress-track{
+height:10px;
+background:#071426;
+border:1px solid #2b4059;
+border-radius:20px;
+overflow:hidden;
+}
+
+.progress-fill{
+height:100%;
+width:0;
+border-radius:20px;
+background:linear-gradient(90deg,#dba72c,#ffe49a);
+box-shadow:0 0 14px rgba(245,196,81,.24);
+transition:width .5s ease;
+}
+
+.level-details{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:10px;
+margin-top:17px;
+}
+
+.level-detail{
+background:rgba(4,16,31,.38);
+border:1px solid rgba(145,163,187,.13);
+padding:11px;
+border-radius:12px;
+min-width:0;
+}
+
+.level-detail span{
+display:block;
+color:var(--muted);
+font-size:10px;
+line-height:1.5;
+}
+
+.level-detail strong{
+display:block;
+color:var(--text);
+font-size:13px;
+margin-top:6px;
+overflow-wrap:anywhere;
+}
+
+/* WALLET */
+
+.wallet-card{
+position:relative;
+overflow:hidden;
+padding:22px;
+border-radius:22px;
+border:1px solid #52617a;
+background:
+radial-gradient(circle at 90% 8%,rgba(245,196,81,.17),transparent 36%),
+linear-gradient(135deg,#173656,#0a1a30 65%,#122945);
+}
+
+.wallet-card:after{
+content:"";
+position:absolute;
+width:140px;
+height:140px;
+right:-65px;
+bottom:-85px;
+border:1px solid rgba(245,196,81,.25);
+border-radius:50%;
+box-shadow:0 0 0 20px rgba(245,196,81,.025);
+pointer-events:none;
+}
+
+.wallet-label{
+font-size:12px;
+color:#bdcadd;
+}
+
+.wallet-total{
+font-size:35px;
+font-weight:800;
+color:var(--gold-light);
+margin:10px 0 4px;
+overflow-wrap:anywhere;
+}
+
+.wallet-usd{
+font-size:13px;
+color:#c6d3e3;
+}
+
+.wallet-grid{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:9px;
+margin-top:22px;
+position:relative;
+z-index:1;
+}
+
+.wallet-stat{
+background:rgba(4,16,31,.45);
+border:1px solid rgba(195,211,232,.12);
+border-radius:13px;
+padding:12px;
+min-width:0;
+}
+
+.wallet-stat span{
+font-size:10px;
+color:#aabbd0;
+display:block;
+line-height:1.5;
+}
+
+.wallet-stat strong{
+font-size:15px;
+display:block;
+color:white;
+margin-top:6px;
+overflow-wrap:anywhere;
+}
+
+.wallet-actions{
+display:flex;
+gap:10px;
+margin-top:17px;
+}
+
+.action-button{
+flex:1;
+text-align:center;
+padding:12px;
+border-radius:12px;
+text-decoration:none;
+font-size:12px;
+font-weight:bold;
+}
+
+.action-primary{
+background:linear-gradient(135deg,#ffe49a,#e7b431);
+color:#172238;
+}
+
+.action-secondary{
+border:1px solid #48617c;
+color:var(--gold-light);
+background:#122943;
+}
+
+/* TOP MEMBERS */
+
+.leaderboard{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:10px;
+}
+
+.member-card{
+min-width:0;
+text-align:center;
+padding:16px 7px;
+border:1px solid var(--border);
+border-radius:17px;
+background:linear-gradient(160deg,#142d4b,#0b1b30);
+}
+
+.member-card.first{
+border-color:#b89a50;
+background:linear-gradient(160deg,#3a3326,#10243d 80%);
+}
+
+.rank{
+width:28px;
+height:28px;
+margin:0 auto 10px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+font-size:12px;
+font-weight:bold;
+background:#263b55;
+color:white;
+}
+
+.first .rank{
+background:linear-gradient(135deg,#ffe49a,#c28b20);
+color:#152238;
+}
+
+.member-avatar{
+width:52px;
+height:52px;
+object-fit:cover;
+border-radius:50%;
+border:2px solid #536780;
+margin:0 auto 10px;
+display:block;
+}
+
+.first .member-avatar{
+border-color:var(--gold);
+}
+
+.member-name{
+font-size:12px;
+font-weight:bold;
+overflow-wrap:anywhere;
+line-height:1.5;
+}
+
+.member-points{
+font-size:11px;
+color:var(--gold-light);
+margin-top:7px;
+overflow-wrap:anywhere;
+}
+
+.member-card .small{
+margin-top:4px;
+font-size:10px;
+}
+
+/* PLATFORM STATS */
+
+.stats-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:11px;
+}
+
+.stat-card{
+padding:16px;
+border:1px solid var(--border);
+border-radius:17px;
+background:linear-gradient(145deg,#122945,#0b1b30);
+min-width:0;
+}
+
+.stat-icon{
+width:36px;
+height:36px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:12px;
+background:rgba(245,196,81,.1);
+font-size:19px;
+margin-bottom:13px;
+}
+
+.stat-label{
+font-size:11px;
+color:var(--muted);
+line-height:1.5;
+}
+
+.stat-value{
+font-size:23px;
+font-weight:800;
+margin-top:6px;
+color:var(--gold-light);
+overflow-wrap:anywhere;
+}
+
+.stat-note{
+font-size:10px;
+color:var(--muted);
+margin-top:6px;
+line-height:1.5;
+}
+
+/* CHART */
+
+.chart-card{
+padding:17px;
+}
+
+.chart-tabs{
+display:flex;
+gap:7px;
+}
+
+.chart-tab{
+padding:8px 12px;
+border:1px solid var(--border);
+border-radius:9px;
+background:#0a1a30;
+color:var(--muted);
+font-size:11px;
+cursor:pointer;
+}
+
+.chart-tab.active{
+background:rgba(245,196,81,.14);
+border-color:#a98a42;
+color:var(--gold-light);
+}
+
+.chart-summary{
+margin:15px 0;
+}
+
+.chart-summary strong{
+font-size:25px;
+color:var(--gold-light);
+}
+
+.chart-summary p{
+font-size:11px;
+color:var(--muted);
+margin-top:5px;
+}
+
+.chart-area{
+position:relative;
+height:230px;
+width:100%;
+}
+
+.chart-empty{
+display:none;
+padding:25px 5px;
+text-align:center;
+color:var(--muted);
+font-size:12px;
+line-height:1.7;
+}
+
+/* DAILY BONUS */
+
+.daily-bonus{
+padding:20px;
+border:1px solid #78652e;
+background:
+radial-gradient(circle at 100% 0,rgba(245,196,81,.09),transparent 38%),
+linear-gradient(145deg,#122944,#0c1e34);
+border-radius:20px;
+}
+
+.bonus-heading{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.bonus-icon{
+width:45px;
+height:45px;
+flex-shrink:0;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:14px;
+background:rgba(245,196,81,.12);
+font-size:23px;
+}
+
+.bonus-heading h2{
+font-size:18px;
+color:var(--gold-light);
+}
+
+.bonus-heading p{
+font-size:12px;
+color:var(--muted);
+margin-top:5px;
+line-height:1.5;
+}
+
+.bonus-points{
+font-size:27px;
+font-weight:800;
+margin-top:18px;
+color:var(--gold);
+}
+
+.bonus-info{
+font-size:12px;
+color:#b7c5d8;
+margin-top:5px;
+}
+
+.bonus-button{
+display:block;
+width:100%;
+border:1px solid #ffe49a;
+background:linear-gradient(135deg,#ffe49a,#e7b431);
+color:#152238;
+padding:14px;
+border-radius:12px;
+font-weight:800;
+margin-top:16px;
+cursor:pointer;
+}
+
+.bonus-button:disabled{
+opacity:.55;
+cursor:not-allowed;
+}
+
+.bonus-message{
+display:none;
+margin-top:12px;
+padding:12px;
+border-radius:11px;
+background:#102d35;
+border:1px solid #285b57;
+color:#b8f6dc;
+font-size:12px;
+line-height:1.6;
+overflow-wrap:anywhere;
+}
+
+/* CAMPAIGNS */
+
+.campaign-card{
+display:flex;
+align-items:center;
+gap:13px;
+padding:18px;
+background:linear-gradient(145deg,#122945,#0b1b30);
+border:1px solid var(--border);
+border-radius:18px;
+}
+
+.campaign-icon{
+width:45px;
+height:45px;
+flex-shrink:0;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:14px;
+background:rgba(245,196,81,.12);
+font-size:22px;
+}
+
+.campaign-info{
+flex:1;
+min-width:0;
+}
+
+.campaign-info h3{
+font-size:15px;
+}
+
+.campaign-info p{
+font-size:11px;
+color:var(--muted);
+margin-top:5px;
+line-height:1.5;
+}
+
+.campaign-arrow{
+color:var(--gold-light);
+font-size:22px;
+text-decoration:none;
+padding:7px;
+}
+
+/* ADMIN */
+
+.admin-review{
+display:none;
+}
+
+.admin-card{
+border:1px solid var(--border);
+border-radius:17px;
+padding:17px;
+background:linear-gradient(145deg,#10243d,#0c1c30);
+margin-top:10px;
+}
+
+.admin-card strong{
+font-size:14px;
+}
+
+.admin-card p{
+font-size:12px;
+color:var(--muted);
+line-height:1.6;
+margin-top:7px;
+}
+
+.admin-button{
+display:block;
+width:100%;
+text-align:center;
+background:var(--card2);
+border:1px solid #36516d;
+color:var(--gold-light);
+padding:12px;
+border-radius:11px;
+font-weight:bold;
+margin-top:13px;
+text-decoration:none;
+font-size:12px;
+}
+
+/* AD AND FOOTER */
+
+.ad{
+margin-top:25px;
+border:1px dashed #39516d;
+border-radius:16px;
+padding:18px;
+text-align:center;
+color:var(--muted);
+font-size:12px;
+overflow:hidden;
+background:rgba(12,30,51,.65);
+}
+
+footer{
+text-align:center;
+padding:30px 0 15px;
+color:#71839c;
+font-size:11px;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+position:fixed!important;
+left:0!important;
+right:0!important;
+bottom:0!important;
+width:100%!important;
+min-height:72px;
+display:flex!important;
+align-items:center;
+justify-content:space-around;
+gap:0;
+padding:7px 3px calc(7px + env(safe-area-inset-bottom));
+background:rgba(7,20,38,.98);
+border-top:1px solid var(--border);
+box-shadow:0 -5px 24px rgba(0,0,0,.32);
+backdrop-filter:blur(18px);
+z-index:2147483647!important;
+}
+
+.bottom-nav a{
+flex:1;
+min-width:0;
+min-height:50px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:4px;
+color:#8496ad;
+text-decoration:none;
+font-size:10px;
+font-weight:600;
+white-space:nowrap;
+}
+
+.bottom-nav a svg{
+width:22px;
+height:22px;
+display:block;
+stroke:currentColor;
+stroke-width:1.8;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+
+.bottom-nav a.active{
+color:var(--gold-light);
+font-weight:800;
+}
+
+.bottom-nav a.earn-link{
+color:var(--gold);
+font-weight:800;
+}
+
+.earn-icon-wrap{
+width:45px;
+height:45px;
+flex-shrink:0;
+border-radius:50%;
+background:linear-gradient(135deg,#ffe49a,#e7b431);
+display:flex;
+align-items:center;
+justify-content:center;
+margin-top:-18px;
+border:2px solid #fff0b8;
+box-shadow:0 4px 18px rgba(245,196,81,.25);
+}
+
+.bottom-nav a.earn-link svg{
+width:27px;
+height:27px;
+stroke:#172238;
+stroke-width:2.4;
+}
+
+.bottom-nav a.earn-link span{
+color:var(--gold);
+font-size:11px;
+font-weight:800;
+}
+
+/* RESPONSIVE */
+
+@media(min-width:700px){
+.app{
+padding-left:30px;
+padding-right:30px;
+}
+
+.stats-grid{
+grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+.main-content{
+max-width:950px;
+}
+
+.dashboard-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
+align-items:start;
+}
+
+.dashboard-grid .section{
+margin-top:23px;
+}
+
+.dashboard-grid .full-width{
+grid-column:1/-1;
+}
+
+.wallet-grid{
+gap:12px;
+}
+}
+
+@media(max-width:420px){
+.app{
+padding-left:13px;
+padding-right:13px;
+}
+
+.logo{
+width:65px;
+}
+
+.header-actions{
+gap:4px;
+}
+
+.header-button{
+width:34px;
+height:36px;
+border-radius:10px;
+}
+
+.header-button svg{
+width:19px;
+height:19px;
+}
+
+.profile-card{
+padding:15px;
+gap:11px;
+}
+
+.avatar-wrap{
+width:52px;
+height:52px;
+}
+
+.profile-info h1{
+font-size:16px;
+}
+
+.level-card{
+padding:16px;
+}
+
+.level-title{
+font-size:20px;
+}
+
+.level-details{
+gap:6px;
+}
+
+.level-detail{
+padding:9px 7px;
+}
+
+.level-detail strong{
+font-size:11px;
+}
+
+.wallet-card{
+padding:18px;
+}
+
+.wallet-total{
+font-size:31px;
+}
+
+.wallet-grid{
+gap:6px;
+}
+
+.wallet-stat{
+padding:10px 8px;
+}
+
+.wallet-stat strong{
+font-size:12px;
+}
+
+.member-card{
+padding:13px 5px;
+}
+
+.member-avatar{
+width:43px;
+height:43px;
+}
+
+.member-name{
+font-size:10px;
+}
+
+.member-points{
+font-size:10px;
+}
+
+.stat-value{
+font-size:20px;
+}
+
+.chart-tabs{
+gap:4px;
+}
+
+.chart-tab{
+padding:8px 9px;
+}
+
+.bottom-nav a{
+font-size:9px;
+gap:3px;
+}
+
+.bottom-nav a svg{
+width:21px;
+height:21px;
+}
+
+.earn-icon-wrap{
+width:41px;
+height:41px;
+margin-top:-15px;
+}
+
+.bottom-nav a.earn-link svg{
+width:24px;
+height:24px;
+}
+
+.menu{
+width:235px;
+}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+<div class="brand">
+<img class="logo" src="./logo.PNG" alt="EarningHub Logo">
+</div>
+
+<div class="header-actions">
+
+<button class="header-button" type="button"
+onclick="shareSite()" aria-label="Share">
+<svg viewBox="0 0 24 24">
+<circle cx="18" cy="5" r="2.5"></circle>
+<circle cx="6" cy="12" r="2.5"></circle>
+<circle cx="18" cy="19" r="2.5"></circle>
+<line x1="8.2" y1="10.8" x2="15.8" y2="6.2"></line>
+<line x1="8.2" y1="13.2" x2="15.8" y2="17.8"></line>
+</svg>
+</button>
+
+<a class="header-button" href="./search.html" aria-label="Search">
+<svg viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="6.5"></circle>
+<line x1="16" y1="16" x2="21" y2="21"></line>
+</svg>
+</a>
+
+<a class="header-button notification-button"
+href="./notification-center.html" aria-label="Notifications">
+<svg viewBox="0 0 24 24">
+<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+<path d="M10 21h4"></path>
+</svg>
+<span class="notification-dot" id="notificationDot">0</span>
+</a>
+
+<button class="header-button" id="menuButton"
+type="button" onclick="toggleMenu()" aria-label="Menu"
+aria-expanded="false">
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="5" r="1.5" fill="#f5f7fb"></circle>
+<circle cx="12" cy="12" r="1.5" fill="#f5f7fb"></circle>
+<circle cx="12" cy="19" r="1.5" fill="#f5f7fb"></circle>
+</svg>
+</button>
+
+</div>
+
+<div id="menu" class="menu">
+<div class="menu-user">
+<strong id="menuUsername">User</strong>
+<small id="menuEmail"></small>
+</div>
+
+<a href="./account.html">👤 My Account</a>
+<a href="./create-campaign.html">🚀 Create Campaign</a>
+<a href="./wallet.html">💳 Wallet</a>
+<a href="./withdraw.html">📤 Withdraw</a>
+<a class="menu-earn" href="./earn.html">⭐ Earn</a>
+<a class="menu-feature" href="#dailyBonus" onclick="closeMenu()">🎁 Daily Bonus</a>
+<a class="menu-feature" href="#myCampaigns" onclick="closeMenu()">📊 My Campaigns</a>
+<a href="./transactions.html">📜 Transaction History</a>
+<a href="./referral.html">👥 Invite &amp; Earn</a>
+<a href="./settings.html">⚙️ Settings</a>
+<button class="logout-menu" type="button" onclick="logout()">🚪 Logout</button>
+</div>
+</header>
+
+<main class="main-content">
+
+<!-- PROFILE HEADER -->
+
+<section class="profile-card">
+<div class="avatar-wrap">
+<img id="profileAvatar" class="avatar"
+src="https://ui-avatars.com/api/?name=User&background=142b47&color=ffe49a"
+alt="Profile picture">
+</div>
+
+<div class="profile-info">
+<h1 id="username">Loading...</h1>
+<div class="profile-email" id="profileEmail">EarningHub member</div>
+<span class="member-badge" id="memberBadge">⭐ MEMBER</span>
+</div>
+</section>
+
+<!-- LEVEL CARD -->
+
+<section class="section">
+<div class="section-heading">
+<div>
+<h2>🏆 Member Level</h2>
+<p>Your progress and next level</p>
+</div>
+</div>
+
+<div class="level-card">
+<div class="level-top">
+<div>
+<div class="level-number" id="levelNumber">LEVEL 1</div>
+<div class="level-title" id="levelTitle">BRONZE MEMBER</div>
+</div>
+<div class="level-icon" id="levelIcon">🥉</div>
+</div>
+
+<div class="progress-info">
+<span id="progressLabel">Points progress</span>
+<strong class="gold" id="progressPercent">0%</strong>
+</div>
+
+<div class="progress-track">
+<div class="progress-fill" id="levelProgress"></div>
+</div>
+
+<div class="level-details">
+<div class="level-detail">
+<span>Current Points</span>
+<strong id="currentPoints">0</strong>
+</div>
+<div class="level-detail">
+<span>Next Level</span>
+<strong id="nextLevel">LEVEL 2</strong>
+</div>
+<div class="level-detail">
+<span>Points Needed</span>
+<strong id="pointsNeeded">—</strong>
+</div>
+</div>
+
+<p class="status-text" id="levelNote" style="margin-top:12px">
+Level progress will update when the points system is configured.
+</p>
+</div>
+</section>
+
+<!-- WALLET -->
+
+<section class="section">
+<div class="section-heading">
+<div>
+<h2>💰 Token Balance</h2>
+<p>Your rewards and available funds</p>
+</div>
+</div>
+
+<div class="wallet-card">
+<div class="wallet-label">Total Tokens</div>
+<div class="wallet-total" id="totalTokens">0</div>
+<div class="wallet-usd">Estimated token value: <strong id="tokenUsd">$0.00</strong></div>
+
+<div class="wallet-grid">
+<div class="wallet-stat">
+<span>Available Balance</span>
+<strong id="balance">$0.00</strong>
+</div>
+<div class="wallet-stat">
+<span>Total Earned</span>
+<strong id="totalEarned">—</strong>
+</div>
+<div class="wallet-stat">
+<span>Token Rate</span>
+<strong>300 = $0.50</strong>
+</div>
+</div>
+
+<div class="wallet-actions">
+<a class="action-button action-primary" href="./wallet.html">Open Wallet</a>
+<a class="action-button action-secondary" href="./withdraw.html">Withdraw</a>
+</div>
+</div>
+</section>
+
+<div class="dashboard-grid">
+
+<!-- TOP MEMBERS -->
+
+<section class="section full-width">
+<div class="section-heading">
+<div>
+<h2>👑 Top Members</h2>
+<p>Members ranked by available points data</p>
+</div>
+</div>
+
+<div class="leaderboard" id="leaderboard">
+<div class="member-card">
+<div class="rank">1</div>
+<div class="status-text">Loading members...</div>
+</div>
+<div class="member-card">
+<div class="rank">2</div>
+<div class="status-text">—</div>
+</div>
+<div class="member-card">
+<div class="rank">3</div>
+<div class="status-text">—</div>
+</div>
+</div>
+
+<p class="status-text" id="leaderboardNote" style="margin-top:10px">
+Loading leaderboard...
+</p>
+</section>
+
+<!-- PLATFORM STATISTICS -->
+
+<section class="section full-width">
+<div class="section-heading">
+<div>
+<h2>📊 Platform Statistics</h2>
+<p>Community and platform overview</p>
+</div>
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+<div class="stat-icon">👥</div>
+<div class="stat-label">Total Members</div>
+<div class="stat-value" id="totalMembers">—</div>
+<div class="stat-note">Registered profiles</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">💸</div>
+<div class="stat-label">Total Payouts</div>
+<div class="stat-value" id="totalPayouts">—</div>
+<div class="stat-note">Verified successful withdrawals</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📅</div>
+<div class="stat-label">Active Days</div>
+<div class="stat-value" id="activeDays">—</div>
+<div class="stat-note" id="activeDaysNote">Launch date required</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">⚡</div>
+<div class="stat-label">Active Members</div>
+<div class="stat-value" id="activeMembers">—</div>
+<div class="stat-note">Based on available activity records</div>
+</div>
+
+</div>
+</section>
+
+<!-- EARNINGS CHART -->
+
+<section class="section full-width">
+<div class="section-heading">
+<div>
+<h2>📈 Earnings Analytics</h2>
+<p>Your recorded earnings over time</p>
+</div>
+</div>
+
+<div class="card chart-card">
+
+<div class="chart-tabs">
+<button class="chart-tab active" data-range="daily" onclick="changeChartRange('daily',this)">Daily</button>
+<button class="chart-tab" data-range="weekly" onclick="changeChartRange('weekly',this)">Weekly</button>
+<button class="chart-tab" data-range="monthly" onclick="changeChartRange('monthly',this)">Monthly</button>
+</div>
+
+<div class="chart-summary">
+<strong id="chartTotal">$0.00</strong>
+<p id="chartCaption">Recorded earnings for the selected period</p>
+</div>
+
+<div class="chart-area" id="chartArea">
+<canvas id="earningsChart"></canvas>
+</div>
+
+<div class="chart-empty" id="chartEmpty">
+No usable earnings history was found.<br>
+The chart will appear when compatible transaction records are available.
+</div>
+
+</div>
+</section>
+
+<!-- DAILY BONUS -->
+
+<section class="section" id="dailyBonus">
+<div class="section-heading">
+<div>
+<h2>🎁 Daily Bonus</h2>
+<p>Claim your daily points</p>
+</div>
+</div>
+
+<div class="daily-bonus">
+<div class="bonus-heading">
+<div class="bonus-icon">🎁</div>
+<div>
+<h2>Daily Rewards</h2>
+<p>Claim your daily bonus and collect points every day.</p>
+</div>
+</div>
+
+<div class="bonus-points" id="bonusPoints">0 Points</div>
+<div class="bonus-info">300 Points = $0.50</div>
+
+<button id="bonusButton" class="bonus-button" onclick="claimDailyBonus()">
+Claim Daily Bonus +10
+</button>
+
+<div id="bonusMessage" class="bonus-message" role="status"></div>
+</div>
+</section>
+
+<!-- MY CAMPAIGNS -->
+
+<section class="section" id="myCampaigns">
+<div class="section-heading">
+<div>
+<h2>🚀 My Campaigns</h2>
+<p>Manage campaigns you created</p>
+</div>
+</div>
+
+<div class="campaign-card">
+<div class="campaign-icon">📊</div>
+<div class="campaign-info">
+<h3>My Campaign Details</h3>
+<p id="campaignDescription">View the details of your campaigns.</p>
+</div>
+<a class="campaign-arrow" href="./my-campaigns.html" aria-label="Open My Campaigns">›</a>
+</div>
+</section>
+
+<!-- ADMIN -->
+
+<section class="section admin-review full-width" id="adminReview">
+<div class="section-heading">
+<div>
+<h2>🛡️ Admin Panel</h2>
+<p>Administrative review tools</p>
+</div>
+</div>
+
+<div class="admin-card">
+<strong>Task Review</strong>
+<p>Review pending task submissions and approve or reject rewards.</p>
+<a class="admin-button" href="./admin-review.html">Open Task Review</a>
+</div>
+
+<div class="admin-card">
+<strong>Withdrawal Review</strong>
+<p>Review pending withdrawal requests.</p>
+<a class="admin-button" href="./admin-withdrawals.html">Open Withdrawal Review</a>
+</div>
+
+<div class="admin-card">
+<strong>Payment Review</strong>
+<p>Review campaign payments and approve or reject submitted receipts.</p>
+<a class="admin-button" href="./admin.html">Open Payment Review</a>
+</div>
+</section>
+
+</div>
+
+<div class="ad">
+<script>
+atOptions = {
+'key':'2d1ea72a15ba0757204523b601e58d7c',
+'format':'iframe',
+'height':250,
+'width':300,
+'params':{}
+};
+</script>
+<script src="https://www.highrevenueformat.com/2d1ea72a15ba0757204523b601e58d7c/invoke.js"></script>
+</div>
+
+<footer>© 2026 EarningHub</footer>
+
+</main>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+
+<nav class="bottom-nav" aria-label="Main navigation">
+
+<a href="./dashboard.html" class="active" aria-current="page">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M3 10.5 12 3l9 7.5"></path>
+<path d="M5.5 9.5V21h13V9.5"></path>
+<path d="M9 21v-7h6v7"></path>
+</svg>
+<span>Home</span>
+</a>
+
+<a href="./create-campaign.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M4 13V7l12-3v15L4 16v-3"></path>
+<path d="M4 7h-1a2 2 0 0 0 0 6h1"></path>
+<path d="m8 17 2 4h4l-3-5"></path>
+<path d="M19 8h2"></path>
+<path d="M19 12h2"></path>
+</svg>
+<span>Campaigns</span>
+</a>
+
+<a href="./earn.html" class="earn-link">
+<div class="earn-icon-wrap">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M12 7v10"></path>
+<path d="M15 9.5c0-1.2-1.3-2-3-2s-3 .8-3 2 1 2 3 2.5 3 1.3 3 2.5-1.3 2-3 2-3-.8-3-2"></path>
+</svg>
+</div>
+<span>Earn</span>
+</a>
+
+<a href="./wallet.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<rect x="2.5" y="5" width="19" height="15" rx="2.5"></rect>
+<path d="M3 9h18"></path>
+<path d="M16 14h2"></path>
+</svg>
+<span>Wallet</span>
+</a>
+
+<a href="./account.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 21a8 8 0 0 1 16 0"></path>
+</svg>
+<span>Account</span>
+</a>
+
+</nav>
+
+<script>
+/* SUPABASE */
+
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+/*
+CONFIGURATION
+
+Set the real launch date here using YYYY-MM-DD.
+Leave empty until the actual date is confirmed.
+
+Level thresholds below are examples and must be adjusted
+to match your official EarningHub level rules.
+*/
+
+const SITE_LAUNCH_DATE = "";
+
+const LEVELS = [
+{level:1,name:"BRONZE MEMBER",min:0,icon:"🥉"},
+{level:2,name:"SILVER MEMBER",min:1000,icon:"🥈"},
+{level:3,name:"GOLD MEMBER",min:3000,icon:"🥇"},
+{level:4,name:"PLATINUM MEMBER",min:7000,icon:"💎"},
+{level:5,name:"DIAMOND MEMBER",min:15000,icon:"👑"}
+];
+
+const POINTS_PER_HALF_DOLLAR = 300;
+
+let currentUserId = null;
+let chartInstance = null;
+let chartRecords = [];
+let currentChartRange = "daily";
+
+/* HELPERS */
+
+function byId(id){
+return document.getElementById(id);
+}
+
+function escapeHTML(value){
+return String(value ?? "").replace(/[&<>"']/g,function(char){
+return {
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+}[char];
+});
+}
+
+function formatMoney(value){
+const amount = Number(value);
+if(!Number.isFinite(amount)) return "—";
+return "$" + amount.toLocaleString("en-US",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+});
+}
+
+function formatNumber(value){
+const amount = Number(value);
+if(!Number.isFinite(amount)) return "—";
+return Math.round(amount).toLocaleString("en-US");
+}
+
+function formatDate(date){
+const d = new Date(date);
+if(Number.isNaN(d.getTime())) return "";
+return d.toISOString().slice(0,10);
+}
+
+function initialsAvatar(name){
+return "https://ui-avatars.com/api/?name=" +
+encodeURIComponent(name || "User") +
+"&background=142b47&color=ffe49a&bold=true";
+}
+
+function safeAvatar(url,name){
+if(typeof url === "string" &&
+(url.startsWith("https://") || url.startsWith("http://"))){
+return url;
+}
+return initialsAvatar(name);
+}
+
+/* MENU */
+
+function toggleMenu(){
+const menu = byId("menu");
+const button = byId("menuButton");
+
+menu.classList.toggle("show");
+button.setAttribute(
+"aria-expanded",
+menu.classList.contains("show") ? "true" : "false"
+);
+}
+
+function closeMenu(){
+byId("menu").classList.remove("show");
+byId("menuButton").setAttribute("aria-expanded","false");
+}
+
+document.addEventListener("click",function(event){
+if(
+!byId("menu").contains(event.target) &&
+!byId("menuButton").contains(event.target)
+){
+closeMenu();
+}
+});
+
+/* SHARE */
+
+async function shareSite(){
+const shareData = {
+title:"EarningHub",
+text:"Check out EarningHub",
+url:window.location.href
+};
+
+if(navigator.share){
+try{
+await navigator.share(shareData);
+}catch(error){}
+}else{
+try{
+await navigator.clipboard.writeText(window.location.href);
+alert("EarningHub link copied.");
+}catch(error){
+alert("Unable to share this page.");
+}
+}
+}
+
+/* PROFILE */
+
+async function loadProfile(user){
+const email = user.email || "";
+const fallbackName = email.split("@")[0] || "User";
+
+byId("profileEmail").textContent = email || "EarningHub member";
+byId("menuEmail").textContent = email;
+byId("username").textContent = fallbackName;
+byId("menuUsername").textContent = fallbackName;
+byId("profileAvatar").src = initialsAvatar(fallbackName);
+
+const {data,error} = await client
+.from("profiles")
+.select("*")
+.eq("id",user.id)
+.maybeSingle();
+
+if(error){
+console.log("Profile loading error:",error.message);
+return null;
+}
+
+if(!data) return null;
+
+const name = data.username || fallbackName;
+
+byId("username").textContent = name;
+byId("menuUsername").textContent = name;
+byId("profileAvatar").src = safeAvatar(data.avatar_url,name);
+byId("profileAvatar").alt = name + " profile picture";
+
+const badge = data.is_admin ? "🛡️ ADMIN" : "⭐ MEMBER";
+byId("memberBadge").textContent = badge;
+
+return data;
+}
+
+/* WALLET */
+
+async function loadWallet(userId){
+const {data,error} = await client
+.from("wallets")
+.select("*")
+.eq("user_id",userId)
+.maybeSingle();
+
+if(error){
+console.log("Wallet loading error:",error.message);
+return {balance:0,record:null};
+}
+
+const balance = Number(data?.balance || 0);
+
+byId("balance").textContent = formatMoney(balance);
+
+return {balance,record:data};
+}
+
+/* DAILY BONUS */
+
+async function loadDailyBonus(userId){
+const {data,error} = await client
+.from("daily_bonuses")
+.select("points,bonus_date")
+.eq("user_id",userId)
+.order("bonus_date",{ascending:false});
+
+if(error){
+console.log("Daily bonus loading error:",error.message);
+byId("bonusPoints").textContent = "— Points";
+byId("levelNote").textContent =
+"Your points could not be loaded. Check the daily_bonuses table permissions.";
+return {points:0,records:[]};
+}
+
+const records = data || [];
+const points = records.reduce(function(total,row){
+return total + Number(row.points || 0);
+},0);
+
+byId("bonusPoints").textContent = formatNumber(points) + " Points";
+byId("totalTokens").textContent = formatNumber(points);
+
+const estimatedValue =
+points / POINTS_PER_HALF_DOLLAR * 0.50;
+
+byId("tokenUsd").textContent = formatMoney(estimatedValue);
+
+const today = formatDate(new Date());
+const claimedToday = records.some(function(row){
+return formatDate(row.bonus_date) === today;
+});
+
+const button = byId("bonusButton");
+
+if(claimedToday){
+button.disabled = true;
+button.textContent = "Daily Bonus Claimed ✓";
+}else{
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+}
+
+updateLevel(points);
+
+return {points,records};
+}
+
+/* LEVEL */
+
+function updateLevel(points){
+let current = LEVELS[0];
+let next = null;
+
+for(let i=0;i<LEVELS.length;i++){
+if(points >= LEVELS[i].min){
+current = LEVELS[i];
+next = LEVELS[i+1] || null;
+}
+}
+
+byId("levelNumber").textContent = "LEVEL " + current.level;
+byId("levelTitle").textContent = current.name;
+byId("levelIcon").textContent = current.icon;
+byId("memberBadge").textContent = "⭐ " + current.name;
+
+byId("currentPoints").textContent = formatNumber(points);
+
+if(next){
+const needed = next.min - points;
+const progress = Math.max(0,Math.min(
+100,
+((points-current.min)/(next.min-current.min))*100
+));
+
+byId("nextLevel").textContent = "LEVEL " + next.level;
+byId("pointsNeeded").textContent = formatNumber(needed);
+byId("progressPercent").textContent = Math.floor(progress) + "%";
+byId("levelProgress").style.width = progress + "%";
+byId("progressLabel").textContent =
+formatNumber(points-current.min) + " / " +
+formatNumber(next.min-current.min) + " points";
+
+byId("levelNote").textContent =
+"Example level thresholds are currently in use. Update LEVELS to match your official EarningHub rules.";
+}else{
+byId("nextLevel").textContent = "MAX LEVEL";
+byId("pointsNeeded").textContent = "0";
+byId("progressPercent").textContent = "100%";
+byId("levelProgress").style.width = "100%";
+byId("progressLabel").textContent = "Maximum configured level reached";
+byId("levelNote").textContent =
+"You have reached the highest level configured on this page.";
+}
+}
+
+/* CLAIM DAILY BONUS */
+
+async function claimDailyBonus(){
+const button = byId("bonusButton");
+const message = byId("bonusMessage");
+
+button.disabled = true;
+button.textContent = "Claiming...";
+message.style.display = "none";
+
+try{
+const {data,error} = await client.rpc("claim_daily_bonus");
+
+if(error){
+message.textContent =
+"Unable to claim daily bonus: " + error.message;
+message.style.display = "block";
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+return;
+}
+
+if(!data){
+message.textContent = "Unable to claim daily bonus.";
+message.style.display = "block";
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+return;
+}
+
+if(data.success){
+message.textContent =
+data.message || "Daily bonus claimed successfully.";
+
+if(Number(data.reward || 0) > 0){
+message.textContent += " " +
+formatMoney(data.reward) +
+" has been added to your wallet.";
+}
+
+message.style.display = "block";
+
+if(currentUserId){
+await Promise.all([
+loadWallet(currentUserId),
+loadDailyBonus(currentUserId)
+]);
+}
+
+button.textContent = "Daily Bonus Claimed ✓";
+}else{
+message.textContent =
+data.message || "Daily bonus could not be claimed.";
+message.style.display = "block";
+
+if(
+data.message &&
+data.message.toLowerCase().includes("already claimed")
+){
+button.disabled = true;
+button.textContent = "Daily Bonus Claimed ✓";
+}else{
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+}
+}
+}catch(error){
+console.error("Daily bonus claim error:",error);
+message.textContent = "Something went wrong. Please try again.";
+message.style.display = "block";
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+}
+}
+
+/* TOP MEMBERS */
+
+async function loadLeaderboard(){
+const board = byId("leaderboard");
+const note = byId("leaderboardNote");
+
+const {data:bonusRows,error:bonusError} = await client
+.from("daily_bonuses")
+.select("user_id,points");
+
+if(bonusError){
+console.log("Leaderboard points error:",bonusError.message);
+board.innerHTML =
+'<div class="member-card" style="grid-column:1/-1">' +
+'<div class="status-text">Leaderboard data is unavailable.</div></div>';
+note.textContent =
+"Check access to daily_bonuses before enabling member rankings.";
+return;
+}
+
+const totals = {};
+
+(bonusRows || []).forEach(function(row){
+if(!row.user_id) return;
+totals[row.user_id] =
+(totals[row.user_id] || 0) + Number(row.points || 0);
+});
+
+const ranked = Object.entries(totals)
+.map(([id,points])=>({id,points}))
+.sort((a,b)=>b.points-a.points)
+.slice(0,3);
+
+if(!ranked.length){
+board.innerHTML =
+'<div class="member-card" style="grid-column:1/-1">' +
+'<div class="status-text">No points records are available yet.</div></div>';
+note.textContent = "The leaderboard will appear when members have points records.";
+return;
+}
+
+const ids = ranked.map(item=>item.id);
+
+const {data:profiles,error:profileError} = await client
+.from("profiles")
+.select("id,username,avatar_url")
+.in("id",ids);
+
+if(profileError){
+console.log("Leaderboard profiles error:",profileError.message);
+}
+
+const profileMap = {};
+(profiles || []).forEach(function(profile){
+profileMap[profile.id] = profile;
+});
+
+board.innerHTML = ranked.map(function(member,index){
+const profile = profileMap[member.id] || {};
+const name = profile.username || "Member";
+const avatar = safeAvatar(profile.avatar_url,name);
+const rankIcons = ["🥇","🥈","🥉"];
+
+return `
+<div class="member-card ${index===0?"first":""}">
+<div class="rank">${rankIcons[index]}</div>
+<img class="member-avatar"
+src="${escapeHTML(avatar)}"
+alt="${escapeHTML(name)}"
+onerror="this.onerror=null;this.src='${initialsAvatar(name)}'">
+<div class="member-name">${escapeHTML(name)}</div>
+<div class="member-points">${formatNumber(member.points)} Points</div>
+<div class="small muted">Rank #${index+1}</div>
+</div>`;
+}).join("");
+
+note.textContent =
+"Ranking is calculated from points recorded in daily_bonuses, not from all possible EarningHub activities.";
+}
+
+/* PLATFORM STATISTICS */
+
+async function loadPlatformStats(){
+const {count:memberCount,error:memberError} = await client
+.from("profiles")
+.select("id",{count:"exact",head:true});
+
+if(memberError){
+console.log("Member count error:",memberError.message);
+byId("totalMembers").textContent = "—";
+}else{
+byId("totalMembers").textContent = formatNumber(memberCount || 0);
+}
+
+/*
+Active days are not guessed.
+Configure SITE_LAUNCH_DATE with the real launch date.
+*/
+
+if(SITE_LAUNCH_DATE){
+const start = new Date(SITE_LAUNCH_DATE + "T00:00:00Z");
+const now = new Date();
+
+if(!Number.isNaN(start.getTime()) && start <= now){
+const days = Math.floor((now-start)/86400000)+1;
+byId("activeDays").textContent = formatNumber(days);
+byId("activeDaysNote").textContent = "Since configured launch date";
+}
+}else{
+byId("activeDays").textContent = "—";
+byId("activeDaysNote").textContent = "Set the real launch date in the code";
+}
+
+/*
+Active users are estimated from users with daily_bonuses records.
+This is not the same as users active today.
+*/
+
+const {data:activeRows,error:activeError} = await client
+.from("daily_bonuses")
+.select("user_id");
+
+if(activeError){
+console.log("Active members query error:",activeError.message);
+byId("activeMembers").textContent = "—";
+}else{
+const uniqueUsers = new Set(
+(activeRows || []).map(row=>row.user_id).filter(Boolean)
+);
+byId("activeMembers").textContent = formatNumber(uniqueUsers.size);
+}
+}
+
+/* PAYOUTS */
+
+async function loadPayoutStats(){
+const {data,error} = await client
+.from("withdrawals")
+.select("*");
+
+if(error){
+console.log("Payout statistics error:",error.message);
+byId("totalPayouts").textContent = "—";
+return;
+}
+
+const rows = data || [];
+
+const successful = rows.filter(function(row){
+const status = String(
+row.status || row.state || row.withdrawal_status || ""
+).toLowerCase();
+
+return [
+"paid",
+"completed",
+"success",
+"successful",
+"approved"
+].includes(status);
+});
+
+let total = 0;
+
+successful.forEach(function(row){
+const amount = Number(
+row.amount ?? row.requested_amount ?? row.withdrawal_amount ?? 0
+);
+if(Number.isFinite(amount)) total += amount;
+});
+
+byId("totalPayouts").textContent =
+formatMoney(total);
+
+}
+
+/* TRANSACTIONS AND EARNINGS */
+
+function getTransactionAmount(row){
+const possible = [
+row.amount,
+row.value,
+row.earned_amount,
+row.reward_amount,
+row.credit,
+row.total
+];
+
+for(const item of possible){
+if(item !== null && item !== undefined && item !== ""){
+const value = Number(item);
+if(Number.isFinite(value)) return value;
+}
+}
+
+return null;
+}
+
+function getTransactionDate(row){
+const possible = [
+row.created_at,
+row.transaction_date,
+row.date,
+row.createdAt
+];
+
+for(const item of possible){
+if(item){
+const date = new Date(item);
+if(!Number.isNaN(date.getTime())) return date;
+}
+}
+return null;
+}
+
+function isEarningTransaction(row){
+const status = String(row.status || "").toLowerCase();
+const type = String(
+row.type || row.transaction_type || row.category || ""
+).toLowerCase();
+
+if(status && ![
+"completed","success","successful","approved","paid"
+].includes(status)){
+return false;
+}
+
+if(type){
+if(
+type.includes("withdraw") ||
+type.includes("debit") ||
+type.includes("purchase") ||
+type.includes("payment")
+){
+return false;
+}
+
+if(
+type.includes("earn") ||
+type.includes("reward") ||
+type.includes("bonus") ||
+type.includes("credit") ||
+type.includes("task")
+){
+return true;
+}
+}
+
+return row.amount !== undefined ||
+row.value !== undefined ||
+row.earned_amount !== undefined ||
+row.reward_amount !== undefined;
+}
+
+async function loadEarnings(userId){
+const {data,error} = await client
+.from("transactions")
+.select("*")
+.eq("user_id",userId);
+
+if(error){
+console.log("Earnings query error:",error.message);
+chartRecords = [];
+byId("totalEarned").textContent = "—";
+renderChart();
+return;
+}
+
+const rows = (data || []).filter(isEarningTransaction);
+
+chartRecords = rows.map(function(row){
+return {
+amount:getTransactionAmount(row),
+date:getTransactionDate(row)
+};
+}).filter(function(item){
+return item.amount !== null &&
+item.amount > 0 &&
+item.date !== null;
+});
+
+if(chartRecords.length){
+const total = chartRecords.reduce((sum,row)=>sum+row.amount,0);
+byId("totalEarned").textContent = formatMoney(total);
+}else{
+byId("totalEarned").textContent = "—";
+}
+
+renderChart();
+}
+
+/* CHART */
+
+function changeChartRange(range,button){
+currentChartRange = range;
+
+document.querySelectorAll(".chart-tab").forEach(function(tab){
+tab.classList.toggle("active",tab===button);
+});
+
+renderChart();
+}
+
+function startOfWeek(date){
+const d = new Date(date);
+const day = (d.getDay()+6)%7;
+d.setDate(d.getDate()-day);
+d.setHours(0,0,0,0);
+return d;
+}
+
+function renderChart(){
+const canvas = byId("earningsChart");
+const empty = byId("chartEmpty");
+const area = byId("chartArea");
+
+if(chartInstance){
+chartInstance.destroy();
+chartInstance = null;
+}
+
+if(!chartRecords.length){
+area.style.display = "none";
+empty.style.display = "block";
+byId("chartTotal").textContent = "—";
+byId("chartCaption").textContent = "No verified transaction history available";
+return;
+}
+
+area.style.display = "block";
+empty.style.display = "none";
+
+const now = new Date();
+let labels = [];
+let values = [];
+let grouped = {};
+
+if(currentChartRange === "daily"){
+for(let i=6;i>=0;i--){
+const d = new Date(now);
+d.setDate(now.getDate()-i);
+const key = formatDate(d);
+labels.push(d.toLocaleDateString("en-US",{weekday:"short"}));
+grouped[key] = 0;
+}
+}else if(currentChartRange === "weekly"){
+for(let i=7;i>=0;i--){
+const d = new Date(now);
+d.setDate(now.getDate()-i*7);
+const start = startOfWeek(d);
+const key = formatDate(start);
+labels.push(start.toLocaleDateString("en-US",{month:"short",day:"numeric"}));
+grouped[key] = 0;
+}
+}else{
+for(let i=5;i>=0;i--){
+const d = new Date(now.getFullYear(),now.getMonth()-i,1);
+const key = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+labels.push(d.toLocaleDateString("en-US",{month:"short"}));
+grouped[key] = 0;
+}
+}
+
+chartRecords.forEach(function(row){
+let key;
+
+if(currentChartRange==="daily"){
+key = formatDate(row.date);
+}else if(currentChartRange==="weekly"){
+key = formatDate(startOfWeek(row.date));
+}else{
+key = row.date.getFullYear()+"-"+String(row.date.getMonth()+1).padStart(2,"0");
+}
+
+if(Object.prototype.hasOwnProperty.call(grouped,key)){
+grouped[key] += row.amount;
+}
+});
+
+values = Object.values(grouped);
+
+const total = values.reduce((sum,value)=>sum+value,0);
+byId("chartTotal").textContent = formatMoney(total);
+
+byId("chartCaption").textContent =
+currentChartRange==="daily" ? "Last 7 days" :
+currentChartRange==="weekly" ? "Last 8 weeks" :
+"Last 6 months";
+
+const ctx = canvas.getContext("2d");
+const gradient = ctx.createLinearGradient(0,0,0,230);
+gradient.addColorStop(0,"rgba(245,196,81,0.32)");
+gradient.addColorStop(1,"rgba(245,196,81,0.01)");
+
+chartInstance = new Chart(ctx,{
+type:"line",
+data:{
+labels:labels,
+datasets:[{
+label:"Earnings",
+data:values,
+borderColor:"#f5c451",
+backgroundColor:gradient,
+borderWidth:2.5,
+fill:true,
+tension:.38,
+pointRadius:3,
+pointHoverRadius:5,
+pointBackgroundColor:"#ffe49a",
+pointBorderColor:"#f5c451"
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{display:false},
+tooltip:{
+callbacks:{
+label:function(context){
+return " " + formatMoney(context.parsed.y);
+}
+}
+}
+},
+scales:{
+x:{
+grid:{display:false},
+ticks:{color:"#91a3bb",font:{size:10}}
+},
+y:{
+beginAtZero:true,
+grid:{color:"rgba(145,163,187,.12)"},
+ticks:{
+color:"#91a3bb",
+font:{size:10},
+callback:function(value){return "$"+value;}
+}
+}
+}
+}
+});
+}
+
+/* NOTIFICATIONS */
+
+async function loadNotificationCount(userId){
+const {count,error} = await client
+.from("notifications")
+.select("id",{count:"exact",head:true})
+.eq("user_id",userId)
+.eq("is_read",false);
+
+if(error){
+console.log("Notification count error:",error.message);
+return;
+}
+
+const dot = byId("notificationDot");
+const unread = Number(count || 0);
+
+if(unread > 0){
+dot.textContent = unread > 99 ? "99+" : unread;
+dot.style.display = "flex";
+}else{
+dot.style.display = "none";
+}
+}
+
+/* MY CAMPAIGNS */
+
+async function loadMyCampaigns(userId){
+const {data,error} = await client
+.from("campaigns")
+.select("id")
+.eq("creator_id",userId)
+.limit(1);
+
+if(error){
+console.log("Campaign loading error:",error.message);
+byId("campaignDescription").textContent =
+"Your campaigns could not be loaded right now.";
+return;
+}
+
+if(data && data.length){
+byId("campaignDescription").textContent =
+"You have created campaigns. Open My Campaigns to view details.";
+}else{
+byId("campaignDescription").textContent =
+"You have not created a campaign yet. Start creating one to see it here.";
+}
+}
+
+/* LOGOUT */
+
+async function logout(){
+const {error} = await client.auth.signOut();
+
+if(error){
+alert("Unable to log out. Please try again.");
+console.error("Logout error:",error.message);
+return;
+}
+
+window.location.href = "index.html";
+}
+
+/* START */
+
+async function loadUser(){
+try{
+const {data,error} = await client.auth.getSession();
+
+if(error){
+console.error("Session error:",error.message);
+return;
+}
+
+if(!data.session){
+window.location.href = "index.html";
+return;
+}
+
+const user = data.session.user;
+currentUserId = user.id;
+
+await loadProfile(user);
+
+if((user.email || "").toLowerCase()==="earninghubadmin@gmail.com"){
+byId("adminReview").style.display = "block";
+}
+
+const results = await Promise.allSettled([
+loadWallet(user.id),
+loadDailyBonus(user.id),
+loadNotificationCount(user.id),
+loadMyCampaigns(user.id),
+loadLeaderboard(),
+loadPlatformStats(),
+loadPayoutStats(),
+loadEarnings(user.id)
+]);
+
+results.forEach(function(result){
+if(result.status==="rejected"){
+console.error("Dashboard section failed:",result.reason);
+}
+});
+
+}catch(error){
+console.error("Dashboard loading error:",error);
+}
+}
+
+loadUser();
+</script>
+
+</body>
+</html>
