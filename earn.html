@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#071426">
+
+<title>Earn | EarningHub</title>
+
+<style>
+:root{
+--bg:#071426;
+--bg2:#0b1b30;
+--card:#10243d;
+--card2:#142b47;
+--gold:#f5c451;
+--gold-light:#ffe49a;
+--text:#f5f7fb;
+--muted:#91a3bb;
+--border:rgba(173,196,225,.14);
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+html{
+min-height:100%;
+background:var(--bg);
+}
+
+body{
+min-height:100vh;
+background:
+radial-gradient(
+ellipse at 50% -10%,
+rgba(48,100,163,.25),
+transparent 55%
+),
+linear-gradient(
+180deg,
+#081629 0%,
+#071426 65%,
+#09182a 100%
+);
+color:var(--text);
+padding-bottom:110px;
+}
+
+.app{
+max-width:900px;
+margin:auto;
+padding:0 22px 30px;
+}
+
+/* HEADER */
+
+header{
+height:90px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:1px solid var(--border);
+}
+
+.logo{
+width:100px;
+height:auto;
+max-height:65px;
+object-fit:contain;
+}
+
+.back-link{
+text-decoration:none;
+color:var(--gold-light);
+border:1px solid rgba(245,196,81,.23);
+border-radius:12px;
+padding:11px 15px;
+font-size:12px;
+font-weight:bold;
+background:rgba(245,196,81,.06);
+transition:background .2s,transform .2s;
+}
+
+.back-link:active{
+background:rgba(245,196,81,.14);
+transform:scale(.97);
+}
+
+/* INTRO */
+
+.intro{
+position:relative;
+overflow:hidden;
+margin:26px 0 25px;
+padding:24px 22px;
+border-radius:22px;
+border:1px solid rgba(245,196,81,.2);
+background:
+radial-gradient(
+circle at 100% 0%,
+rgba(245,196,81,.12),
+transparent 43%
+),
+linear-gradient(
+145deg,
+#173451,
+#10243d 65%,
+#0c1c31
+);
+box-shadow:0 12px 35px rgba(0,0,0,.14);
+}
+
+.intro small{
+display:inline-flex;
+align-items:center;
+gap:8px;
+color:var(--gold);
+font-size:10px;
+font-weight:bold;
+letter-spacing:1.7px;
+}
+
+.intro small::before{
+content:"";
+width:7px;
+height:7px;
+border-radius:50%;
+background:var(--gold);
+box-shadow:0 0 9px rgba(245,196,81,.4);
+}
+
+.intro h1{
+font-size:30px;
+line-height:1.3;
+letter-spacing:-.7px;
+margin:12px 0 10px;
+}
+
+.intro h1 .gold{
+color:var(--gold);
+}
+
+.intro p{
+font-size:13px;
+color:#b0bfd2;
+line-height:1.8;
+max-width:570px;
+}
+
+/* EARNING OPTIONS */
+
+.earning-options{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:15px;
+}
+
+.earning-card{
+position:relative;
+overflow:hidden;
+min-width:0;
+min-height:225px;
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+padding:21px 18px 17px;
+background:
+linear-gradient(
+145deg,
+rgba(20,44,72,.98),
+rgba(12,29,49,.98)
+);
+border:1px solid var(--border);
+border-radius:20px;
+text-decoration:none;
+color:var(--text);
+box-shadow:0 9px 24px rgba(0,0,0,.12);
+transition:
+transform .18s,
+border-color .18s,
+box-shadow .18s;
+}
+
+.earning-card::after{
+content:"";
+position:absolute;
+width:105px;
+height:105px;
+top:-65px;
+right:-48px;
+border-radius:50%;
+background:rgba(255,255,255,.025);
+pointer-events:none;
+}
+
+.earning-card:active{
+transform:scale(.985);
+border-color:rgba(245,196,81,.35);
+}
+
+.earning-icon{
+width:54px;
+height:54px;
+flex-shrink:0;
+border-radius:17px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:27px;
+background:linear-gradient(
+145deg,
+#1b3654,
+#142941
+);
+border:1px solid rgba(173,196,225,.13);
+margin-bottom:17px;
+box-shadow:0 5px 15px rgba(0,0,0,.12);
+}
+
+.earning-card h2{
+font-size:17px;
+line-height:1.4;
+margin-bottom:8px;
+color:#f5f7fb;
+}
+
+.earning-card p{
+font-size:12px;
+color:var(--muted);
+line-height:1.7;
+flex-grow:1;
+}
+
+.open-link{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:7px;
+margin-top:18px;
+width:100%;
+padding:12px 8px;
+text-align:center;
+background:linear-gradient(
+135deg,
+#1a3554,
+#132842
+);
+color:var(--gold-light);
+border:1px solid rgba(245,196,81,.2);
+border-radius:11px;
+font-size:12px;
+font-weight:bold;
+transition:background .2s;
+}
+
+.earning-card:active .open-link{
+background:#203c5b;
+}
+
+/* FEATURED TASK CARD */
+
+.earning-card.tasks{
+border:1px solid rgba(245,196,81,.5);
+background:
+radial-gradient(
+circle at 100% 0%,
+rgba(245,196,81,.13),
+transparent 45%
+),
+linear-gradient(
+145deg,
+#183451,
+#10243d
+);
+box-shadow:
+0 8px 28px rgba(0,0,0,.15),
+inset 0 0 0 1px rgba(245,196,81,.035);
+}
+
+.earning-card.tasks .earning-icon{
+background:linear-gradient(
+145deg,
+#ffe8a5,
+#eab93e
+);
+border-color:rgba(255,228,154,.4);
+box-shadow:0 5px 18px rgba(245,196,81,.12);
+}
+
+.earning-card.tasks h2{
+color:var(--gold-light);
+}
+
+.earning-card.tasks .open-link{
+background:linear-gradient(
+135deg,
+#ffe49a,
+#e8b43a
+);
+color:#17253a;
+border-color:transparent;
+}
+
+/* BOTTOM NAVIGATION */
+
+.bottom-nav{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+width:100%;
+max-width:900px;
+margin:auto;
+min-height:72px;
+display:flex;
+align-items:center;
+justify-content:space-around;
+padding:7px 3px calc(7px + env(safe-area-inset-bottom));
+background:rgba(7,20,38,.97);
+border-top:1px solid rgba(173,196,225,.15);
+box-shadow:0 -5px 24px rgba(0,0,0,.2);
+backdrop-filter:blur(18px);
+-webkit-backdrop-filter:blur(18px);
+z-index:9999;
+}
+
+.bottom-nav a{
+flex:1;
+min-width:0;
+min-height:50px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:4px;
+color:#8396b0;
+text-decoration:none;
+font-size:10px;
+font-weight:600;
+white-space:nowrap;
+border-radius:12px;
+}
+
+.bottom-nav a svg{
+width:22px;
+height:22px;
+stroke:currentColor;
+stroke-width:1.8;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+
+.bottom-nav a.active{
+color:var(--gold);
+font-weight:800;
+}
+
+.bottom-nav a.earn-link{
+color:var(--gold);
+font-weight:800;
+}
+
+.bottom-nav a.earn-link .earn-icon-wrap{
+width:46px;
+height:46px;
+flex-shrink:0;
+border-radius:16px;
+background:linear-gradient(
+145deg,
+#ffe8a5,
+#eab43b
+);
+display:flex;
+align-items:center;
+justify-content:center;
+margin-top:-19px;
+border:3px solid var(--bg);
+box-shadow:
+0 4px 15px rgba(245,196,81,.2),
+0 0 0 1px rgba(245,196,81,.15);
+}
+
+.bottom-nav a.earn-link svg{
+width:26px;
+height:26px;
+stroke:#14243a;
+stroke-width:2.2;
+}
+
+.bottom-nav a.earn-link span{
+color:var(--gold);
+font-size:11px;
+font-weight:800;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.app{
+padding-left:16px;
+padding-right:16px;
+}
+
+.intro{
+padding:22px 18px;
+}
+
+.intro h1{
+font-size:27px;
+}
+
+.earning-options{
+gap:11px;
+}
+
+.earning-card{
+min-height:220px;
+padding:17px 13px;
+border-radius:17px;
+}
+
+.earning-card h2{
+font-size:15px;
+}
+
+.earning-card p{
+font-size:12px;
+}
+
+.earning-icon{
+width:48px;
+height:48px;
+font-size:25px;
+border-radius:15px;
+margin-bottom:14px;
+}
+
+.open-link{
+font-size:11px;
+padding:11px 5px;
+}
+
+.bottom-nav a{
+font-size:9px;
+gap:3px;
+}
+
+.bottom-nav a svg{
+width:21px;
+height:21px;
+}
+
+.bottom-nav a.earn-link .earn-icon-wrap{
+width:42px;
+height:42px;
+margin-top:-16px;
+}
+}
+
+@media(max-width:350px){
+
+.app{
+padding-left:12px;
+padding-right:12px;
+}
+
+.earning-options{
+gap:8px;
+}
+
+.earning-card{
+padding:15px 10px;
+}
+
+.earning-card h2{
+font-size:14px;
+}
+
+.earning-card p{
+font-size:11px;
+}
+
+.bottom-nav a{
+font-size:8px;
+}
+}
+
+@media(prefers-reduced-motion:reduce){
+
+*,*::before,*::after{
+transition:none!important;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<img class="logo" src="./logo.PNG" alt="EarningHub Logo">
+<a class="back-link" href="dashboard.html">← Dashboard</a>
+</header>
+
+<section class="intro">
+<small>YOUR EARNING CENTER</small>
+<h1>Earn with <span class="gold">EarningHub</span> ⭐</h1>
+<p>
+Choose an earning activity below. Complete the available activities
+and collect rewards according to each activity's rules.
+</p>
+</section>
+
+<section class="earning-options">
+
+<a class="earning-card tasks" href="earn-tasks2.html">
+<div class="earning-icon">📋</div>
+<h2>Tasks</h2>
+<p>Find available earning tasks and submit your work for review.</p>
+<span class="open-link">Browse Tasks →</span>
+</a>
+
+<a class="earning-card" href="daily-quiz.html">
+<div class="earning-icon">🧠</div>
+<h2>Daily Quiz</h2>
+<p>Answer today's quiz and earn points when you qualify for rewards.</p>
+<span class="open-link">Play Quiz →</span>
+</a>
+
+<a class="earning-card" href="spin-win.html">
+<div class="earning-icon">🎡</div>
+<h2>Spin &amp; Win</h2>
+<p>Try your daily spin and discover the reward available to you.</p>
+<span class="open-link">Spin Now →</span>
+</a>
+
+<a class="earning-card" href="watch-ads.html">
+<div class="earning-icon">💰</div>
+<h2>Watch Ads &amp; Earn</h2>
+<p>Visit the ads page to view available advertisements and earning options.</p>
+<span class="open-link">Watch Ads →</span>
+</a>
+
+</section>
+
+</div>
+
+<nav class="bottom-nav" aria-label="Main navigation">
+
+<a href="dashboard.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M3 10.5 12 3l9 7.5"></path>
+<path d="M5.5 9.5V21h13V9.5"></path>
+<path d="M9 21v-7h6v7"></path>
+</svg>
+<span>Home</span>
+</a>
+
+<a href="create-campaign.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M4 13V7l12-3v15L4 16v-3"></path>
+<path d="M4 7h-1a2 2 0 0 0 0 6h1"></path>
+<path d="m8 17 2 4h4l-3-5"></path>
+<path d="M19 8h2"></path>
+<path d="M19 12h2"></path>
+</svg>
+<span>Campaigns</span>
+</a>
+
+<a href="earn.html" class="earn-link active" aria-current="page">
+<div class="earn-icon-wrap">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M12 7v10"></path>
+<path d="M15 9.5c0-1.2-1.3-2-3-2s-3 .8-3 2 1 2 3 2.5 3 1.3 3 2.5-1.3 2-3 2-3-.8-3-2"></path>
+</svg>
+</div>
+<span>Earn</span>
+</a>
+
+<a href="wallet.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<rect x="2.5" y="5" width="19" height="15" rx="2.5"></rect>
+<path d="M3 9h18"></path>
+<path d="M16 14h2"></path>
+</svg>
+<span>Wallet</span>
+</a>
+
+<a href="account.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 21a8 8 0 0 1 16 0"></path>
+</svg>
+<span>Account</span>
+</a>
+
+</nav>
+
+</body>
+</html>
