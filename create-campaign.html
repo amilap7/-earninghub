@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Campaign - EarningHub</title>
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="Create campaigns on EarningHub to promote YouTube videos, websites and social media content.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+:root{
+    --bg:#0b1220;
+    --card:#111c30;
+    --card2:#15233a;
+    --gold:#ffd54f;
+    --gold-dark:#e5ac00;
+    --text:#f5f7fc;
+    --muted:#9ba9bf;
+    --border:#293850;
+    --input:#0c1628;
+}
+body{
+    background:
+        radial-gradient(ellipse at top,#172947 0%,#0b1220 48%),
+        var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+button,input,textarea,select{
+    font:inherit;
+}
+button{
+    cursor:pointer;
+}
+.app{
+    width:100%;
+    max-width:520px;
+    min-height:100vh;
+    margin:auto;
+    padding:18px 17px 105px;
+}
+header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:7px 0 25px;
+}
+.logo{
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:-.7px;
+}
+.logo span{
+    color:var(--gold);
+}
+.back{
+    background:var(--card);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:10px 15px;
+    font-size:13px;
+    font-weight:bold;
+}
+.back:active{
+    transform:scale(.97);
+}
+.hero{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg,#172944,#101a2c);
+    border:1px solid #33435e;
+    border-radius:22px;
+    padding:23px 20px;
+    margin-bottom:24px;
+}
+.hero:after{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:150px;
+    border:24px solid rgba(255,213,79,.07);
+    border-radius:50%;
+    right:-50px;
+    top:-55px;
+}
+.hero-icon{
+    width:51px;
+    height:51px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,213,79,.13);
+    border:1px solid rgba(255,213,79,.28);
+    border-radius:15px;
+    font-size:25px;
+    margin-bottom:15px;
+}
+h1{
+    font-size:29px;
+    letter-spacing:-.8px;
+    line-height:1.2;
+    margin-bottom:10px;
+}
+.hero p{
+    color:#b7c4d8;
+    font-size:13px;
+    line-height:1.7;
+    max-width:360px;
+}
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--gold);
+    background:rgba(255,213,79,.09);
+    border:1px solid rgba(255,213,79,.2);
+    border-radius:30px;
+    padding:7px 10px;
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:14px;
+    letter-spacing:.6px;
+    text-transform:uppercase;
+}
+.section-title{
+    font-size:17px;
+    margin-bottom:7px;
+}
+.section-subtitle{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+    margin-bottom:17px;
+}
+.group{
+    margin-bottom:19px;
+}
+label{
+    display:block;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:8px;
+    color:#e4eaf4;
+}
+.required{
+    color:var(--gold);
+}
+input,
+textarea,
+select{
+    width:100%;
+    padding:14px;
+    color:var(--text);
+    background:var(--input);
+    border:1px solid var(--border);
+    border-radius:12px;
+    outline:none;
+    font-size:14px;
+    transition:border-color .2s,box-shadow .2s;
+}
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:var(--gold-dark);
+    box-shadow:0 0 0 3px rgba(255,213,79,.08);
+}
+input::placeholder,
+textarea::placeholder{
+    color:#718099;
+}
+select{
+    appearance:auto;
+}
+select option{
+    background:#111c30;
+    color:white;
+}
+textarea{
+    min-height:100px;
+    resize:vertical;
+    line-height:1.6;
+}
+.help{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:7px;
+    line-height:1.5;
+}
+.panel{
+    background:rgba(17,28,48,.85);
+    border:1px solid var(--border);
+    border-radius:19px;
+    padding:19px 15px;
+    margin-bottom:22px;
+}
+.platform-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-bottom:20px;
+}
+.platform-card{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-height:76px;
+    text-align:left;
+    color:var(--text);
+    background:#0d1729;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:12px 10px;
+    transition:.2s;
+}
+.platform-card.active{
+    background:rgba(255,213,79,.08);
+    border-color:var(--gold);
+    box-shadow:inset 0 0 0 1px rgba(255,213,79,.12);
+}
+.platform-card .icon{
+    flex-shrink:0;
+    width:36px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#1b2940;
+    border-radius:11px;
+    font-size:19px;
+}
+.platform-card.active .icon{
+    background:rgba(255,213,79,.15);
+}
+.platform-card .name{
+    font-size:12px;
+    font-weight:bold;
+    line-height:1.4;
+}
+.platform-card .desc{
+    font-size:10px;
+    color:var(--muted);
+    margin-top:3px;
+    line-height:1.3;
+}
+.platform-card .check{
+    display:none;
+    position:absolute;
+    top:6px;
+    right:7px;
+    color:var(--gold);
+    font-size:13px;
+    font-weight:bold;
+}
+.platform-card.active .check{
+    display:block;
+}
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:11px;
+}
+.summary{
+    background:linear-gradient(145deg,#182844,#111c30);
+    border:1px solid #34445d;
+    border-radius:17px;
+    padding:17px;
+    margin:20px 0;
+}
+.summary-title{
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+.summary-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:13px;
+    font-size:12px;
+    color:#c2ccda;
+}
+.summary-line:last-child{
+    margin-bottom:0;
+}
+.summary-line strong{
+    color:var(--text);
+    font-size:14px;
+    white-space:nowrap;
+}
+.summary-line .gold{
+    color:var(--gold);
+}
+.summary-divider{
+    border:0;
+    border-top:1px solid var(--border);
+    margin:13px 0;
+}
+.note{
+    padding:12px;
+    border-radius:11px;
+    background:rgba(255,213,79,.07);
+    border:1px solid rgba(255,213,79,.16);
+    color:#d8d5bd;
+    font-size:11px;
+    line-height:1.7;
+    margin-bottom:18px;
+}
+.submit{
+    width:100%;
+    padding:16px;
+    background:linear-gradient(135deg,#ffe47a,#ffc928);
+    color:#172033;
+    border:0;
+    border-radius:13px;
+    font-weight:900;
+    font-size:14px;
+    box-shadow:0 5px 20px rgba(255,197,40,.12);
+    transition:.2s;
+}
+.submit:active{
+    transform:scale(.99);
+}
+.submit:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+.message{
+    display:none;
+    margin-top:15px;
+    padding:13px;
+    border-radius:12px;
+    background:#172740;
+    border:1px solid #354967;
+    color:#f1d77b;
+    font-size:12px;
+    line-height:1.6;
+    overflow-wrap:anywhere;
+}
+.ad{
+    margin-top:24px;
+    background:#101b2e;
+    border:1px dashed #34445d;
+    border-radius:15px;
+    padding:17px 8px;
+    text-align:center;
+    overflow:hidden;
+}
+.ad-label{
+    color:#8291a8;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:13px;
+}
+.ad-content{
+    min-height:250px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.footer{
+    text-align:center;
+    color:#718099;
+    font-size:10px;
+    margin-top:22px;
+    line-height:1.7;
+}
+/* Bottom Navigation */
+.bottom-nav{
+    position:fixed;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:520px;
+    min-height:75px;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    background:rgba(11,18,32,.97);
+    border-top:1px solid #293850;
+    padding:7px 5px calc(7px + env(safe-area-inset-bottom));
+    z-index:999;
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
+}
+.bottom-nav a{
+    flex:1;
+    min-width:0;
+    min-height:58px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    color:#9ba9bf;
+    text-decoration:none;
+    font-size:10px;
+    font-weight:600;
+    -webkit-tap-highlight-color:transparent;
+}
+.bottom-nav .nav-icon{
+    font-size:21px;
+    line-height:1;
+}
+.bottom-nav a.active{
+    color:#ffd54f;
+}
+.bottom-nav .earn-link{
+    position:relative;
+    margin-top:-22px;
+}
+.bottom-nav .earn-icon{
+    width:49px;
+    height:49px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ffe47a,#ffc928);
+    color:#172033;
+    border:4px solid #0b1220;
+    box-shadow:0 3px 14px rgba(255,213,79,.2);
+    font-size:27px;
+    font-weight:bold;
+}
+.bottom-nav .earn-link span:last-child{
+    margin-top:1px;
+    color:#ffd54f;
+}
+@media(max-width:360px){
+    .app{
+        padding:14px 12px 105px;
+    }
+    h1{
+        font-size:26px;
+    }
+    .platform-grid{
+        gap:7px;
+    }
+    .platform-card{
+        padding:10px 7px;
+        gap:7px;
+    }
+    .platform-card .icon{
+        width:31px;
+        height:31px;
+        font-size:16px;
+    }
+    .platform-card .name{
+        font-size:11px;
+    }
+    .panel{
+        padding:15px 11px;
+    }
+    .bottom-nav{
+        min-height:70px;
+    }
+    .bottom-nav a{
+        font-size:9px;
+    }
+    .bottom-nav .nav-icon{
+        font-size:19px;
+    }
+    .bottom-nav .earn-icon{
+        width:45px;
+        height:45px;
+    }
+}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+    <div class="logo">earning<span>Hub</span></div>
+    <button class="back" type="button" onclick="goBack()">← Back</button>
+</header>
+<section class="hero">
+    <div class="badge">✦ Campaign Studio</div>
+    <div class="hero-icon">🚀</div>
+<h1>Create Your<br>Campaign</h1>
+<p>
+    Promote your YouTube channel, videos, website and social
+    media content with EarningHub campaigns.
+</p>
+</section>
+<form id="campaignForm" novalidate>
+<section class="panel">
+<h2 class="section-title">01. Choose a platform</h2>
+<p class="section-subtitle">
+    Where would you like to promote your content?
+</p>
+<div class="platform-grid" id="platformGrid">
+    <button class="platform-card" type="button" data-platform="YouTube">
+        <span class="icon">▶️</span>
+        <span>
+            <span class="name">YouTube</span>
+            <span class="desc">Videos & channels</span>
+        </span>
+        <span class="check">✓</span>
+    </button>
+    <button class="platform-card" type="button" data-platform="Website">
+        <span class="icon">🌐</span>
+        <span>
+            <span class="name">Website</span>
+            <span class="desc">Visits & promotion</span>
+        </span>
+        <span class="check">✓</span>
+    </button>
+    <button class="platform-card" type="button" data-platform="Facebook">
+        <span class="icon">📘</span>
+        <span>
+            <span class="name">Facebook</span>
+            <span class="desc">Pages & content</span>
+        </span>
+        <span class="check">✓</span>
+    </button>
+    <button class="platform-card" type="button" data-platform="Instagram">
+        <span class="icon">📸</span>
+        <span>
+            <span class="name">Instagram</span>
+            <span class="desc">Profiles & posts</span>
+        </span>
+        <span class="check">✓</span>
+    </button>
+    <button class="platform-card" type="button" data-platform="TikTok">
+        <span class="icon">🎵</span>
+        <span>
+            <span class="name">TikTok</span>
+            <span class="desc">Videos & profiles</span>
+        </span>
+        <span class="check">✓</span>
+    </button>
+</div>
+<input type="hidden" id="platform" required>
+<div class="group">
+    <label for="taskType">Campaign task type <span class="required">*</span></label>
+    <select id="taskType" required disabled>
+        <option value="">Choose a platform first</option>
+    </select>
+    <p class="help" id="taskHelp">
+        Select a platform above to see available campaign types.
+    </p>
+</div>
+</section>
+<section class="panel">
+<h2 class="section-title">02. Campaign details</h2>
+<p class="section-subtitle">
+    Give your campaign a clear title and instructions.
+</p>
+<div class="group">
+    <label for="title">Campaign title <span class="required">*</span></label>
+    <input
+        id="title"
+        type="text"
+        placeholder="Example: Subscribe to my YouTube channel"
+        required
+        maxlength="100">
+</div>
+<div class="group">
+    <label for="description">Description & instructions <span class="required">*</span></label>
+    <textarea
+        id="description"
+        placeholder="Explain what participants should do to complete this task..."
+        required
+        maxlength="500"></textarea>
+    <p class="help">
+        Maximum 500 characters. Give clear and honest instructions.
+    </p>
+</div>
+<div class="group">
+    <label for="targetUrl">Target URL <span class="required">*</span></label>
+    <input
+        id="targetUrl"
+        type="url"
+        placeholder="https://www.youtube.com/..."
+        required>
+    <p class="help">
+        Enter the public URL of your video, channel, website or social media page.
+    </p>
+</div>
+</section>
+<section class="panel">
+<h2 class="section-title">03. Budget & rewards</h2>
+<p class="section-subtitle">
+    Set your campaign budget and review the estimated reward pool.
+</p>
+<div class="row">
+    <div class="group">
+        <label for="reward">Reward per completion</label>
+        <input
+            id="reward"
+            type="number"
+            value="0.10"
+            readonly>
+        <p class="help">Fixed at $0.10</p>
+    </div>
+    <div class="group">
+        <label for="budget">Total budget ($) <span class="required">*</span></label>
+        <input
+            id="budget"
+            type="number"
+            min="5"
+            step="0.01"
+            inputmode="decimal"
+            placeholder="5.00"
+            required>
+        <p class="help">Minimum $5.00</p>
+    </div>
+</div>
+<div class="summary">
+    <div class="summary-title">💰 Campaign budget summary</div>
+    <div class="summary-line">
+        <span>Total campaign budget</span>
+        <strong id="totalBudget">$0.00</strong>
+    </div>
+    <div class="summary-line">
+        <span>Participant reward pool (70%)</span>
+        <strong class="gold" id="rewardPool">$0.00</strong>
+    </div>
+    <div class="summary-line">
+        <span>EarningHub platform fee (30%)</span>
+        <strong id="platformFee">$0.00</strong>
+    </div>
+    <hr class="summary-divider">
+    <div class="summary-line">
+        <span>Estimated full $0.10 rewards</span>
+        <strong class="gold" id="completionCount">0</strong>
+    </div>
+</div>
+<div class="note">
+    <strong>ⓘ Please note:</strong>
+    The completion count is an estimate based on 70% of your budget.
+    Actual approved completions depend on campaign review and task availability.
+</div>
+<button class="submit" id="publishBtn" type="submit">
+    Continue to Payment →
+</button>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+</section>
+</form>
+<div class="ad">
+    <div class="ad-label">Advertisement</div>
+    <div class="ad-content">
+    <script>
+    var atOptions = {
+        'key' : '2d1ea72a15ba0757204523b601e58d7c',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+    };
+    </script>
+    <script src="https://www.highrevenueformat.com/2d1ea72a15ba0757204523b601e58d7c/invoke.js"></script>
+</div>
+</div>
+<div class="footer">
+    EarningHub Campaign Studio<br>
+    Create campaigns responsibly and follow each platform's rules.
+</div>
+</main>
+<!-- EarningHub Bottom Navigation -->
+<nav class="bottom-nav" aria-label="Main navigation">
+<a href="dashboard.html">
+    <span class="nav-icon">⌂</span>
+    <span>Home</span>
+</a>
+<a href="campaigns.html" class="active" aria-current="page">
+    <span class="nav-icon">📢</span>
+    <span>Campaigns</span>
+</a>
+<a href="earn.html" class="earn-link">
+    <span class="earn-icon">+</span>
+    <span>Earn</span>
+</a>
+<a href="wallet.html">
+    <span class="nav-icon">💰</span>
+    <span>Wallet</span>
+</a>
+<a href="account.html">
+    <span class="nav-icon">👤</span>
+    <span>Account</span>
+</a>
+</nav>
+<script>
+"use strict";
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+const taskOptions = {
+    YouTube: [
+        {
+            value: "youtube_subscribe",
+            label: "YouTube Subscribe"
+        },
+        {
+            value: "video_watch",
+            label: "YouTube Video Views"
+        },
+        {
+            value: "content_discovery",
+            label: "Discover YouTube Content"
+        },
+        {
+            value: "feedback",
+            label: "Video Feedback"
+        }
+    ],
+    Website: [
+        {
+            value: "website_visit",
+            label: "Website Visit"
+        },
+        {
+            value: "content_discovery",
+            label: "Website Discovery"
+        },
+        {
+            value: "feedback",
+            label: "Website Feedback"
+        },
+        {
+            value: "survey",
+            label: "Website Survey"
+        }
+    ],
+    Facebook: [
+        {
+            value: "facebook_follow",
+            label: "Facebook Page Follow"
+        },
+        {
+            value: "content_discovery",
+            label: "Discover Facebook Content"
+        },
+        {
+            value: "feedback",
+            label: "Facebook Content Feedback"
+        }
+    ],
+    Instagram: [
+        {
+            value: "instagram_follow",
+            label: "Instagram Follow"
+        },
+        {
+            value: "content_discovery",
+            label: "Discover Instagram Content"
+        },
+        {
+            value: "feedback",
+            label: "Instagram Content Feedback"
+        }
+    ],
+    TikTok: [
+        {
+            value: "tiktok_follow",
+            label: "TikTok Follow"
+        },
+        {
+            value: "video_watch",
+            label: "TikTok Video Views"
+        },
+        {
+            value: "content_discovery",
+            label: "Discover TikTok Content"
+        },
+        {
+            value: "feedback",
+            label: "TikTok Content Feedback"
+        }
+    ]
+};
+const platformInput =
+document.getElementById("platform");
+const taskTypeSelect =
+document.getElementById("taskType");
+const taskHelp =
+document.getElementById("taskHelp");
+const budgetInput =
+document.getElementById("budget");
+const messageBox =
+document.getElementById("message");
+const publishButton =
+document.getElementById("publishBtn");
+function showMessage(text){
+    messageBox.textContent = text;
+    messageBox.style.display = "block";
+}
+function hideMessage(){
+    messageBox.textContent = "";
+    messageBox.style.display = "none";
+}
+function goBack(){
+    window.location.href = "dashboard.html";
+}
+/*
+Select platform and update task types.
+*/
+document.querySelectorAll(".platform-card").forEach(card => {
+    card.addEventListener("click", () => {
+        const selectedPlatform =
+            card.dataset.platform;
+        platformInput.value = selectedPlatform;
+        document.querySelectorAll(".platform-card")
+            .forEach(item => {
+                item.classList.toggle(
+                    "active",
+                    item === card
+                );
+            });
+        taskTypeSelect.innerHTML = "";
+        const placeholder =
+            document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Select campaign task";
+        taskTypeSelect.appendChild(placeholder);
+        (taskOptions[selectedPlatform] || []).forEach(task => {
+            const option =
+                document.createElement("option");
+            option.value = task.value;
+            option.textContent = task.label;
+            taskTypeSelect.appendChild(option);
+        });
+        taskTypeSelect.disabled = false;
+        taskHelp.textContent =
+            "Choose the action participants should complete.";
+        hideMessage();
+    });
+});
+/*
+Calculate the 70% reward pool and 30% fee.
+*/
+function updateCampaignCalculation(){
+    const budget =
+        Math.round(
+            (Number(budgetInput.value) || 0) * 100
+        ) / 100;
+    const rewardPool =
+        Math.round(budget * 70) / 100;
+    const platformFee =
+        Math.round(budget * 30) / 100;
+    const completionCount =
+        Math.floor((rewardPool + 0.000001) / 0.10);
+    document.getElementById("totalBudget").textContent =
+        "$" + budget.toFixed(2);
+    document.getElementById("rewardPool").textContent =
+        "$" + rewardPool.toFixed(2);
+    document.getElementById("platformFee").textContent =
+        "$" + platformFee.toFixed(2);
+    document.getElementById("completionCount").textContent =
+        completionCount.toLocaleString();
+}
+budgetInput.addEventListener(
+    "input",
+    updateCampaignCalculation
+);
+updateCampaignCalculation();
+/*
+Retrieve the authenticated Supabase user.
+*/
+async function getCurrentUser(){
+    const {
+        data: sessionData,
+        error: sessionError
+    } = await supabaseClient.auth.getSession();
+    if(sessionError){
+        throw sessionError;
+    }
+    if(sessionData.session){
+        return sessionData.session.user;
+    }
+    const {
+        data: userData,
+        error: userError
+    } = await supabaseClient.auth.getUser();
+    if(userError){
+        return null;
+    }
+    return userData.user || null;
+}
+/*
+Create the campaign and proceed to payment.
+*/
+document.getElementById("campaignForm")
+.addEventListener("submit", async function(event){
+    event.preventDefault();
+    hideMessage();
+    if(!this.reportValidity()){
+        return;
+    }
+    publishButton.disabled = true;
+    publishButton.textContent = "Checking...";
+    try{
+        const user = await getCurrentUser();
+        if(!user){
+            showMessage(
+                "Your login session is not available. Please log in again."
+            );
+            return;
+        }
+        const title =
+            document.getElementById("title").value.trim();
+        const description =
+            document.getElementById("description").value.trim();
+        const platform =
+            platformInput.value;
+        const taskType =
+            taskTypeSelect.value;
+        const targetUrl =
+            document.getElementById("targetUrl").value.trim();
+        const reward = 0.10;
+        const budget =
+            Math.round(Number(budgetInput.value) * 100) / 100;
+        if(!taskOptions[platform]){
+            showMessage(
+                "Please select a valid campaign platform."
+            );
+            return;
+        }
+        if(!taskOptions[platform].some(task => task.value === taskType)){
+            showMessage(
+                "Please select a valid campaign task type."
+            );
+            return;
+        }
+        if(!Number.isFinite(budget) || budget < 5){
+            showMessage(
+                "Minimum campaign budget is $5.00."
+            );
+            return;
+        }
+        if(!/^https?:\/\/\S+$/i.test(targetUrl)){
+            showMessage(
+                "Please enter a valid public URL starting with https:// or http://."
+            );
+            return;
+        }
+        /*
+        Confirm that the user's profile exists.
+        */
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq("id", user.id)
+            .maybeSingle();
+        if(profileError){
+            throw profileError;
+        }
+        if(!profile){
+            showMessage(
+                "Your profile is missing. Please log out and log in again."
+            );
+            return;
+        }
+        /*
+        Create campaign as pending payment.
+        The platform and task_type values must be
+        permitted by the existing database schema.
+        */
+        const {
+            data: campaign,
+            error: campaignError
+        } = await supabaseClient
+            .from("campaigns")
+            .insert({
+                creator_id: user.id,
+                title: title,
+                description: description,
+                platform: platform,
+                task_type: taskType,
+                target_url: targetUrl,
+                reward: reward,
+                budget: budget,
+                status: "pending_payment"
+            })
+            .select()
+            .single();
+        if(campaignError){
+            throw campaignError;
+        }
+        /*
+        Save campaign ID and open payment page.
+        */
+        sessionStorage.setItem(
+            "earninghub_campaign_id",
+            campaign.id
+        );
+        const paymentUrl = new URL(
+            "/campaign-payment.html",
+            window.location.origin
+        );
+        paymentUrl.searchParams.set(
+            "id",
+            campaign.id
+        );
+        window.location.assign(paymentUrl.href);
+    }catch(error){
+        console.error("Campaign creation error:", error);
+        showMessage(
+            error.message ||
+            "Unable to create campaign. Please try again."
+        );
+    }finally{
+        publishButton.disabled = false;
+        publishButton.textContent =
+            "Continue to Payment →";
+    }
+});
+</script>
+</body>
+</html>
