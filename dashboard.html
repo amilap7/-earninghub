@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub Dashboard</title>
+
+<style>
+:root{
+--bg:#071426;
+--bg2:#0b1b30;
+--card:#10243d;
+--card2:#142b47;
+--gold:#f5c451;
+--gold-light:#ffe49a;
+--text:#f5f7fb;
+--muted:#91a3bb;
+--border:#243b57;
+--success:#38d996;
+--danger:#ff6b79;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif
+}
+
+html{
+background:var(--bg);
+scroll-behavior:smooth
+}
+
+body{
+background:
+radial-gradient(ellipse at top left,rgba(34,77,125,.23),transparent 45%),
+linear-gradient(160deg,#071426 0%,#09182b 48%,#071426 100%);
+color:var(--text);
+min-height:100vh;
+padding-bottom:calc(100px + env(safe-area-inset-bottom))
+}
+
+button,a{
+-webkit-tap-highlight-color:transparent
+}
+
+.app{
+max-width:1200px;
+min-height:100vh;
+margin:auto;
+padding:0 30px 30px
+}
+
+/* TOP APP BAR */
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:flex-end;
+height:105px;
+padding-bottom:12px;
+border-bottom:1px solid var(--border);
+background:rgba(7,20,38,.92);
+position:relative;
+z-index:100;
+backdrop-filter:blur(15px)
+}
+
+.logo{
+width:105px;
+height:auto;
+display:block;
+object-fit:contain;
+transform:translateY(16px)
+}
+
+.header-actions{
+display:flex;
+align-items:center;
+gap:7px
+}
+
+.header-button{
+width:40px;
+height:40px;
+border:1px solid transparent;
+background:var(--card);
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+text-decoration:none;
+padding:0;
+position:relative;
+transition:background .2s,border-color .2s
+}
+
+.header-button svg{
+width:23px;
+height:23px;
+stroke:var(--text);
+stroke-width:2;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.header-button:active{
+background:var(--card2);
+border-color:var(--gold)
+}
+
+/* NOTIFICATION */
+
+.notification-button{
+position:relative
+}
+
+.notification-dot{
+position:absolute;
+top:2px;
+right:1px;
+min-width:18px;
+height:18px;
+padding:0 5px;
+background:#f04d65;
+color:#fff;
+border-radius:50%;
+display:none;
+align-items:center;
+justify-content:center;
+font-size:10px;
+font-weight:bold;
+line-height:18px;
+text-align:center;
+z-index:2
+}
+
+/* MENU */
+
+.menu{
+display:none;
+position:absolute;
+right:0;
+top:92px;
+width:250px;
+max-height:75vh;
+overflow-y:auto;
+background:#0d2037;
+border:1px solid var(--border);
+border-radius:16px;
+padding:8px;
+box-shadow:0 16px 40px rgba(0,0,0,.4);
+z-index:999
+}
+
+.menu.show{
+display:block
+}
+
+.menu-user{
+padding:12px;
+border-bottom:1px solid var(--border);
+margin-bottom:5px
+}
+
+.menu-user strong{
+display:block;
+font-size:14px;
+color:var(--gold-light);
+overflow-wrap:anywhere
+}
+
+.menu-user small{
+display:block;
+font-size:11px;
+color:var(--muted);
+margin-top:4px;
+overflow-wrap:anywhere
+}
+
+.menu a,
+.menu button{
+display:block;
+width:100%;
+border:0;
+background:transparent;
+color:var(--text);
+text-align:left;
+padding:12px;
+border-radius:9px;
+text-decoration:none;
+font-size:14px;
+cursor:pointer
+}
+
+.menu a:active,
+.menu button:active{
+background:var(--card2)
+}
+
+.menu a.menu-earn{
+background:linear-gradient(135deg,#f9d978,#e9b632);
+color:#172033;
+font-weight:bold;
+border:1px solid #ffe49a
+}
+
+.menu .logout-menu{
+color:#ff9ba6;
+border-top:1px solid var(--border);
+margin-top:5px
+}
+
+/* MAIN */
+
+.main-content{
+max-width:1000px;
+margin:auto
+}
+
+/* WELCOME */
+
+.welcome{
+margin:25px 0;
+padding:21px;
+border:1px solid var(--border);
+border-radius:20px;
+background:
+linear-gradient(125deg,rgba(25,54,87,.92),rgba(12,30,51,.96));
+position:relative;
+overflow:hidden
+}
+
+.welcome:after{
+content:"";
+position:absolute;
+width:145px;
+height:145px;
+border-radius:50%;
+border:1px solid rgba(245,196,81,.15);
+right:-48px;
+top:-64px;
+box-shadow:0 0 0 20px rgba(245,196,81,.025),
+0 0 0 40px rgba(245,196,81,.02);
+pointer-events:none
+}
+
+.welcome small{
+color:var(--muted);
+font-size:12px;
+letter-spacing:1.4px;
+text-transform:uppercase
+}
+
+.welcome h1{
+font-size:28px;
+margin-top:8px;
+color:var(--text);
+overflow-wrap:anywhere
+}
+
+/* BALANCE */
+
+.balance{
+background:
+radial-gradient(circle at 90% 10%,rgba(245,196,81,.15),transparent 34%),
+linear-gradient(135deg,#132e4c 0%,#0b1b30 58%,#10243d 100%);
+color:var(--text);
+border-radius:22px;
+padding:25px;
+margin-bottom:20px;
+border:1px solid #36516d;
+box-shadow:0 12px 30px rgba(0,0,0,.18);
+position:relative;
+overflow:hidden
+}
+
+.balance:after{
+content:"";
+position:absolute;
+width:120px;
+height:120px;
+right:-35px;
+bottom:-55px;
+border:1px solid rgba(245,196,81,.22);
+border-radius:50%;
+box-shadow:0 0 0 16px rgba(245,196,81,.025),
+0 0 0 32px rgba(245,196,81,.025);
+pointer-events:none
+}
+
+.balance small{
+color:var(--muted);
+font-size:13px;
+letter-spacing:.5px
+}
+
+.balance h2{
+font-size:36px;
+margin:10px 0;
+color:var(--gold-light);
+overflow-wrap:anywhere
+}
+
+.balance p{
+color:#a9b9ce;
+font-size:13px;
+line-height:1.6
+}
+
+/* DAILY BONUS */
+
+.daily-bonus{
+border:1px solid #78652e;
+background:
+radial-gradient(circle at 100% 0,rgba(245,196,81,.09),transparent 38%),
+linear-gradient(145deg,#122944,#0c1e34);
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 8px 24px rgba(0,0,0,.12)
+}
+
+.daily-bonus h2{
+font-size:20px;
+margin-bottom:9px;
+color:var(--gold-light)
+}
+
+.daily-bonus p{
+font-size:13px;
+color:var(--muted);
+line-height:1.6
+}
+
+.bonus-points{
+font-size:28px;
+font-weight:800;
+margin-top:15px;
+color:var(--gold)
+}
+
+.bonus-info{
+font-size:12px;
+color:#b7c5d8;
+margin-top:6px
+}
+
+.bonus-button{
+display:block;
+width:100%;
+border:1px solid #ffe49a;
+background:linear-gradient(135deg,#ffe49a,#e7b431);
+color:#152238;
+padding:14px;
+border-radius:12px;
+font-weight:800;
+margin-top:16px;
+cursor:pointer;
+box-shadow:0 5px 16px rgba(245,196,81,.12);
+transition:transform .15s,opacity .15s
+}
+
+.bonus-button:active{
+transform:scale(.99)
+}
+
+.bonus-button:disabled{
+opacity:.55;
+cursor:not-allowed;
+box-shadow:none
+}
+
+.bonus-message{
+display:none;
+margin-top:12px;
+padding:13px;
+border-radius:12px;
+background:#102d35;
+border:1px solid #285b57;
+color:#b8f6dc;
+font-size:13px;
+line-height:1.6;
+overflow-wrap:anywhere
+}
+
+/* MY CAMPAIGNS */
+
+.my-campaigns{
+display:none;
+margin-top:30px
+}
+
+.my-campaigns h2{
+font-size:20px;
+margin-bottom:15px;
+color:var(--gold-light)
+}
+
+.my-campaigns-card{
+border:1px solid var(--border);
+border-radius:18px;
+padding:20px;
+background:linear-gradient(145deg,#10243d,#0c1c30)
+}
+
+.my-campaigns-card strong{
+color:var(--text)
+}
+
+.my-campaigns-card p{
+font-size:13px;
+color:var(--muted);
+line-height:1.6;
+margin-top:8px
+}
+
+.my-campaigns-button{
+display:block;
+width:100%;
+text-align:center;
+background:linear-gradient(135deg,#ffe49a,#e7b431);
+color:#152238;
+padding:13px;
+border-radius:11px;
+font-weight:bold;
+margin-top:15px;
+text-decoration:none
+}
+
+/* ADMIN */
+
+.admin-review{
+display:none;
+margin-top:30px
+}
+
+.admin-review h2{
+font-size:20px;
+margin-bottom:15px;
+color:var(--gold-light)
+}
+
+.admin-card{
+border:1px solid var(--border);
+border-radius:18px;
+padding:20px;
+background:linear-gradient(145deg,#10243d,#0c1c30)
+}
+
+.admin-card strong{
+color:var(--text)
+}
+
+.admin-card p{
+font-size:13px;
+color:var(--muted);
+line-height:1.6;
+margin-top:8px
+}
+
+.admin-button{
+display:block;
+width:100%;
+text-align:center;
+background:var(--card2);
+border:1px solid #36516d;
+color:var(--gold-light);
+padding:13px;
+border-radius:11px;
+font-weight:bold;
+margin-top:15px;
+text-decoration:none
+}
+
+.admin-button:active{
+background:#1b3857
+}
+
+/* AD */
+
+.ad{
+margin-top:25px;
+border:1px dashed #39516d;
+border-radius:16px;
+padding:20px;
+text-align:center;
+color:var(--muted);
+font-size:13px;
+overflow:hidden;
+background:rgba(12,30,51,.65)
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 0 20px;
+color:#71839c;
+font-size:12px
+}
+
+/* BOTTOM NAVIGATION */
+
+.bottom-nav{
+position:fixed!important;
+left:0!important;
+right:0!important;
+bottom:0!important;
+width:100%!important;
+min-height:72px;
+display:flex!important;
+align-items:center;
+justify-content:space-around;
+gap:0;
+padding:7px 3px calc(7px + env(safe-area-inset-bottom));
+background:rgba(7,20,38,.97);
+border-top:1px solid var(--border);
+box-shadow:0 -5px 24px rgba(0,0,0,.28);
+backdrop-filter:blur(18px);
+z-index:2147483647!important
+}
+
+.bottom-nav a{
+flex:1;
+min-width:0;
+min-height:50px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:4px;
+color:#8496ad;
+text-decoration:none;
+font-size:10px;
+font-weight:600;
+white-space:nowrap;
+-webkit-tap-highlight-color:transparent
+}
+
+.bottom-nav a svg{
+width:22px;
+height:22px;
+display:block;
+stroke:currentColor;
+stroke-width:1.8;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.bottom-nav a.active{
+color:var(--gold-light);
+font-weight:800
+}
+
+.bottom-nav a.active svg{
+stroke-width:2.5
+}
+
+.bottom-nav a:active{
+background:rgba(255,255,255,.04);
+border-radius:10px
+}
+
+/* GOLD EARN NAVIGATION BUTTON */
+
+.bottom-nav a.earn-link{
+color:var(--gold);
+font-weight:800;
+overflow:visible
+}
+
+.bottom-nav a.earn-link .earn-icon-wrap{
+width:46px;
+height:46px;
+flex-shrink:0;
+border-radius:50%;
+background:linear-gradient(135deg,#ffe49a,#e7b431);
+display:flex;
+align-items:center;
+justify-content:center;
+margin-top:-19px;
+border:2px solid #fff0b8;
+box-shadow:0 4px 18px rgba(245,196,81,.25)
+}
+
+.bottom-nav a.earn-link svg{
+width:28px;
+height:28px;
+stroke:#172238;
+stroke-width:2.4
+}
+
+.bottom-nav a.earn-link span{
+color:var(--gold);
+font-size:11px;
+font-weight:800
+}
+
+/* TABLET */
+
+@media(max-width:900px){
+.app{
+max-width:760px;
+padding:0 25px 25px
+}
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+.app{
+max-width:480px;
+padding:0 16px 20px
+}
+
+header{
+height:105px;
+padding-bottom:12px
+}
+
+.logo{
+width:105px;
+transform:translateY(16px)
+}
+
+.main-content{
+width:100%
+}
+
+.welcome{
+margin:22px 0;
+padding:19px
+}
+
+.balance{
+padding:22px
+}
+
+.daily-bonus{
+padding:18px
+}
+}
+
+/* SMALL MOBILE */
+
+@media(max-width:380px){
+.app{
+padding:0 13px 20px
+}
+
+.header-actions{
+gap:2px
+}
+
+.header-button{
+width:38px;
+height:38px
+}
+
+.welcome h1{
+font-size:25px
+}
+
+.balance h2{
+font-size:32px
+}
+
+.bottom-nav a{
+font-size:9px;
+gap:3px
+}
+
+.bottom-nav a svg{
+width:21px;
+height:21px
+}
+
+.bottom-nav a.earn-link .earn-icon-wrap{
+width:42px;
+height:42px;
+margin-top:-16px
+}
+
+.bottom-nav a.earn-link svg{
+width:25px;
+height:25px
+}
+
+.menu{
+width:230px
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<img class="logo" src="./logo.PNG" alt="EarningHub Logo">
+
+<div class="header-actions">
+
+<button class="header-button" type="button"
+onclick="shareSite()" aria-label="Share">
+
+<svg viewBox="0 0 24 24">
+<circle cx="18" cy="5" r="2.5"></circle>
+<circle cx="6" cy="12" r="2.5"></circle>
+<circle cx="18" cy="19" r="2.5"></circle>
+<line x1="8.2" y1="10.8" x2="15.8" y2="6.2"></line>
+<line x1="8.2" y1="13.2" x2="15.8" y2="17.8"></line>
+</svg>
+
+</button>
+
+<a class="header-button" href="./search.html" aria-label="Search">
+<svg viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="6.5"></circle>
+<line x1="16" y1="16" x2="21" y2="21"></line>
+</svg>
+</a>
+
+<a class="header-button notification-button"
+href="./notification-center.html" aria-label="Notifications">
+
+<svg viewBox="0 0 24 24">
+<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+<path d="M10 21h4"></path>
+</svg>
+
+<span class="notification-dot" id="notificationDot">0</span>
+</a>
+
+<button class="header-button" id="menuButton"
+type="button" onclick="toggleMenu()" aria-label="Menu"
+aria-expanded="false">
+
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="5" r="1.5" fill="#f5f7fb"></circle>
+<circle cx="12" cy="12" r="1.5" fill="#f5f7fb"></circle>
+<circle cx="12" cy="19" r="1.5" fill="#f5f7fb"></circle>
+</svg>
+
+</button>
+</div>
+
+<div id="menu" class="menu">
+
+<div class="menu-user">
+<strong id="menuUsername">User</strong>
+<small id="menuEmail"></small>
+</div>
+
+<a href="./account.html">👤 My Account</a>
+<a href="./create-campaign.html">🚀 Create Campaign</a>
+<a href="./wallet.html">💳 Wallet</a>
+<a href="./withdraw.html">📤 Withdraw</a>
+<a class="menu-earn" href="./earn.html">⭐ Earn</a>
+<a href="./transactions.html">📜 Transaction History</a>
+<a href="./referral.html">👥 Invite &amp; Earn</a>
+<a href="./settings.html">⚙️ Settings</a>
+
+<button class="logout-menu" type="button" onclick="logout()">🚪 Logout</button>
+
+</div>
+
+</header>
+
+<div class="main-content">
+
+<div class="welcome">
+<small>Welcome back</small>
+<h1 id="username">User</h1>
+</div>
+
+<div class="balance">
+<small>Available balance</small>
+<h2 id="balance">$0.00</h2>
+<p>Your current EarningHub rewards balance</p>
+</div>
+
+<div class="daily-bonus">
+
+<h2>🎁 Daily Bonus</h2>
+<p>Claim your daily bonus and collect points every day.</p>
+
+<div class="bonus-points" id="bonusPoints">0 Points</div>
+<div class="bonus-info">300 Points = $0.50</div>
+
+<button id="bonusButton" class="bonus-button"
+onclick="claimDailyBonus()">
+Claim Daily Bonus +10
+</button>
+
+<div id="bonusMessage" class="bonus-message" role="status"></div>
+
+</div>
+
+<div id="myCampaigns" class="my-campaigns">
+
+<h2>My Campaigns</h2>
+
+<div class="my-campaigns-card">
+<strong>My Campaigns Details</strong>
+<p>View details of campaigns you have created.</p>
+
+<a class="my-campaigns-button" href="./my-campaigns.html">
+My Campaigns Details
+</a>
+</div>
+
+</div>
+
+<div id="adminReview" class="admin-review">
+
+<h2>Admin Panel</h2>
+
+<div class="admin-card">
+<strong>Task Review</strong>
+<p>Review pending task submissions and approve or reject rewards.</p>
+<a class="admin-button" href="./admin-review.html">Open Task Review</a>
+</div>
+
+<div class="admin-card" style="margin-top:12px">
+<strong>Withdrawal Review</strong>
+<p>Review pending withdrawal requests.</p>
+<a class="admin-button" href="./admin-withdrawals.html">Open Withdrawal Review</a>
+</div>
+
+<div class="admin-card" style="margin-top:12px">
+<strong>Payment Review</strong>
+<p>Review campaign payments and approve or reject submitted receipts.</p>
+<a class="admin-button" href="./admin.html">Open Payment Review</a>
+</div>
+
+</div>
+
+<div class="ad">
+
+<script>
+atOptions = {
+'key' : '2d1ea72a15ba0757204523b601e58d7c',
+'format' : 'iframe',
+'height' : 250,
+'width' : 300,
+'params' : {}
+};
+</script>
+
+<script src="https://www.highrevenueformat.com/2d1ea72a15ba0757204523b601e58d7c/invoke.js"></script>
+
+</div>
+
+<footer>© 2026 EarningHub</footer>
+
+</div>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+
+<nav class="bottom-nav" aria-label="Main navigation">
+
+<a href="./dashboard.html" class="active" aria-current="page">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M3 10.5 12 3l9 7.5"></path>
+<path d="M5.5 9.5V21h13V9.5"></path>
+<path d="M9 21v-7h6v7"></path>
+</svg>
+<span>Home</span>
+</a>
+
+<a href="./create-campaign.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M4 13V7l12-3v15L4 16v-3"></path>
+<path d="M4 7h-1a2 2 0 0 0 0 6h1"></path>
+<path d="m8 17 2 4h4l-3-5"></path>
+<path d="M19 8h2"></path>
+<path d="M19 12h2"></path>
+</svg>
+<span>Campaigns</span>
+</a>
+
+<a href="./earn.html" class="earn-link">
+<div class="earn-icon-wrap">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M12 7v10"></path>
+<path d="M15 9.5c0-1.2-1.3-2-3-2s-3 .8-3 2 1 2 3 2.5 3 1.3 3 2.5-1.3 2-3 2-3-.8-3-2"></path>
+</svg>
+</div>
+<span>Earn</span>
+</a>
+
+<a href="./wallet.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<rect x="2.5" y="5" width="19" height="15" rx="2.5"></rect>
+<path d="M3 9h18"></path>
+<path d="M16 14h2"></path>
+</svg>
+<span>Wallet</span>
+</a>
+
+<a href="./account.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 21a8 8 0 0 1 16 0"></path>
+</svg>
+<span>Account</span>
+</a>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+/* MENU */
+
+function toggleMenu(){
+const menu = document.getElementById("menu");
+const button = document.getElementById("menuButton");
+
+menu.classList.toggle("show");
+button.setAttribute(
+"aria-expanded",
+menu.classList.contains("show") ? "true" : "false"
+);
+}
+
+document.addEventListener("click",function(event){
+const menu = document.getElementById("menu");
+const menuButton = document.getElementById("menuButton");
+
+if(
+!menu.contains(event.target) &&
+!menuButton.contains(event.target)
+){
+menu.classList.remove("show");
+menuButton.setAttribute("aria-expanded","false");
+}
+});
+
+/* SHARE */
+
+async function shareSite(){
+const shareData = {
+title:"EarningHub",
+text:"Check out EarningHub",
+url:window.location.href
+};
+
+if(navigator.share){
+try{
+await navigator.share(shareData);
+}catch(error){}
+}else{
+try{
+await navigator.clipboard.writeText(window.location.href);
+alert("EarningHub link copied.");
+}catch(error){
+alert("Unable to share this page.");
+}
+}
+}
+
+/* LOAD USER */
+
+async function loadUser(){
+try{
+const {data,error} = await client.auth.getSession();
+
+if(error){
+console.error("Session error:",error.message);
+return;
+}
+
+if(!data.session){
+window.location.href = "index.html";
+return;
+}
+
+const userId = data.session.user.id;
+const email = data.session.user.email || "";
+const username = email.split("@")[0] || "User";
+
+document.getElementById("username").textContent = username;
+document.getElementById("menuUsername").textContent = username;
+document.getElementById("menuEmail").textContent = email;
+
+const isAdmin =
+email.toLowerCase() === "earninghubadmin@gmail.com";
+
+if(isAdmin){
+document.getElementById("adminReview").style.display = "block";
+}
+
+await Promise.all([
+loadWallet(userId),
+loadDailyBonus(userId),
+loadNotificationCount(userId),
+loadMyCampaigns(userId)
+]);
+
+}catch(error){
+console.error("Dashboard loading error:",error);
+}
+}
+
+/* NOTIFICATION COUNT */
+
+async function loadNotificationCount(userId){
+const {count,error} = await client
+.from("notifications")
+.select("id",{count:"exact",head:true})
+.eq("user_id",userId)
+.eq("is_read",false);
+
+if(error){
+console.log("Notification count error:",error.message);
+return;
+}
+
+const dot = document.getElementById("notificationDot");
+const unreadCount = Number(count || 0);
+
+if(unreadCount > 0){
+dot.textContent = unreadCount > 99 ? "99+" : unreadCount;
+dot.style.display = "flex";
+}else{
+dot.textContent = "0";
+dot.style.display = "none";
+}
+}
+
+/* MY CAMPAIGNS */
+
+async function loadMyCampaigns(userId){
+const {data,error} = await client
+.from("campaigns")
+.select("id")
+.eq("creator_id",userId)
+.limit(1);
+
+if(error){
+console.log("My campaigns error:",error.message);
+return;
+}
+
+if(data && data.length > 0){
+document.getElementById("myCampaigns").style.display = "block";
+}
+}
+
+/* WALLET BALANCE */
+
+async function loadWallet(userId){
+const {data,error} = await client
+.from("wallets")
+.select("user_id,balance")
+.eq("user_id",userId)
+.maybeSingle();
+
+if(error){
+console.log("Wallet error:",error.message);
+return;
+}
+
+const balance = Number(data?.balance || 0);
+
+document.getElementById("balance").textContent =
+"$" + balance.toFixed(2);
+}
+
+/* DAILY BONUS */
+
+async function loadDailyBonus(userId){
+const {data,error} = await client
+.from("daily_bonuses")
+.select("points,bonus_date")
+.eq("user_id",userId)
+.order("bonus_date",{ascending:false});
+
+if(error){
+console.log("Daily bonus error:",error.message);
+return;
+}
+
+let totalPoints = 0;
+
+if(data){
+data.forEach(function(row){
+totalPoints += Number(row.points || 0);
+});
+}
+
+document.getElementById("bonusPoints").textContent =
+totalPoints + " Points";
+
+const today = new Date().toISOString().split("T")[0];
+
+const claimedToday = data && data.some(function(row){
+return row.bonus_date === today;
+});
+
+const button = document.getElementById("bonusButton");
+
+if(claimedToday){
+button.disabled = true;
+button.textContent = "Daily Bonus Claimed ✓";
+}else{
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+}
+}
+
+/* CLAIM DAILY BONUS */
+
+async function claimDailyBonus(){
+const button = document.getElementById("bonusButton");
+const message = document.getElementById("bonusMessage");
+
+button.disabled = true;
+button.textContent = "Claiming...";
+message.style.display = "none";
+
+try{
+const {data,error} = await client.rpc("claim_daily_bonus");
+
+if(error){
+message.textContent =
+"Unable to claim daily bonus: " + error.message;
+message.style.display = "block";
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+return;
+}
+
+if(!data){
+message.textContent = "Unable to claim daily bonus.";
+message.style.display = "block";
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+return;
+}
+
+if(data.success){
+const {data:sessionData} = await client.auth.getSession();
+
+if(sessionData.session){
+const userId = sessionData.session.user.id;
+await loadWallet(userId);
+await loadDailyBonus(userId);
+}
+
+message.textContent =
+data.message || "Daily bonus claimed successfully.";
+
+if(Number(data.reward || 0) > 0){
+message.textContent +=
+" $" + Number(data.reward).toFixed(2) +
+" has been added to your wallet.";
+}
+
+message.style.display = "block";
+button.textContent = "Daily Bonus Claimed ✓";
+
+}else{
+message.textContent =
+data.message || "Daily bonus could not be claimed.";
+
+message.style.display = "block";
+
+if(
+data.message &&
+data.message.toLowerCase().includes("already claimed")
+){
+button.disabled = true;
+button.textContent = "Daily Bonus Claimed ✓";
+}else{
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+}
+}
+
+}catch(error){
+console.error("Daily bonus claim error:",error);
+
+message.textContent =
+"Something went wrong. Please try again.";
+message.style.display = "block";
+
+button.disabled = false;
+button.textContent = "Claim Daily Bonus +10";
+}
+}
+
+/* LOGOUT */
+
+async function logout(){
+const {error} = await client.auth.signOut();
+
+if(error){
+alert("Unable to log out. Please try again.");
+console.error("Logout error:",error.message);
+return;
+}
+
+window.location.href = "index.html";
+}
+
+loadUser();
+</script>
+
+</body>
+</html>
