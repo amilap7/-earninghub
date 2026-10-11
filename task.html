@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Task</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+:root{
+--bg:#08111f;
+--panel:#111e30;
+--panel2:#16263b;
+--gold:#f5c542;
+--text:#ffffff;
+--muted:#a8b4c6;
+--border:#26364b;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+padding-bottom:105px;
+min-height:100vh;
+}
+
+.app{
+max-width:520px;
+min-height:100vh;
+margin:auto;
+padding:20px 18px 30px;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:8px 0 25px;
+gap:12px;
+}
+
+.logo{
+font-size:24px;
+font-weight:800;
+color:var(--gold);
+}
+
+.back{
+border:1px solid var(--border);
+background:var(--panel);
+border-radius:10px;
+padding:10px 14px;
+font-size:13px;
+font-weight:bold;
+text-decoration:none;
+color:var(--text);
+}
+
+.card{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:18px;
+padding:20px;
+}
+
+.platform{
+font-size:12px;
+font-weight:bold;
+color:var(--gold);
+margin-bottom:9px;
+text-transform:uppercase;
+letter-spacing:.6px;
+}
+
+h1{
+font-size:26px;
+line-height:1.3;
+margin-bottom:12px;
+overflow-wrap:anywhere;
+}
+
+.description{
+font-size:14px;
+color:var(--muted);
+line-height:1.7;
+overflow-wrap:anywhere;
+}
+
+.reward{
+background:var(--panel2);
+border:1px solid #35455b;
+border-radius:13px;
+padding:17px;
+margin-top:19px;
+}
+
+.reward small{
+color:var(--muted);
+font-size:12px;
+}
+
+.reward strong{
+display:block;
+font-size:29px;
+color:var(--gold);
+margin-top:5px;
+}
+
+.info{
+margin-top:19px;
+}
+
+.info strong{
+font-size:14px;
+}
+
+.info p{
+font-size:13px;
+color:var(--muted);
+margin-top:7px;
+line-height:1.6;
+}
+
+.target{
+display:block;
+width:100%;
+text-align:center;
+text-decoration:none;
+background:var(--gold);
+color:#111827;
+padding:14px;
+border-radius:11px;
+font-weight:800;
+margin-top:20px;
+font-size:14px;
+border:0;
+cursor:pointer;
+}
+
+.target:active,
+.submit:active{
+transform:scale(.99);
+}
+
+/* COUNTDOWN */
+
+.timer-box{
+background:#0b1728;
+border:1px solid #35455b;
+border-radius:15px;
+padding:19px 14px;
+margin-top:20px;
+text-align:center;
+}
+
+.timer-label{
+font-size:12px;
+color:var(--muted);
+font-weight:bold;
+text-transform:uppercase;
+letter-spacing:.8px;
+}
+
+.timer{
+font-size:38px;
+font-weight:800;
+color:var(--gold);
+margin:10px 0;
+font-variant-numeric:tabular-nums;
+}
+
+.timer-status{
+font-size:13px;
+line-height:1.6;
+color:var(--muted);
+}
+
+.timer-status.success{
+color:#55e6a5;
+}
+
+.timer-status.error{
+color:#ff8b8b;
+}
+
+.verify-button{
+display:block;
+width:100%;
+border:0;
+background:var(--gold);
+color:#111827;
+padding:15px;
+border-radius:11px;
+font-weight:800;
+margin-top:14px;
+cursor:pointer;
+font-size:14px;
+}
+
+.verify-button:disabled{
+opacity:.45;
+cursor:not-allowed;
+}
+
+.proof{
+border-top:1px solid var(--border);
+margin-top:23px;
+padding-top:21px;
+}
+
+.proof h2{
+font-size:19px;
+margin-bottom:8px;
+}
+
+.proof p{
+font-size:13px;
+color:var(--muted);
+line-height:1.6;
+margin-bottom:16px;
+}
+
+label{
+display:block;
+font-size:13px;
+font-weight:bold;
+margin-bottom:8px;
+}
+
+textarea{
+display:block;
+width:100%;
+min-height:105px;
+padding:13px;
+border:1px solid var(--border);
+border-radius:11px;
+outline:none;
+resize:vertical;
+background:#0b1728;
+color:var(--text);
+font-size:14px;
+margin-top:12px;
+}
+
+textarea::placeholder{
+color:#8290a4;
+}
+
+input[type="file"]{
+display:block;
+width:100%;
+padding:12px;
+border:1px solid var(--border);
+border-radius:11px;
+background:#0b1728;
+color:var(--muted);
+font-size:12px;
+margin-bottom:12px;
+}
+
+.submit{
+display:block;
+width:100%;
+border:0;
+background:var(--gold);
+color:#111827;
+padding:15px;
+border-radius:11px;
+font-weight:800;
+margin-top:13px;
+cursor:pointer;
+font-size:14px;
+}
+
+.submit:disabled{
+opacity:.55;
+cursor:not-allowed;
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:11px;
+background:#17283a;
+border:1px solid #35465a;
+color:#e2eaf4;
+font-size:13px;
+line-height:1.6;
+overflow-wrap:anywhere;
+}
+
+.empty{
+text-align:center;
+padding:45px 20px;
+color:var(--muted);
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:16px;
+line-height:1.7;
+}
+
+.empty h3{
+color:var(--text);
+font-size:19px;
+margin-bottom:8px;
+}
+
+.bottom-nav{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+width:100%;
+min-height:72px;
+display:flex;
+align-items:center;
+justify-content:space-around;
+padding:7px 3px calc(7px + env(safe-area-inset-bottom));
+background:#0c1727;
+border-top:1px solid var(--border);
+box-shadow:0 -4px 18px rgba(0,0,0,.25);
+z-index:9999;
+}
+
+.bottom-nav a{
+flex:1;
+min-width:0;
+min-height:50px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:4px;
+color:#94a3b8;
+text-decoration:none;
+font-size:10px;
+font-weight:600;
+white-space:nowrap;
+}
+
+.bottom-nav a svg{
+width:22px;
+height:22px;
+stroke:currentColor;
+stroke-width:1.8;
+fill:none;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+
+.bottom-nav a.active{
+color:var(--gold);
+font-weight:800;
+}
+
+.bottom-nav a.earn-link{
+color:var(--gold);
+font-weight:800;
+}
+
+.bottom-nav a.earn-link .earn-icon-wrap{
+width:44px;
+height:44px;
+flex-shrink:0;
+border-radius:50%;
+background:#263044;
+display:flex;
+align-items:center;
+justify-content:center;
+margin-top:-17px;
+border:2px solid var(--gold);
+}
+
+.bottom-nav a.earn-link svg{
+width:26px;
+height:26px;
+stroke:var(--gold);
+stroke-width:2.4;
+}
+
+.bottom-nav a.earn-link span{
+color:var(--gold);
+font-size:11px;
+font-weight:800;
+}
+
+@media(max-width:380px){
+.app{
+padding-left:13px;
+padding-right:13px;
+}
+
+h1{
+font-size:23px;
+}
+
+.card{
+padding:16px;
+}
+
+.bottom-nav a{
+font-size:9px;
+gap:3px;
+}
+
+.bottom-nav a.earn-link .earn-icon-wrap{
+width:40px;
+height:40px;
+margin-top:-14px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<div class="logo">EarningHub</div>
+<a class="back" href="earn-tasks2.html">← Back</a>
+</header>
+
+<div id="content">
+<div class="empty">Loading task...</div>
+</div>
+
+</div>
+
+<nav class="bottom-nav" aria-label="Main navigation">
+
+<a href="dashboard.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M3 10.5 12 3l9 7.5"></path>
+<path d="M5.5 9.5V21h13V9.5"></path>
+<path d="M9 21v-7h6v7"></path>
+</svg>
+<span>Home</span>
+</a>
+
+<a href="create-campaign.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M4 13V7l12-3v15L4 16v-3"></path>
+<path d="M4 7h-1a2 2 0 0 0 0 6h1"></path>
+<path d="m8 17 2 4h4l-3-5"></path>
+<path d="M19 8h2"></path>
+<path d="M19 12h2"></path>
+</svg>
+<span>Campaigns</span>
+</a>
+
+<a href="earn.html" class="earn-link active" aria-current="page">
+<div class="earn-icon-wrap">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M12 7v10"></path>
+<path d="M15 9.5c0-1.2-1.3-2-3-2s-3 .8-3 2 1 2 3 2.5 3 1.3 3 2.5-1.3 2-3 2-3-.8-3-2"></path>
+</svg>
+</div>
+<span>Earn</span>
+</a>
+
+<a href="wallet.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<rect x="2.5" y="5" width="19" height="15" rx="2.5"></rect>
+<path d="M3 9h18"></path>
+<path d="M16 14h2"></path>
+</svg>
+<span>Wallet</span>
+</a>
+
+<a href="account.html">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 21a8 8 0 0 1 16 0"></path>
+</svg>
+<span>Account</span>
+</a>
+
+</nav>
+
+<script>
+const SUPABASE_URL =
+"https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const client = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+const params = new URLSearchParams(window.location.search);
+const campaignParam = params.get("campaign");
+
+let selectedCampaign = null;
+let selectedTaskId = null;
+let activeTimer = null;
+let countdownInterval = null;
+let timerStarted = false;
+let timerFinished = false;
+let serverClockOffset = 0;
+let isSubmitting = false;
+
+function escapeHTML(value){
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+function showEmpty(title,text){
+stopCountdown();
+
+document.getElementById("content").innerHTML = `
+<div class="empty">
+<h3>${escapeHTML(title)}</h3>
+<p>${escapeHTML(text)}</p>
+</div>`;
+}
+
+function showMessage(element,text,type){
+element.textContent = text;
+element.style.display = "block";
+element.classList.remove("success","error");
+
+if(type){
+element.classList.add(type);
+}
+}
+
+function getCampaignId(value){
+try{
+const parsed = JSON.parse(decodeURIComponent(value));
+if(parsed && parsed.id) return parsed.id;
+}catch(e){}
+
+return value;
+}
+
+function isTimedTask(){
+if(!selectedCampaign) return false;
+
+const type = String(selectedCampaign.task_type || "").toLowerCase();
+
+return type === "website_visit" || type === "video_watch";
+}
+
+function formatTime(seconds){
+const safeSeconds = Math.max(0,Math.ceil(seconds));
+const minutes = Math.floor(safeSeconds / 60);
+const remainingSeconds = safeSeconds % 60;
+
+return String(minutes).padStart(2,"0") + ":" +
+String(remainingSeconds).padStart(2,"0");
+}
+
+function stopCountdown(){
+if(countdownInterval){
+clearInterval(countdownInterval);
+countdownInterval = null;
+}
+}
+
+function getTaskTypeName(){
+const taskTypeNames = {
+youtube_subscribe:"YouTube Subscribe",
+video_watch:"Watch Video",
+content_discovery:"Discover Content",
+feedback:"Provide Feedback",
+website_visit:"Website Visit",
+survey:"Complete Survey",
+facebook_follow:"Facebook Follow",
+instagram_follow:"Instagram Follow",
+tiktok_follow:"TikTok Follow"
+};
+
+const rawType = String(selectedCampaign.task_type || "");
+
+return taskTypeNames[rawType] ||
+rawType.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+function getSafeTarget(){
+const target = String(selectedCampaign.target_url || "");
+
+try{
+const parsedURL = new URL(target);
+
+if(
+parsedURL.protocol === "https:" ||
+parsedURL.protocol === "http:"
+){
+return parsedURL.href;
+}
+}catch(e){}
+
+return "";
+}
+
+function getRewardTokens(){
+const type = String(selectedCampaign.task_type || "").toLowerCase();
+
+const rewards = {
+youtube_subscribe:500,
+website_visit:350,
+facebook_follow:400,
+instagram_follow:350,
+tiktok_follow:350,
+video_watch:500
+};
+
+return rewards[type] ?? 500;
+}
+
+function getRewardXP(){
+return String(selectedCampaign.task_type || "").toLowerCase()
+=== "video_watch" ? 50 : 100;
+}
+
+function renderRewardResult(result){
+const tokens = Number(result?.tokens_awarded || 0);
+const xp = Number(result?.xp_awarded || 0);
+
+showEmpty(
+"Task Verified Successfully!",
+"Reward received: " + tokens.toLocaleString() +
+" Tokens and " + xp.toLocaleString() +
+" XP. Your reward has been processed."
+);
+}
+
+async function getLoggedInUser(){
+const {data,error} = await client.auth.getSession();
+
+if(error){
+throw new Error("Session error: " + error.message);
+}
+
+if(!data.session){
+throw new Error("Please log in before completing a task.");
+}
+
+return data.session.user;
+}
+
+async function loadTaskRecord(){
+const {data,error} = await client
+.from("tasks")
+.select("id,status,campaign_id")
+.eq("campaign_id",selectedCampaign.id)
+.maybeSingle();
+
+if(error){
+throw new Error("Unable to load task: " + error.message);
+}
+
+if(!data){
+throw new Error(
+"This campaign does not have a matching task record. Please contact the site administrator."
+);
+}
+
+if(data.status !== "active"){
+throw new Error("This task is not currently active.");
+}
+
+return data;
+}
+
+async function checkDailyLimit(workerId){
+const today = new Date();
+today.setHours(0,0,0,0);
+
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate()+1);
+
+const {count,error} = await client
+.from("task_submissions")
+.select("id",{count:"exact",head:true})
+.eq("worker_id",workerId)
+.gte("created_at",today.toISOString())
+.lt("created_at",tomorrow.toISOString());
+
+if(error){
+throw new Error("Unable to check daily task limit: " + error.message);
+}
+
+if((count || 0) >= 20){
+throw new Error(
+"You have reached today's task limit. Please come back tomorrow."
+);
+}
+}
+
+async function checkDailyLimitAndExisting(){
+let user;
+
+try{
+user = await getLoggedInUser();
+}catch(error){
+showEmpty("Login Required",error.message);
+return;
+}
+
+try{
+const task = await loadTaskRecord();
+selectedTaskId = task.id;
+
+const {data:existing,error} = await client
+.from("task_submissions")
+.select("id,status")
+.eq("worker_id",user.id)
+.eq("task_id",selectedTaskId)
+.maybeSingle();
+
+if(error){
+throw new Error("Unable to check task status: " + error.message);
+}
+
+if(existing){
+if(existing.status === "approved"){
+showEmpty(
+"Task Already Completed",
+"You have already completed this task."
+);
+}else if(existing.status === "rejected"){
+showEmpty(
+"Task Rejected",
+"Your previous submission was rejected. Please contact support if you need help."
+);
+}else{
+showEmpty(
+"Task Already Submitted",
+"A submission already exists for this task."
+);
+}
+return;
+}
+
+await checkDailyLimit(user.id);
+renderTask();
+
+}catch(error){
+showEmpty("Unable to load task",error.message);
+}
+}
+
+function renderTask(){
+const taskType = getTaskTypeName();
+const safeTarget = getSafeTarget();
+const timed = isTimedTask();
+
+if(!safeTarget){
+showEmpty("Invalid Target Link","This campaign does not have a valid website link.");
+return;
+}
+
+const timerHTML = timed ? `
+<div class="timer-box">
+<div class="timer-label">Time Remaining</div>
+<div class="timer" id="timerDisplay">--:--</div>
+<div class="timer-status" id="timerStatus">
+Open the target link to start the countdown.
+</div>
+
+<button
+type="button"
+id="verifyButton"
+class="verify-button"
+disabled>
+Verify Task
+</button>
+</div>
+` : "";
+
+const proofHTML = timed ? `
+<div class="proof">
+<h2>Verify Your Task</h2>
+<p>
+Open the target link and allow the countdown to finish.
+You can add optional details below before verifying.
+</p>
+
+<label for="proof">Task Details (Optional)</label>
+<textarea
+id="proof"
+name="proof"
+placeholder="Add details about your completed activity..."></textarea>
+
+<div id="message" class="message" role="status"></div>
+</div>
+` : `
+<div class="proof">
+<h2>Submit Task</h2>
+<p>
+Complete the requested activity and upload a screenshot.
+Your task will be processed automatically after submission.
+</p>
+
+<form id="proofForm">
+<label for="screenshot">Screenshot</label>
+<input
+id="screenshot"
+type="file"
+accept="image/png,image/jpeg,image/jpg"
+required>
+
+<label for="proof">Proof Details</label>
+<textarea
+id="proof"
+name="proof"
+placeholder="Describe what you completed or enter your proof link..."
+required></textarea>
+
+<button type="submit" class="submit">Submit Task</button>
+</form>
+
+<div id="message" class="message" role="status"></div>
+</div>
+`;
+
+document.getElementById("content").innerHTML = `
+<div class="card">
+
+<div class="platform">${escapeHTML(selectedCampaign.platform || "Campaign")}</div>
+
+<h1>${escapeHTML(selectedCampaign.title || "Campaign Task")}</h1>
+
+<div class="description">
+${escapeHTML(selectedCampaign.description || "Follow the instructions to complete this task.")}
+</div>
+
+<div class="reward">
+<small>Task Reward</small>
+<strong>${getRewardTokens().toLocaleString()} Tokens</strong>
+<small style="display:block;margin-top:7px">
+XP Reward: ${getRewardXP()} XP
+</small>
+</div>
+
+<div class="info">
+<strong>Task Type</strong>
+<p>${escapeHTML(taskType)}</p>
+</div>
+
+${timerHTML}
+
+<button
+type="button"
+class="target"
+id="openTargetButton">
+${timed ? "Open Target Link ↗" : "Open Target Website ↗"}
+</button>
+
+${proofHTML}
+
+</div>`;
+
+if(timed){
+document.getElementById("openTargetButton")
+.addEventListener("click",startTimedTask);
+
+document.getElementById("verifyButton")
+.addEventListener("click",verifyTimedTask);
+}else{
+document.getElementById("openTargetButton")
+.addEventListener("click",function(){
+window.open(safeTarget,"_blank","noopener,noreferrer");
+});
+
+document.getElementById("proofForm")
+.addEventListener("submit",submitNormalTask);
+}
+}
+
+/*
+Open the link immediately after the user's tap to reduce popup blocking.
+The database remains the source of truth for the timer start time.
+*/
+async function startTimedTask(){
+if(timerStarted) {
+const safeTarget = getSafeTarget();
+if(safeTarget) window.open(safeTarget,"_blank","noopener,noreferrer");
+return;
+}
+
+const button = document.getElementById("openTargetButton");
+const status = document.getElementById("timerStatus");
+const display = document.getElementById("timerDisplay");
+
+const safeTarget = getSafeTarget();
+
+if(!safeTarget){
+showMessage(status,"The target link is invalid.","error");
+return;
+}
+
+/* Open the external link directly in response to the user tap. */
+window.open(safeTarget,"_blank","noopener,noreferrer");
+
+button.disabled = true;
+button.textContent = "Starting Timer...";
+
+showMessage(status,"Starting secure countdown...");
+
+try{
+await getLoggedInUser();
+
+const {data,error} = await client.rpc(
+"start_task_timer",
+{p_task_id:selectedTaskId}
+);
+
+if(error){
+throw new Error(error.message);
+}
+
+const result = Array.isArray(data) ? data[0] : data;
+
+if(!result || !result.started_at || !result.server_now){
+throw new Error("The server did not return a valid timer session.");
+}
+
+activeTimer = {
+startedAt: new Date(result.started_at).getTime(),
+duration: Number(result.duration_seconds)
+};
+
+serverClockOffset =
+new Date(result.server_now).getTime() - Date.now();
+
+if(
+!Number.isFinite(activeTimer.startedAt) ||
+!Number.isFinite(activeTimer.duration) ||
+activeTimer.duration <= 0
+){
+throw new Error("The timer information is invalid.");
+}
+
+timerStarted = true;
+
+button.disabled = false;
+button.textContent = "Open Target Link Again ↗";
+
+startCountdown();
+
+}catch(error){
+button.disabled = false;
+button.textContent = "Try Opening Target Again ↗";
+
+showMessage(
+status,
+"Unable to start timer: " + error.message,
+"error"
+);
+}
+}
+
+function startCountdown(){
+stopCountdown();
+
+const display = document.getElementById("timerDisplay");
+const status = document.getElementById("timerStatus");
+const verifyButton = document.getElementById("verifyButton");
+
+if(!activeTimer || !display || !status || !verifyButton){
+return;
+}
+
+function update(){
+const estimatedServerNow = Date.now() + serverClockOffset;
+
+const endTime =
+activeTimer.startedAt + activeTimer.duration * 1000;
+
+const remaining = Math.max(
+0,
+Math.ceil((endTime - estimatedServerNow)/1000)
+);
+
+display.textContent = formatTime(remaining);
+
+if(remaining > 0){
+verifyButton.disabled = true;
+
+showMessage(
+status,
+"Please keep the task open until the countdown finishes.",
+""
+);
+}else{
+timerFinished = true;
+verifyButton.disabled = false;
+
+showMessage(
+status,
+"Countdown completed. You can now verify your task.",
+"success"
+);
+
+stopCountdown();
+}
+}
+
+update();
+
+if(!timerFinished){
+countdownInterval = setInterval(update,1000);
+}
+}
+
+async function verifyTimedTask(){
+if(isSubmitting || !timerStarted || !activeTimer){
+return;
+}
+
+const button = document.getElementById("verifyButton");
+const status = document.getElementById("timerStatus");
+const message = document.getElementById("message");
+
+const estimatedServerNow = Date.now() + serverClockOffset;
+
+const endTime =
+activeTimer.startedAt + activeTimer.duration * 1000;
+
+if(estimatedServerNow < endTime){
+showMessage(
+status,
+"Please wait until the countdown finishes.",
+"error"
+);
+return;
+}
+
+isSubmitting = true;
+button.disabled = true;
+button.textContent = "Verifying...";
+
+try{
+await getLoggedInUser();
+
+const details =
+document.getElementById("proof")?.value.trim() || "";
+
+const proof = JSON.stringify({
+method:"countdown_verification",
+task_type:selectedCampaign.task_type,
+target_url:getSafeTarget(),
+details:details
+});
+
+const {data,error} = await client.rpc(
+"verify_task_timer",
+{
+p_task_id:selectedTaskId,
+p_proof:proof
+}
+);
+
+if(error){
+throw new Error(error.message);
+}
+
+const result = Array.isArray(data) ? data[0] : data;
+
+if(!result || result.success !== true){
+throw new Error("The server could not verify this task.");
+}
+
+stopCountdown();
+renderRewardResult(result);
+
+}catch(error){
+isSubmitting = false;
+button.disabled = false;
+button.textContent = "Verify Task";
+
+showMessage(
+message || status,
+"Verification failed: " + error.message,
+"error"
+);
+}
+}
+
+async function submitNormalTask(event){
+event.preventDefault();
+
+if(isSubmitting) return;
+
+const message = document.getElementById("message");
+const button = document.querySelector(".submit");
+const proofField = document.getElementById("proof");
+const screenshotField = document.getElementById("screenshot");
+
+const proof = proofField.value.trim();
+const screenshot = screenshotField.files[0];
+
+if(!screenshot){
+showMessage(message,"Please upload a screenshot first.","error");
+return;
+}
+
+if(!proof){
+showMessage(message,"Please enter your proof details.","error");
+return;
+}
+
+if(!screenshot.type.startsWith("image/")){
+showMessage(message,"Please upload a valid image screenshot.","error");
+return;
+}
+
+if(screenshot.size > 2 * 1024 * 1024){
+showMessage(message,"Please choose a screenshot smaller than 2 MB.","error");
+return;
+}
+
+isSubmitting = true;
+button.disabled = true;
+button.textContent = "Submitting...";
+
+showMessage(message,"Processing your task...");
+
+try{
+const user = await getLoggedInUser();
+
+await checkDailyLimit(user.id);
+
+const {data:existing,error:existingError} = await client
+.from("task_submissions")
+.select("id,status")
+.eq("worker_id",user.id)
+.eq("task_id",selectedTaskId)
+.maybeSingle();
+
+if(existingError){
+throw new Error(existingError.message);
+}
+
+if(existing){
+throw new Error("You have already submitted this task.");
+}
+
+const screenshotData = await fileToDataURL(screenshot);
+
+const finalProof = JSON.stringify({
+details:proof,
+screenshot:screenshotData
+});
+
+const {data,error} = await client.rpc(
+"complete_task_automatically",
+{
+p_task_id:selectedTaskId,
+p_proof:finalProof
+}
+);
+
+if(error){
+throw new Error(error.message);
+}
+
+const result = Array.isArray(data) ? data[0] : data;
+
+if(!result || result.success !== true){
+throw new Error("The server could not complete this task.");
+}
+
+renderRewardResult(result);
+
+}catch(error){
+isSubmitting = false;
+
+showMessage(
+message,
+"Unable to complete task: " + error.message,
+"error"
+);
+
+button.disabled = false;
+button.textContent = "Submit Task";
+}
+}
+
+function fileToDataURL(file){
+return new Promise(function(resolve,reject){
+const reader = new FileReader();
+
+reader.onload = function(){
+resolve(reader.result);
+};
+
+reader.onerror = function(){
+reject(reader.error);
+};
+
+reader.readAsDataURL(file);
+});
+}
+
+async function loadSelectedCampaign(){
+if(!campaignParam){
+showEmpty(
+"Task Not Found",
+"Please return to Available Tasks and select a campaign again."
+);
+return;
+}
+
+const campaignId = getCampaignId(campaignParam);
+
+const {data,error} = await client
+.from("campaigns")
+.select("id,title,description,platform,task_type,target_url,reward,budget,status,creator_id")
+.eq("id",campaignId)
+.maybeSingle();
+
+if(error){
+showEmpty("Unable to Load Campaign",error.message);
+return;
+}
+
+if(!data){
+showEmpty(
+"Campaign Not Found",
+"This campaign may have been removed. Please return to Available Tasks."
+);
+return;
+}
+
+if(data.status !== "active"){
+showEmpty(
+"Campaign Unavailable",
+"This campaign is not currently active."
+);
+return;
+}
+
+selectedCampaign = data;
+
+await checkDailyLimitAndExisting();
+}
+
+loadSelectedCampaign();
+</script>
+
+</body>
+</html>
