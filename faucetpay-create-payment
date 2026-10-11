@@ -1,0 +1,272 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const FAUCETPAY_MERCHANT_USERNAME =
+  Deno.env.get("FAUCETPAY_MERCHANT_USERNAME")!;
+const FAUCETPAY_CALLBACK_URL =
+  Deno.env.get("FAUCETPAY_CALLBACK_URL")!;
+
+const SITE_URL = "https://earninghub.pages.dev";
+const FAUCETPAY_CHECKOUT_URL =
+  "https://faucetpay.io/merchant/webscr";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": SITE_URL,
+  "Access-Control-Allow-Headers":
+    "authorization, apikey, content-type, x-client-info",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
+function response(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: corsHeaders,
+  });
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (req.method !== "POST") {
+    return response({ error: "Method not allowed." }, 405);
+  }
+
+  try {
+    if (
+      !SUPABASE_URL ||
+      !SUPABASE_ANON_KEY ||
+      !FAUCETPAY_MERCHANT_USERNAME ||
+      !FAUCETPAY_CALLBACK_URL
+    ) {
+      return response(
+        {
+          error:
+            "Payment setup is incomplete. Please configure the required server secrets.",
+        },
+        503,
+      );
+    }
+
+    const callbackUrl = new URL(FAUCETPAY_CALLBACK_URL);
+
+    if (
+      callbackUrl.protocol !== "https:" ||
+      callbackUrl.hostname !== "zsitqabyplglcppvuetj.supabase.co" ||
+      !callbackUrl.pathname.endsWith("/faucetpay-callback")
+    ) {
+      return response(
+        { error: "The payment callback URL is not configured correctly." },
+        503,
+      );
+    }
+
+    const authorization = req.headers.get("Authorization");
+
+    if (!authorization?.startsWith("Bearer ")) {
+      return response({ error: "Please log in first." }, 401);
+    }
+
+    const accessToken = authorization.slice("Bearer ".length).trim();
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      },
+    );
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (authError || !user) {
+      return response({ error: "Your session is invalid. Please log in again." }, 401);
+    }
+
+    let body: { campaign_id?: string };
+
+    try {
+      body = await req.json();
+    } catch {
+      return response({ error: "Invalid request body." }, 400);
+    }
+
+    const campaignId = body.campaign_id;
+
+    if (
+      typeof campaignId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        campaignId,
+      )
+    ) {
+      return response({ error: "Invalid campaign ID." }, 400);
+    }
+
+    const { data: campaign, error: campaignError } = await supabase
+      .from("campaigns")
+      .select(
+        "id, creator_id, title, status, total_payment, budget",
+      )
+      .eq("id", campaignId)
+      .eq("creator_id", user.id)
+      .maybeSingle();
+
+    if (campaignError) {
+      console.error("Campaign lookup failed:", campaignError.message);
+      return response({ error: "Could not load the campaign." }, 500);
+    }
+
+    if (!campaign) {
+      return response(
+        { error: "Campaign not found or you do not own this campaign." },
+        404,
+      );
+    }
+
+    if (campaign.status !== "pending_payment") {
+      return response(
+        {
+          error:
+            "This campaign is not waiting for payment. Refresh the page and check its status.",
+        },
+        409,
+      );
+    }
+
+    const amount = Number(
+      campaign.total_payment ?? campaign.budget,
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 100000) {
+      return response({ error: "The campaign payment amount is invalid." }, 400);
+    }
+
+    const amount1 = amount.toFixed(2);
+
+    // Reuse an existing pending order for this campaign.
+    const { data: existing, error: existingError } = await supabase
+      .from("campaign_payments")
+      .select(
+        "id, amount, provider_custom, currency1, amount1",
+      )
+      .eq("campaign_id", campaign.id)
+      .eq("creator_id", user.id)
+      .eq("payment_method", "faucetpay")
+      .eq("status", "pending")
+      .maybeSingle();
+
+    if (existingError) {
+      console.error("Pending payment lookup failed:", existingError.message);
+      return response(
+        { error: "Could not prepare the payment order." },
+        500,
+      );
+    }
+
+    let payment = existing;
+
+    if (
+      payment &&
+      (
+        Number(payment.amount) !== amount ||
+        payment.currency1 !== "USDT" ||
+        Number(payment.amount1) !== Number(amount1)
+      )
+    ) {
+      return response(
+        {
+          error:
+            "The existing payment order does not match this campaign amount. Please contact support before retrying.",
+        },
+        409,
+      );
+    }
+
+    if (!payment) {
+      const orderId = crypto.randomUUID();
+
+      const { data: created, error: insertError } = await supabase
+        .from("campaign_payments")
+        .insert({
+          campaign_id: campaign.id,
+          creator_id: user.id,
+          amount: amount,
+          payment_method: "faucetpay",
+          status: "pending",
+          provider_custom: orderId,
+          currency1: "USDT",
+          currency2: null,
+          amount1: Number(amount1),
+          amount2: null,
+          provider_transaction_id: null,
+          processed_at: null,
+        })
+        .select(
+          "id, amount, provider_custom, currency1, amount1",
+        )
+        .single();
+
+      if (insertError || !created) {
+        console.error(
+          "Payment order creation failed:",
+          insertError?.message,
+        );
+
+        return response(
+          {
+            error:
+              "Could not create a payment order. Please refresh and try again.",
+          },
+          409,
+        );
+      }
+
+      payment = created;
+    }
+
+    const checkoutFields: Record<string, string> = {
+      merchant_username: FAUCETPAY_MERCHANT_USERNAME,
+      item_description: `EarningHub campaign: ${String(campaign.title).slice(0, 100)}`,
+      amount1: amount1,
+      currency1: "USDT",
+      custom: payment.provider_custom,
+      callback_url: callbackUrl.toString(),
+      success_url:
+        `${SITE_URL}/campaign-payment.html?id=${encodeURIComponent(campaign.id)}&payment=return`,
+      cancel_url:
+        `${SITE_URL}/campaign-payment.html?id=${encodeURIComponent(campaign.id)}&payment=cancel`,
+    };
+
+    return response({
+      action: FAUCETPAY_CHECKOUT_URL,
+      method: "POST",
+      fields: checkoutFields,
+      amount: amount1,
+      currency: "USDT",
+    });
+  } catch (error) {
+    console.error(
+      "Unexpected payment preparation error:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+
+    return response(
+      { error: "An unexpected error occurred while preparing checkout." },
+      500,
+    );
+  }
+});
