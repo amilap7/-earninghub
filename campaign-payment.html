@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>EarningHub - Secure Campaign Payment</title>
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="Securely pay for your EarningHub campaign using FaucetPay cryptocurrency payments.">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+    --bg:#0b1220;
+    --bg2:#101d35;
+    --surface:#14223a;
+    --surface2:#192b46;
+    --border:rgba(177,199,231,.13);
+    --gold:#e8c66a;
+    --gold2:#f8df91;
+    --text:#f4f7ff;
+    --muted:#9eacc4;
+    --green:#54dfad;
+    --red:#ff858c;
+    --blue:#78aaff;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    color:var(--text);
+    background:
+        radial-gradient(ellipse at 10% 0%,rgba(47,91,155,.24),transparent 43%),
+        radial-gradient(ellipse at 100% 35%,rgba(35,75,132,.16),transparent 38%),
+        linear-gradient(145deg,#101d35 0%,#0b1220 52%,#0b1425 100%);
+    background-attachment:fixed;
+}
+
+button,
+a{
+    -webkit-tap-highlight-color:transparent;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+button{
+    font:inherit;
+}
+
+button:focus-visible,
+a:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:4px;
+}
+
+.app{
+    max-width:580px;
+    min-height:100vh;
+    margin:auto;
+    padding:0 18px 35px;
+}
+
+/* NAVIGATION */
+
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:17px 0;
+    margin-bottom:24px;
+    background:rgba(11,18,32,.90);
+    border-bottom:1px solid var(--border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+}
+
+.brand-icon{
+    width:42px;
+    height:42px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    border-radius:14px;
+    color:#151a24;
+    font-size:20px;
+    font-weight:900;
+    background:linear-gradient(135deg,#f8e7a6,#d2a941);
+    box-shadow:0 5px 20px rgba(232,198,106,.14);
+}
+
+.brand-name{
+    font-size:19px;
+    font-weight:900;
+    letter-spacing:-.6px;
+}
+
+.brand-name span{
+    color:var(--gold);
+}
+
+.brand-caption{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:10px;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+}
+
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.nav-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:40px;
+    padding:0 12px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:rgba(255,255,255,.035);
+    color:#e8eefb;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+    transition:.2s;
+}
+
+.nav-link:hover{
+    background:var(--surface2);
+    border-color:rgba(232,198,106,.4);
+}
+
+.nav-link.primary{
+    background:var(--gold);
+    color:#17191f;
+    border-color:var(--gold);
+}
+
+/* PAGE HEADER */
+
+.page-heading{
+    margin:9px 0 23px;
+}
+
+.eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 11px;
+    margin-bottom:15px;
+    border:1px solid rgba(84,223,173,.19);
+    border-radius:30px;
+    background:rgba(84,223,173,.07);
+    color:#86edc4;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.1px;
+    text-transform:uppercase;
+}
+
+.status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 12px rgba(84,223,173,.5);
+}
+
+h1{
+    font-size:clamp(29px,7vw,39px);
+    line-height:1.13;
+    letter-spacing:-1.2px;
+    font-weight:900;
+}
+
+h1 span{
+    color:var(--gold);
+}
+
+.subtitle{
+    max-width:440px;
+    margin-top:12px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.75;
+}
+
+/* MESSAGE */
+
+.message{
+    display:none;
+    margin-bottom:17px;
+    padding:14px 15px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:rgba(255,255,255,.04);
+    color:#edf3ff;
+    font-size:13px;
+    line-height:1.65;
+    overflow-wrap:anywhere;
+}
+
+.message.success{
+    border-color:rgba(84,223,173,.3);
+    background:rgba(84,223,173,.08);
+    color:#a7f5d7;
+}
+
+.message.error{
+    border-color:rgba(255,133,140,.27);
+    background:rgba(255,133,140,.07);
+    color:#ffc0c4;
+}
+
+.message.info{
+    border-color:rgba(120,170,255,.28);
+    background:rgba(120,170,255,.07);
+    color:#c3d8ff;
+}
+
+/* CARDS */
+
+.card{
+    padding:20px;
+    margin-bottom:16px;
+    border:1px solid var(--border);
+    border-radius:21px;
+    background:linear-gradient(
+        145deg,
+        rgba(25,43,70,.94),
+        rgba(17,30,50,.94)
+    );
+    box-shadow:0 15px 38px rgba(0,0,0,.13);
+}
+
+.card-heading{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.card-icon{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+    border:1px solid rgba(232,198,106,.17);
+    border-radius:14px;
+    background:rgba(232,198,106,.08);
+    color:var(--gold);
+    font-size:19px;
+}
+
+.card-title{
+    font-size:17px;
+    font-weight:800;
+    letter-spacing:-.3px;
+}
+
+.card-subtitle{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* CAMPAIGN DETAILS */
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    padding:13px 0;
+    border-bottom:1px solid rgba(177,199,231,.08);
+}
+
+.info:first-of-type{
+    padding-top:0;
+}
+
+.info:last-child{
+    padding-bottom:0;
+    border-bottom:0;
+}
+
+.info-label{
+    flex:0 0 38%;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+}
+
+.info-value{
+    flex:1;
+    text-align:right;
+    color:#f5f7ff;
+    font-size:13px;
+    font-weight:700;
+    line-height:1.6;
+    overflow-wrap:anywhere;
+}
+
+/* PAYMENT AMOUNT */
+
+.amount-card{
+    position:relative;
+    overflow:hidden;
+    padding:24px 21px;
+    margin-bottom:16px;
+    border:1px solid rgba(232,198,106,.26);
+    border-radius:23px;
+    background:
+        radial-gradient(circle at 100% 0%,rgba(248,223,145,.18),transparent 43%),
+        linear-gradient(125deg,#243653,#15253e 65%,#17243a);
+    box-shadow:0 16px 36px rgba(0,0,0,.16);
+}
+
+.amount-label{
+    color:#cbd5e6;
+    font-size:12px;
+    font-weight:600;
+}
+
+.amount{
+    margin-top:10px;
+    color:var(--gold2);
+    font-size:clamp(35px,9vw,45px);
+    font-weight:900;
+    letter-spacing:-1.5px;
+    overflow-wrap:anywhere;
+}
+
+.amount-caption{
+    margin-top:8px;
+    color:#aebbd0;
+    font-size:12px;
+    line-height:1.6;
+}
+
+/* SUMMARY */
+
+.summary{
+    overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:15px;
+    background:rgba(5,12,24,.2);
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px;
+    border-bottom:1px solid rgba(177,199,231,.08);
+    font-size:12px;
+    line-height:1.6;
+}
+
+.summary-row:last-child{
+    border-bottom:0;
+}
+
+.summary-row span{
+    color:#b1bfd4;
+}
+
+.summary-row strong{
+    text-align:right;
+    color:#f6f8ff;
+    font-size:13px;
+    overflow-wrap:anywhere;
+}
+
+.summary-row .gold{
+    color:var(--gold);
+}
+
+.summary-row .green{
+    color:#83eec5;
+}
+
+/* PAYMENT METHOD */
+
+.payment-intro{
+    margin-bottom:16px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.7;
+}
+
+.coin-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+}
+
+.coin{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    min-height:108px;
+    padding:13px 7px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:rgba(255,255,255,.025);
+    text-align:center;
+}
+
+.coin-icon{
+    width:39px;
+    height:39px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    font-size:19px;
+    font-weight:900;
+}
+
+.coin.usdt .coin-icon{
+    color:#6ce0bb;
+    background:rgba(38,190,143,.12);
+    border:1px solid rgba(38,190,143,.2);
+}
+
+.coin.ltc .coin-icon{
+    color:#dce5f4;
+    background:rgba(220,229,244,.09);
+    border:1px solid rgba(220,229,244,.16);
+}
+
+.coin.btc .coin-icon{
+    color:#ffc66e;
+    background:rgba(255,166,52,.11);
+    border:1px solid rgba(255,166,52,.18);
+}
+
+.coin-name{
+    font-size:13px;
+    font-weight:800;
+}
+
+.coin-caption{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+.secure-note{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    padding:14px;
+    margin-top:16px;
+    border:1px solid rgba(120,170,255,.16);
+    border-radius:14px;
+    background:rgba(120,170,255,.055);
+    color:#c0d1ec;
+    font-size:12px;
+    line-height:1.7;
+}
+
+.secure-note .lock{
+    flex-shrink:0;
+    font-size:17px;
+}
+
+/* BUTTON */
+
+.submit{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    min-height:54px;
+    padding:15px 18px;
+    margin-top:20px;
+    border:0;
+    border-radius:15px;
+    background:linear-gradient(115deg,#f5dc91,#d8b34f);
+    color:#171b25;
+    box-shadow:0 9px 24px rgba(211,174,73,.14);
+    font-size:14px;
+    font-weight:900;
+    cursor:pointer;
+    transition:transform .2s,opacity .2s,box-shadow .2s;
+}
+
+.submit:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 13px 30px rgba(211,174,73,.22);
+}
+
+.submit:disabled{
+    opacity:.48;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+.button-arrow{
+    font-size:19px;
+    line-height:1;
+}
+
+.small-note{
+    margin-top:12px;
+    color:var(--muted);
+    text-align:center;
+    font-size:11px;
+    line-height:1.7;
+}
+
+/* SECURITY / STATUS */
+
+.status-panel{
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:rgba(255,255,255,.025);
+}
+
+.status-title{
+    margin-bottom:7px;
+    font-size:13px;
+    font-weight:800;
+}
+
+.status-text{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.7;
+}
+
+.loading{
+    padding:65px 15px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.8;
+}
+
+.loader{
+    width:35px;
+    height:35px;
+    margin:0 auto 17px;
+    border:3px solid rgba(232,198,106,.15);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+.hidden{
+    display:none!important;
+}
+
+.footer{
+    padding:25px 10px 8px;
+    color:#7f8da5;
+    text-align:center;
+    font-size:11px;
+    line-height:1.8;
+}
+
+.footer-brand{
+    margin-bottom:5px;
+    color:#dbe3f1;
+    font-size:13px;
+    font-weight:800;
+}
+
+.ad{
+    margin-top:18px;
+    padding:18px;
+    border:1px dashed rgba(177,199,231,.2);
+    border-radius:15px;
+    color:#8190a8;
+    text-align:center;
+    font-size:11px;
+}
+
+/* MOBILE */
+
+@media(max-width:380px){
+    .app{
+        padding:0 13px 25px;
+    }
+
+    .navbar{
+        gap:8px;
+    }
+
+    .brand-name{
+        font-size:16px;
+    }
+
+    .brand-icon{
+        width:37px;
+        height:37px;
+    }
+
+    .nav-link{
+        min-height:37px;
+        padding:0 9px;
+        font-size:11px;
+    }
+
+    .card{
+        padding:16px;
+        border-radius:18px;
+    }
+
+    .coin-grid{
+        gap:7px;
+    }
+
+    .coin{
+        min-height:99px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    *,
+    *::before,
+    *::after{
+        scroll-behavior:auto!important;
+        animation-duration:.01ms!important;
+        transition-duration:.01ms!important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- NAVIGATION -->
+
+    <nav class="navbar" aria-label="Main navigation">
+
+        <a class="brand" href="dashboard.html" aria-label="EarningHub Dashboard">
+
+            <div class="brand-icon">EH</div>
+
+            <div>
+                <div class="brand-name">Earning<span>Hub</span></div>
+                <div class="brand-caption">Campaign Payments</div>
+            </div>
+
+        </a>
+
+        <div class="nav-actions">
+            <a class="nav-link" href="dashboard.html">Dashboard</a>
+            <a class="nav-link primary" href="wallet.html">Wallet ↗</a>
+        </div>
+
+    </nav>
+
+    <!-- LOADING -->
+
+    <div id="loading" class="loading">
+        <div class="loader"></div>
+        Preparing your secure payment...
+    </div>
+
+    <!-- MAIN CONTENT -->
+
+    <main id="content" class="hidden">
+
+        <section class="page-heading">
+
+            <div class="eyebrow">
+                <span class="status-dot"></span>
+                Secure crypto checkout
+            </div>
+
+            <h1>
+                Complete your<br>
+                <span>campaign payment.</span>
+            </h1>
+
+            <p class="subtitle">
+                Review your campaign budget and continue to FaucetPay's secure merchant checkout.
+            </p>
+
+        </section>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <!-- CAMPAIGN DETAILS -->
+
+        <section class="card">
+
+            <div class="card-heading">
+
+                <div class="card-icon">▤</div>
+
+                <div>
+                    <div class="card-title">Campaign details</div>
+                    <div class="card-subtitle">Review your campaign before paying.</div>
+                </div>
+
+            </div>
+
+            <div class="info">
+                <div class="info-label">Campaign title</div>
+                <div class="info-value" id="campaignTitle">—</div>
+            </div>
+
+            <div class="info">
+                <div class="info-label">Platform</div>
+                <div class="info-value" id="campaignPlatform">—</div>
+            </div>
+
+            <div class="info">
+                <div class="info-label">Task type</div>
+                <div class="info-value" id="campaignTaskType">—</div>
+            </div>
+
+            <div class="info">
+                <div class="info-label">Campaign status</div>
+                <div class="info-value" id="campaignStatus">—</div>
+            </div>
+
+        </section>
+
+        <!-- AMOUNT -->
+
+        <section class="amount-card">
+
+            <div class="amount-label">TOTAL CAMPAIGN PAYMENT</div>
+
+            <div class="amount" id="campaignAmount">$0.00</div>
+
+            <div class="amount-caption">
+                Pricing shown in USD. Checkout uses USDT pricing through FaucetPay.
+            </div>
+
+        </section>
+
+        <!-- BUDGET BREAKDOWN -->
+
+        <section class="card">
+
+            <div class="card-heading">
+
+                <div class="card-icon">◈</div>
+
+                <div>
+                    <div class="card-title">Budget breakdown</div>
+                    <div class="card-subtitle">How your campaign payment is allocated.</div>
+                </div>
+
+            </div>
+
+            <div class="summary">
+
+                <div class="summary-row">
+                    <span>Task budget · 70%</span>
+                    <strong class="green" id="rewardPool">$0.00</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>EarningHub revenue · 30%</span>
+                    <strong class="gold" id="platformFee">$0.00</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Reward per approved task</span>
+                    <strong>$0.10</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Estimated task completions</span>
+                    <strong id="completionCount">0</strong>
+                </div>
+
+            </div>
+
+            <div class="secure-note">
+                <span class="lock">ⓘ</span>
+                <span>
+                    The task capacity is an estimate based on the 70% task budget and a $0.10 reward per approved task.
+                </span>
+            </div>
+
+        </section>
+
+        <!-- PAYMENT METHOD -->
+
+        <section class="card">
+
+            <div class="card-heading">
+
+                <div class="card-icon">₿</div>
+
+                <div>
+                    <div class="card-title">Choose your crypto payment</div>
+                    <div class="card-subtitle">Continue securely with FaucetPay Merchant.</div>
+                </div>
+
+            </div>
+
+            <p class="payment-intro">
+                These are the supported coins configured for your merchant account. Available payment choices are controlled by FaucetPay at checkout.
+            </p>
+
+            <div class="coin-grid">
+
+                <div class="coin usdt">
+                    <div class="coin-icon">₮</div>
+                    <div>
+                        <div class="coin-name">USDT</div>
+                        <div class="coin-caption">Tether</div>
+                    </div>
+                </div>
+
+                <div class="coin ltc">
+                    <div class="coin-icon">Ł</div>
+                    <div>
+                        <div class="coin-name">LTC</div>
+                        <div class="coin-caption">Litecoin</div>
+                    </div>
+                </div>
+
+                <div class="coin btc">
+                    <div class="coin-icon">₿</div>
+                    <div>
+                        <div class="coin-name">BTC</div>
+                        <div class="coin-caption">Bitcoin</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="secure-note">
+                <span class="lock">🔒</span>
+                <span>
+                    Your campaign will not be activated simply because you return from checkout. The payment must be verified by the server.
+                </span>
+            </div>
+
+            <button
+                id="submitButton"
+                class="submit"
+                type="button"
+                disabled
+            >
+                Continue to FaucetPay
+                <span class="button-arrow">→</span>
+            </button>
+
+            <p class="small-note">
+                You will be redirected to FaucetPay to complete your payment.
+            </p>
+
+        </section>
+
+        <!-- PAYMENT STATUS -->
+
+        <section class="status-panel">
+
+            <div class="status-title">Payment protection</div>
+
+            <p class="status-text">
+                Payment verification is handled separately from the checkout redirect. If your payment is pending, do not pay again; check your campaign payment status first.
+            </p>
+
+        </section>
+
+        <div class="ad">
+            Advertisement
+        </div>
+
+        <footer class="footer">
+            <div class="footer-brand">EarningHub</div>
+            Secure campaign payments · Always verify the final checkout details before paying.
+        </footer>
+
+    </main>
+
+</div>
+
+<script>
+"use strict";
+
+/* =========================
+   SUPABASE CONFIGURATION
+========================= */
+
+const SUPABASE_URL =
+    "https://zsitqabyplglcppvuetj.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_NbGpP3kHSfLH9Yqjd_EgDw_mITmJJ_Z";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+/*
+This Edge Function must be deployed separately
+in Supabase before the checkout button can work.
+*/
+
+const CREATE_PAYMENT_FUNCTION =
+    "faucetpay-create-payment";
+
+const TASK_REWARD = 0.10;
+
+let currentUser = null;
+let currentCampaign = null;
+let isSubmitting = false;
+
+
+/* =========================
+   SAFE UI HELPERS
+========================= */
+
+function showMessage(text, type = "error") {
+    const box = document.getElementById("message");
+
+    box.textContent = text;
+    box.className = "message " + type;
+    box.style.display = "block";
+}
+
+function hideMessage() {
+    const box = document.getElementById("message");
+
+    box.textContent = "";
+    box.style.display = "none";
+}
+
+function showContent() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").classList.remove("hidden");
+}
+
+function setButton(text, disabled) {
+    const button = document.getElementById("submitButton");
+
+    button.textContent = text;
+    button.disabled = disabled;
+}
+
+function money(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) {
+        return "$0.00";
+    }
+
+    return "$" + number.toFixed(2);
+}
+
+
+/* =========================
+   CAMPAIGN ID
+========================= */
+
+function getCampaignId() {
+    const params = new URLSearchParams(window.location.search);
+
+    const urlId = params.get("id");
+
+    if (urlId) {
+        return urlId;
+    }
+
+    return sessionStorage.getItem(
+        "earninghub_campaign_id"
+    );
+}
+
+
+/* =========================
+   AUTHENTICATED USER
+========================= */
+
+async function getCurrentUser() {
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    if (!data.session) {
+        return null;
+    }
+
+    return data.session.user;
+}
+
+
+/* =========================
+   LOAD CAMPAIGN
+========================= */
+
+async function loadCampaign() {
+    try {
+        currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+            showContent();
+
+            showMessage(
+                "Your session has expired. Please log in and open your campaign payment page again.",
+                "error"
+            );
+
+            setButton("Please log in first", true);
+            return;
+        }
+
+        const campaignId = getCampaignId();
+
+        if (!campaignId) {
+            showContent();
+
+            showMessage(
+                "Campaign ID is missing. Open this page from your campaign creation flow.",
+                "error"
+            );
+
+            setButton("Campaign ID missing", true);
+            return;
+        }
+
+        sessionStorage.setItem(
+            "earninghub_campaign_id",
+            campaignId
+        );
+
+        /*
+        total_payment is the intended checkout amount.
+        budget is retained as a fallback for older campaign records.
+        */
+
+        const {
+            data: campaign,
+            error
+        } = await supabaseClient
+            .from("campaigns")
+            .select(`
+                id,
+                creator_id,
+                title,
+                description,
+                platform,
+                task_type,
+                target_url,
+                reward,
+                budget,
+                total_payment,
+                task_budget,
+                platform_revenue,
+                task_reward,
+                task_capacity,
+                completed_tasks,
+                status,
+                created_at
+            `)
+            .eq("id", campaignId)
+            .eq("creator_id", currentUser.id)
+            .maybeSingle();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        if (!campaign) {
+            throw new Error(
+                "Campaign not found, or you do not have permission to access it."
+            );
+        }
+
+        currentCampaign = campaign;
+
+        displayCampaign(campaign);
+        showContent();
+
+        await refreshPaymentStatus();
+
+    } catch (error) {
+        showContent();
+
+        showMessage(
+            error.message || "Unable to load your campaign.",
+            "error"
+        );
+
+        setButton("Unable to load campaign", true);
+    }
+}
+
+
+/* =========================
+   DISPLAY CAMPAIGN
+========================= */
+
+function displayCampaign(campaign) {
+    const amount = getCampaignAmount(campaign);
+
+    /*
+    These values are displayed as a preview.
+    The server must independently calculate and validate
+    the amount before creating the checkout.
+    */
+
+    const taskBudget =
+        campaign.task_budget != null
+            ? Number(campaign.task_budget)
+            : amount * 0.70;
+
+    const platformRevenue =
+        campaign.platform_revenue != null
+            ? Number(campaign.platform_revenue)
+            : amount * 0.30;
+
+    const reward =
+        campaign.task_reward != null
+            ? Number(campaign.task_reward)
+            : TASK_REWARD;
+
+    const capacity =
+        campaign.task_capacity != null
+            ? Number(campaign.task_capacity)
+            : Math.floor(taskBudget / reward);
+
+    document.getElementById("campaignTitle").textContent =
+        campaign.title || "Campaign";
+
+    document.getElementById("campaignPlatform").textContent =
+        campaign.platform || "—";
+
+    document.getElementById("campaignTaskType").textContent =
+        campaign.task_type || "—";
+
+    document.getElementById("campaignAmount").textContent =
+        money(amount);
+
+    document.getElementById("rewardPool").textContent =
+        money(taskBudget);
+
+    document.getElementById("platformFee").textContent =
+        money(platformRevenue);
+
+    document.getElementById("completionCount").textContent =
+        Number.isFinite(capacity) ? String(capacity) : "0";
+
+    document.getElementById("campaignStatus").textContent =
+        campaign.status || "Unknown";
+}
+
+function getCampaignAmount(campaign) {
+    const totalPayment = Number(campaign.total_payment);
+
+    if (
+        campaign.total_payment !== null &&
+        campaign.total_payment !== undefined &&
+        Number.isFinite(totalPayment) &&
+        totalPayment > 0
+    ) {
+        return totalPayment;
+    }
+
+    const budget = Number(campaign.budget || 0);
+
+    return Number.isFinite(budget) ? budget : 0;
+}
+
+
+/* =========================
+   REFRESH PAYMENT STATUS
+========================= */
+
+async function refreshPaymentStatus() {
+    if (!currentCampaign || !currentUser) {
+        return;
+    }
+
+    const {
+        data: campaign,
+        error
+    } = await supabaseClient
+        .from("campaigns")
+        .select(`
+            id,
+            creator_id,
+            title,
+            platform,
+            task_type,
+            budget,
+            total_payment,
+            task_budget,
+            platform_revenue,
+            task_reward,
+            task_capacity,
+            status
+        `)
+        .eq("id", currentCampaign.id)
+        .eq("creator_id", currentUser.id)
+        .maybeSingle();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    if (!campaign) {
+        throw new Error("Unable to refresh campaign status.");
+    }
+
+    currentCampaign = {
+        ...currentCampaign,
+        ...campaign
+    };
+
+    displayCampaign(currentCampaign);
+
+    const button = document.getElementById("submitButton");
+
+    if (campaign.status === "active") {
+        setButton("Campaign is active", true);
+
+        showMessage(
+            "This campaign is active. Its status was loaded from the database.",
+            "success"
+        );
+
+        return;
+    }
+
+    if (
+        campaign.status === "payment_review" ||
+        campaign.status === "payment_pending"
+    ) {
+        setButton("Payment is being reviewed", true);
+
+        showMessage(
+            "A payment review is already in progress. Please check the payment status before attempting another payment.",
+            "info"
+        );
+
+        return;
+    }
+
+    if (campaign.status !== "pending_payment") {
+        setButton("Payment unavailable", true);
+
+        showMessage(
+            "This campaign is not currently available for payment. Current status: " +
+            campaign.status,
+            "error"
+        );
+
+        return;
+    }
+
+    if (getCampaignAmount(campaign) <= 0) {
+        setButton("Invalid campaign amount", true);
+
+        showMessage(
+            "The campaign payment amount is invalid. Please check your campaign details.",
+            "error"
+        );
+
+        return;
+    }
+
+    setButton("Continue to FaucetPay →", false);
+}
+
+
+/* =========================
+   CREATE FAUCETPAY CHECKOUT
+========================= */
+
+document
+    .getElementById("submitButton")
+    .addEventListener("click", startFaucetPayPayment);
+
+async function startFaucetPayPayment() {
+    if (isSubmitting) {
+        return;
+    }
+
+    hideMessage();
+
+    if (!currentUser || !currentCampaign) {
+        showMessage(
+            "Your session or campaign details are missing. Reload the page and try again.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (currentCampaign.status !== "pending_payment") {
+        await refreshPaymentStatus();
+        return;
+    }
+
+    const amount = getCampaignAmount(currentCampaign);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        showMessage(
+            "The campaign payment amount is invalid.",
+            "error"
+        );
+
+        return;
+    }
+
+    isSubmitting = true;
+
+    setButton("Preparing secure checkout...", true);
+
+    try {
+        /*
+        The Edge Function must:
+        1. Verify the user's Supabase access token.
+        2. Confirm campaign ownership and status.
+        3. Validate the payment amount on the server.
+        4. Create or reuse a pending campaign_payments row.
+        5. Return FaucetPay's checkout action and form fields.
+
+        It must not activate the campaign at this stage.
+        */
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
+
+        if (sessionError) {
+            throw new Error(sessionError.message);
+        }
+
+        const session = sessionData.session;
+
+        if (!session || !session.access_token) {
+            throw new Error(
+                "Your login session has expired. Please log in again."
+            );
+        }
+
+        const {
+            data,
+            error
+        } = await supabaseClient.functions.invoke(
+            CREATE_PAYMENT_FUNCTION,
+            {
+                body: {
+                    campaign_id: currentCampaign.id
+                }
+            }
+        );
+
+        if (error) {
+            throw new Error(
+                "Could not prepare FaucetPay checkout. " +
+                error.message
+            );
+        }
+
+        if (!data || typeof data !== "object") {
+            throw new Error(
+                "The payment server returned an invalid response."
+            );
+        }
+
+        /*
+        Expected Edge Function response:
+        {
+            action: "https://faucetpay.io/merchant/webscr",
+            method: "POST",
+            fields: {
+                merchant_username: "...",
+                item_description: "...",
+                amount1: "...",
+                currency1: "USDT",
+                ...
+            }
+        }
+        */
+
+        const checkoutAction =
+            data.action || data.checkout_url;
+
+        const fields = data.fields;
+
+        const checkoutMethod =
+            String(data.method || "POST").toUpperCase();
+
+        if (
+            checkoutAction !==
+            "https://faucetpay.io/merchant/webscr"
+        ) {
+            throw new Error(
+                "The payment server returned an unexpected checkout URL."
+            );
+        }
+
+        if (
+            checkoutMethod !== "POST" ||
+            !fields ||
+            typeof fields !== "object" ||
+            Array.isArray(fields)
+        ) {
+            throw new Error(
+                "The payment server returned invalid checkout details."
+            );
+        }
+
+        const requiredFields = [
+            "merchant_username",
+            "item_description",
+            "amount1",
+            "currency1",
+            "custom"
+        ];
+
+        for (const fieldName of requiredFields) {
+            if (
+                fields[fieldName] === undefined ||
+                fields[fieldName] === null ||
+                String(fields[fieldName]).trim() === ""
+            ) {
+                throw new Error(
+                    "The payment server is missing required checkout information."
+                );
+            }
+        }
+
+        if (
+            String(fields.currency1).toUpperCase() !== "USDT"
+        ) {
+            throw new Error(
+                "The checkout currency is not configured as expected. Please contact support."
+            );
+        }
+
+        const checkoutAmount = Number(fields.amount1);
+
+        if (
+            !Number.isFinite(checkoutAmount) ||
+            checkoutAmount <= 0 ||
+            Math.abs(checkoutAmount - amount) > 0.000001
+        ) {
+            throw new Error(
+                "The checkout amount does not match the campaign payment amount. No payment was started."
+            );
+        }
+
+        /*
+        Use a real POST form to redirect to FaucetPay.
+        Do not mark the campaign as paid here.
+        */
+
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = checkoutAction;
+        form.acceptCharset = "UTF-8";
+        form.style.display = "none";
+
+        for (const [name, value] of Object.entries(fields)) {
+            if (
+                typeof value !== "string" &&
+                typeof value !== "number"
+            ) {
+                continue;
+            }
+
+            const input = document.createElement("input");
+
+            input.type = "hidden";
+            input.name = name;
+            input.value = String(value);
+
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+
+        setButton("Redirecting to FaucetPay...", true);
+
+        form.submit();
+
+    } catch (error) {
+        isSubmitting = false;
+
+        setButton("Continue to FaucetPay →", false);
+
+        showMessage(
+            error.message ||
+            "Unable to start the payment. Please try again.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadCampaign();
+</script>
+
+</body>
+</html>
